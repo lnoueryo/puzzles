@@ -1,2 +1,2 @@
 # puzzles
-aa
+a
