@@ -1,0 +1,23 @@
+{{template "app" .}}
+
+{{define "content"}}
+<div class="container">
+  <h1>Hello World</h1>
+</div>
+<script type="text/javascript">
+  var sock = null;
+  var myData = "";
+  function sendMessage() {
+    var s = {"Name": "Rio", "Message": "Hello world"};
+    sock.send(JSON.stringify(s));
+  }
+  window.onload = function() {
+    sock = new WebSocket("ws://localhost:8080/chat");
+    sock.onmessage = function(event) {
+      var data = JSON.parse(event.data);
+      myData = data.myData;
+      console.log(data)
+    };
+  };
+</script>
+{{end}}

@@ -1,0 +1,72 @@
+{{define "app"}}
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>home</title>
+  </head>
+
+  <body>
+    <header class="d-flex justify-content-between p-3">
+      <div>
+        <a href="/">
+          <h2 class="text-warning m-2">Diary</h2>
+        </a>
+      </div>
+      <div class="d-flex align-items-center">
+        {{ $x := .Session.CSRFToken }}
+        {{ if $x}}
+        <div class="d-flex">
+          <form class="d-flex" action="/users/">
+            <input class="form-control me-2" name="name" type="search" placeholder="Search" aria-label="Search" value="{{ .Page.Keyword }}">
+            <input name="page" type="hidden" value="1">
+            <button class="btn btn-outline-warning" type="submit">Search</button>
+          </form>
+          <a href="/users/{{ .Session.UserId }}">
+            <img class="rounded-circle mx-2" style="width: 40px;height: 40px" src="/media/user/{{ .Session.Image }}" alt="">
+          </a>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ .Session.Name }}
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/users/{{ .Session.UserId }}">profile</a></li>
+            <li><a class="dropdown-item" href="/post">post</a></li>
+            <form action="/logout" method="post">
+              <li><input class="dropdown-item" type="submit" value="logout"></li>
+            </form>
+          </ul>
+        </div>
+        {{ end }}
+      </div>
+    </header>
+    {{ if index .StringMap "auth" }}
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Active</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+      </li>
+    </ul>
+    {{ end }}
+    <div class="py-4">
+      {{ block "content" . }}
+      {{ end }}
+    </div>
+  </body>
+
+</html>
+{{end}}

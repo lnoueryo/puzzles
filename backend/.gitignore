@@ -1,0 +1,10 @@
+a
+session/*
+.env
+.env.dev
+upload
+gorm.db
+main
+backend
+data
+pra
