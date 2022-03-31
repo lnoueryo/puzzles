@@ -45,8 +45,14 @@ func allDatabase() {
 	// SeriesOfCreation(SQDB, MQDB)
 	start := time.Now()
 	AutoMigrate(SQDB, MQDB)
-	var u User
-	MQDB.Preload(clause.Associations).Preload("Organizations", "id = ?", "prygen4fDISDVgSYDjxZ5uICD").First(&u, "email = ?", "popo62520908@gmail.com")
+	// var c []Comment
+	// DB.Preload(clause.Associations).First(&c, 5)
+	// fmt.Println(c)
+	// var t Task
+	// DB = DB.Preload("Comments", "parent_id = ?", 1)
+	// DB = RecursivePreload(DB)
+	// DB.First(&t, 1)
+	// DB.Preload(RecursivePreload()).Preload("Comments", "parent_id = ?", 1).Preload(clause.Associations).First(&t, 1)
 	// createOrganizations(SQDB, MQDB)
 	// createUsers(SQDB, MQDB)
 	// createProjects(SQDB, MQDB)
@@ -54,12 +60,40 @@ func allDatabase() {
 	// CreateFields(SQDB, MQDB)
 	// CreateMilestones(SQDB, MQDB)
 	// createFieldUsers(SQDB, MQDB)
-	createTasks(SQDB, MQDB)
+	// createTasks(SQDB, MQDB)
 	// createProjectUsers(SQDB, MQDB)
 	// ReadOrganization()
+	SQDB.Migrator().DropTable(&Activity{})
+	SQDB.Migrator().CreateTable(&Activity{})
+	MQDB.Migrator().DropTable(&Activity{})
+	MQDB.Migrator().CreateTable(&Activity{})
+
+	SQDB.Migrator().DropTable(&ActivityContent{})
+	SQDB.Migrator().CreateTable(&ActivityContent{})
+	MQDB.Migrator().DropTable(&ActivityContent{})
+	MQDB.Migrator().CreateTable(&ActivityContent{})
 	fmt.Println((time.Now()).Sub(start))
 	// readTask(MQDB)
 }
+
+func RecursivePreload(DB *gorm.DB) *gorm.DB {
+	column := "Comments"
+	DB.Preload(column + ".User")
+	for i := 0; i < 100; i++{
+		DB.Preload(column + ".User")
+		column += ".Replies"
+		DB.Preload(column)
+	}
+	return DB
+}
+
+// func RecursivePreload() string {
+// 	column := "Comments"
+// 	for i := 0; i < 100; i++{
+// 		column += ".Replies"
+// 	}
+// 	return column
+// }
 
 func (pa *ProjectAuthority) AfterFind(tx *gorm.DB) (err error) {
 	fmt.Println(pa)
@@ -384,120 +418,7 @@ func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 		MQDB.Create(&tasks)
 		SQDB.Create(&tasks)
 	}
-	// for _, project := range projects {
-	// 	if project.ID == 1 {
-	// 		continue
-	// 	}
-	// 	random := 0
-	// 	var tasks []Task
-	// 	count := 1
-	// 	for {
-	// 		rand.Seed(time.Now().UnixNano())
-	// 		assigneeNum := rand.Intn(len(project.AuthorityUsers))
-	// 		assignerNum := rand.Intn(len(project.AuthorityUsers))
-	// 		random = rand.Intn(500)
-	// 		milestoneNum := rand.Intn(len(project.Milestones))
-	// 		statusNum := rand.Intn(9)
-	// 		statusID := statusNum + 1
-	// 		fieldNum := rand.Intn(len(project.Fields))
-	// 		priorityNum := rand.Intn(3)
-	// 		priorityID := priorityNum + 1
-	// 		typeNum := rand.Intn(5)
-	// 		typeID := typeNum + 1
-	// 		fieldID := project.Fields[fieldNum].ID
-	// 		milestoneID := project.Milestones[milestoneNum].ID
-	// 		task := Task{
-	// 			AssigneeID: project.AuthorityUsers[assigneeNum].User.ID,
-	// 			AssignerID: project.AuthorityUsers[assignerNum].User.ID,
-	// 			FieldID: &fieldID,
-	// 			MilestoneID: &milestoneID,
-	// 			StatusID: statusID,
-	// 			PriorityID: priorityID,
-	// 			TypeID: typeID,
-	// 			ProjectID: project.ID,
-	// 			Key: project.Name + "_" + strconv.Itoa(count),
-	// 			Title: "テスト",
-	// 			Detail: "テストです",
-	// 			ParentID: 1,
-	// 			EstimatedTime: 1,
-	// 			ActualTime: 0,
-	// 			StartTime: time.Now(),
-	// 			Deadline: time.Now(),
-	// 		}
-	// 		tasks = append(tasks, task)
-	// 		count += 1
-	// 		if random == 0 {
-	// 			break
-	// 		}
-	// 	}
-	// 	MQDB.Create(&tasks)
-	// 	SQDB.Create(&tasks)
-	// }
 }
-
-// func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
-// 	Migrate(SQDB, MQDB, Task{})
-// 	CreateTask(SQDB, MQDB)
-// 	var organizations []Organization
-// 	var pa []ProjectAuthority
-// 	DB.Preload("Projects.AuthorityUsers.User").Preload("Projects", func(db *gorm.DB) *gorm.DB {
-// 		return DB.Preload(clause.Associations)
-// 	  }).Preload(clause.Associations).Find(&organizations)
-// 	for _, organization := range organizations {
-// 		if len(organization.Projects) == 0 {
-// 			continue
-// 		}
-// 		for _, project := range organization.Projects {
-// 			if project.ID == 1 {
-// 				continue
-// 			}
-// 			random := 0
-// 			var tasks []Task
-// 			count := 1
-// 			for {
-// 				rand.Seed(time.Now().UnixNano())
-// 				assigneeNum := rand.Intn(len(project.AuthorityUsers))
-// 				assignerNum := rand.Intn(len(project.AuthorityUsers))
-// 				random = rand.Intn(500)
-// 				milestoneNum := rand.Intn(len(project.Milestones))
-// 				statusNum := rand.Intn(9)
-// 				statusID := statusNum + 1
-// 				fieldNum := rand.Intn(len(project.Fields))
-// 				priorityNum := rand.Intn(3)
-// 				priorityID := priorityNum + 1
-// 				typeNum := rand.Intn(5)
-// 				typeID := typeNum + 1
-// 				fieldID := project.Fields[fieldNum].ID
-// 				milestoneID := project.Milestones[milestoneNum].ID
-// 				task := Task{
-// 					AssigneeID: project.AuthorityUsers[assigneeNum].User.ID,
-// 					AssignerID: project.AuthorityUsers[assignerNum].User.ID,
-// 					FieldID: &fieldID,
-// 					MilestoneID: &milestoneID,
-// 					StatusID: statusID,
-// 					PriorityID: priorityID,
-// 					TypeID: typeID,
-// 					ProjectID: project.ID,
-// 					Key: project.Name + "_" + strconv.Itoa(count),
-// 					Title: "テスト",
-// 					Detail: "テストです",
-// 					ParentID: 1,
-// 					EstimatedTime: 1,
-// 					ActualTime: 0,
-// 					StartTime: time.Now(),
-// 					Deadline: time.Now(),
-// 				}
-// 				tasks = append(tasks, task)
-// 				count += 1
-// 				if random == 0 {
-// 					break
-// 				}
-// 			}
-// 			MQDB.Create(&tasks)
-// 			SQDB.Create(&tasks)
-// 		}
-// 	}
-// }
 
 func CreateFields(SQDB *gorm.DB, MQDB *gorm.DB) {
 	Migrate(SQDB, MQDB, Field{})

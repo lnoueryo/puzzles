@@ -1,7 +1,6 @@
 <template>
   <v-card
     class="mx-auto"
-    style="max-width: 500px;"
   >
     <slot></slot>
     <v-divider></v-divider>

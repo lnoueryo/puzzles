@@ -70,39 +70,19 @@ func (par *ProjectAuthorityRequest)BulkUpdateProject() error {
 				return errors.New("couldn't delete")
 			}
 		}
-		var projectAuthorities []ProjectAuthority
-		for _, user := range par.ProjectAuthority.ProjectUsers {
-			projectAuthority := ProjectAuthority{
-				ID: user.ID,
-				ProjectID: user.ProjectID,
-				UserID: user.UserID,
-				AuthID: user.AuthID,
-				Active: user.Active,
-			}
-			projectAuthorities = append(projectAuthorities, projectAuthority)
-		}
 		if par.ProjectAuthority.Project.ImageData != "" {
 			fileName, err := image.StoreImage("projects", par.ProjectAuthority.Project.ImageData); if err != nil {
 				return errors.New("couldn't save the image")
 			}
 			path := "upload/projects/" + par.ProjectAuthority.Project.Image
 			par.ProjectAuthority.Project.Image = fileName
-			result := tx.Debug().Updates(&projectAuthorities); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				return result.Error
-			}
-			result = tx.Debug().Updates(&par.ProjectAuthority.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			result := tx.Debug().Omit("Fields", "Milestones", "Users", "AuthorityUsers.User", "AuthorityUsers.Type").Session(&gorm.Session{FullSaveAssociations: true}).Save(&par.ProjectAuthority.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 				return result.Error
 			}
 			os.Remove(path)
 			return nil
 		}
-		result := tx.Debug().Save(&projectAuthorities); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return result.Error
-		}
-		// result = tx.Debug().Updates(&par.ProjectAuthority.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		// 	return result.Error
-		// }
-		result = tx.Debug().Session(&gorm.Session{FullSaveAssociations: true}).Save(&par.ProjectAuthority.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		result := tx.Debug().Omit("Fields", "Milestones", "Users", "AuthorityUsers.User", "AuthorityUsers.Type").Session(&gorm.Session{FullSaveAssociations: true}).Save(&par.ProjectAuthority.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return result.Error
 		}
 		return nil

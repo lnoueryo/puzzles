@@ -10,6 +10,7 @@ const initialState = () => {
     types: lib.types,
     priorities: lib.priorities,
     tasks: new Tasks(),
+    selectedComment: {id: 0, index: 0, parent: 0},
   }
 }
 
@@ -34,6 +35,7 @@ export const getters: GetterTree<TaskState, RootState> = {
   totalPageNum: state => state.tasks.totalPageNum,
   currentDisplayedTasksNum: state => state.tasks.currentDisplayedTasksNum,
   task: state => state.tasks.selectedTask,
+  selectedComment: state => state.selectedComment
 }
 
 export const mutations: MutationTree<TaskState> = {
@@ -77,6 +79,7 @@ export const mutations: MutationTree<TaskState> = {
   pageChange: (state, index) => state.tasks.tasks.pageIndex += index,
   addTask: (state, task) => state.tasks.addTask(task),
   updateTask: (state, task) => state.tasks.updateTask(task),
+  selectComment: (state, id) => state.selectedComment = id,
 }
 
 export const actions: ActionTree<TaskState, RootState> = {
@@ -137,6 +140,32 @@ export const actions: ActionTree<TaskState, RootState> = {
     if(item?.field) commit('selectField', item?.field);
     if(item?.status)commit('selectStatus', item.status);
     if(item?.cellKey?.index && item?.cellKey?.active) commit('cellKey', item.cellKey);
-  }
+  },
+  async createComment({commit}, form) {
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.post('/api/comment/create', form);
+        commit('updateTask', response.data);
+        resolve(response);
+        // commit('tasks', response.data);
+      } catch (error) {
+        console.log(error);
+        reject(error.response);
+      }
+    })
+  },
+  async updateComment({commit}, form) {
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.put('/api/comment/update', form);
+        // commit('updateTask', response.data);
+        resolve(response);
+        // commit('tasks', response.data);
+      } catch (error) {
+        console.log(error);
+        reject(error.response);
+      }
+    })
+  },
 }
 

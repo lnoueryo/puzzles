@@ -1,0 +1,26 @@
+package models
+
+import "time"
+
+type Activity struct {
+	ID			int				`gorm:"AUTO_INCREMENT"json:"id"`
+	UserID		int				`json:"user_id"`
+	ProjectID	int				`json:"project_id"`
+	ContentID	int				`json:"content_id"`
+	User		User			`gorm:"references:ID;"json:"user"`
+	Content		ActivityContent	`gorm:"references:ID;"json:"content"`
+	CreatedAt	time.Time 		`gorm:"autoCreateTime;"json:"created_at"`
+	UpdatedAt	time.Time 		`gorm:"autoUpdateTime;"json:"updated_at"`
+}
+
+type ActivityContent struct {
+	ID			int		`gorm:"AUTO_INCREMENT"json:"id"`
+	Content		string	`json:"content"`
+}
+
+func (a *Activity)Create() error {
+	result := DB.Create(&a); if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

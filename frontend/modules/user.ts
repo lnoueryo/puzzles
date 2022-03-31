@@ -82,8 +82,7 @@ export class MainUser {
   updateProject(projectAuthority: lib.ProjectAuthority) {
     this.mainUser.projects = this.mainUser.projects.map((project) => {
       if(project.project_id == projectAuthority.project_id) {
-        const newProject = {...project.project, ...projectAuthority.project}
-        project.project = newProject
+        project.project = {...project.project, ...projectAuthority.project}
         project = {...project, ...projectAuthority}
       }
       return project;

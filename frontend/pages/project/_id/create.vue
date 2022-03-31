@@ -99,7 +99,7 @@ export default Vue.extend({
         assignee_id: this.user.id,
         status_id: 1,
         type_id: 1,
-        priority_id: 1,
+        priority_id: 2,
         estimated_time: 0,
         deadline: this.changeToDateISOFormat('', 5)
       }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -49,10 +50,28 @@ func NewTask(r *http.Request) (Task, error) {
 
 func GetTasks(projectID int) ([]Task, error) {
 	var t []Task
-	result := DB.Preload(clause.Associations).Find(&t, "project_id = ?", projectID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	tx := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations)
+	tx = RecursivePreload(tx)
+	result := tx.Find(&t, "project_id = ?", projectID)
+	// result := DB.Preload("Comments.Replies").Preload("Comments.User").Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
+	// result := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return t, result.Error
 	}
 	return t, nil
+}
+
+func (t *Task)GetTask() error {
+	fmt.Println(t)
+	tx := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations)
+	tx = RecursivePreload(tx)
+	result := tx.Find(&t, t.ID)
+	fmt.Println(t)
+	// result := DB.Preload(RecursivePreload()).Preload("Comments", "parent_id = ?", 1).Preload(clause.Associations).First(&t)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
 
 func (t *Task)Create() error {

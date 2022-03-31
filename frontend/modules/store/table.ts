@@ -90,11 +90,12 @@ export class Tasks {
   }
   preprocessTask = (task: lib.Task) => {
     const newTask = {} as Task
-    newTask.priority = (task.priority as lib.Priority).name;
-    newTask.milestone = (task.milestone as lib.Milestone).name;
-    newTask.field = (task.field as lib.Field).name;
-    newTask.status = (task.status as lib.Status).name;
-    newTask.type = (task.type as lib.Type).name;
+    newTask.priority = (task?.priority as lib.Priority)?.name;
+    newTask.milestone = (task?.milestone as lib.Milestone)?.name;
+    newTask.field = (task.field as lib.Field)?.name;
+    newTask.status = (task.status as lib.Status)?.name;
+    newTask.type = (task.type as lib.Type)?.name;
+    newTask.comments = task.comments
     newTask.created_at = this.changeTimeFormat(task.created_at);
     newTask.updated_at = this.changeTimeFormat(task.updated_at);
     newTask.start_time = this.changeTimeFormat(task.start_time);
@@ -118,12 +119,16 @@ export class Tasks {
   updateTask(updatedTask: lib.Task) {
     this.tasks.all = this.tasks.all.map((task) => {
       if(task.id == updatedTask.id) {
-        task = {...task, ...this.preprocessTask(updatedTask)}
+        const newTask = this.preprocessTask(updatedTask);
+        task.comments = {...{}, ...newTask.comments}
+        task = {...{}, ...newTask}
+        console.log(task)
       }
       return task;
     })
-    this.tasks.sortedTasks = this.tasks.all;
+    this.tasks.sortedTasks = [...[], ...this.tasks.all];
     this.resetSort();
+    this.selectTask({key: String(updatedTask.id)} as lib.Params)
   }
   changeTimeFormat = (time: string) => {
     const dateObj = new Date(time);
@@ -222,7 +227,7 @@ interface Task {
   id: number
   title: string
   assignee: lib.User
-  comments: Comment[]
+  comments: lib.Comment[]
   detail: string
   key: string
   parent: number

@@ -63,7 +63,7 @@ const fileReader = (e: File) => {
 const resize = (reader: FileReader) => {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    const imgWidth = 200;
+    const imgWidth = 400;
     image.src = reader.result as string;
     image.onload = () => {
       const imgType = image.src.substring(5, image.src.indexOf(';'));

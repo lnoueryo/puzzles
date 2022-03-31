@@ -1,5 +1,5 @@
 <template>
-  <div class="cell text-left" :style="cell.header.style">
+  <div class="cell text-left" :style="styleValue">
     <v-btn class="mx-1" icon>
       <v-avatar size="25px">
         <img alt="Avatar" :src="'http://localhost:8080/media/users/' + user.image">
@@ -12,6 +12,6 @@
 <script>
 import Vue from 'vue'
 export default Vue.extend({
-  props: ['cell', 'user']
+  props: ['styleValue', 'user']
 })
 </script>

@@ -113,7 +113,11 @@ export interface OrganizationAuthority {
 }
 
 export interface Comment {
-  type: string
+  id: number
+  content: string
+  user: User
+  parent_id: boolean
+  replies: Comment[]
 }
 
 export interface Table {

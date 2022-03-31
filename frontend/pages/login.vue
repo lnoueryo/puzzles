@@ -1,6 +1,6 @@
 <template>
 
-  <form-card @send="onClickSend">
+  <form-card @send="onClickSend" style="max-width: 500px">
     <v-form
       ref="form"
       v-model="formReady"

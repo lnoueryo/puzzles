@@ -117,16 +117,16 @@ export default Vue.extend({
   },
   methods: {
     preprocessProjectAuthority() {
-      const authorityType = '管理者';
+      const authorityType = 1;
       this.selectedProject = JSON.parse(JSON.stringify(this.projectAuthority));
-      console.log(this.selectedProject.project_users.filter((user) => user.type.name == authorityType))
-      this.selectedProject.project.authority_users = this.selectedProject.project_users.filter((user) => user.type.name == authorityType);
+      this.selectedProject.project.authority_users = this.selectedProject.project_users.filter((user) => user.auth_id == authorityType);
       if(this.isEmptyArr(this.projectAuthority.project.milestones)) this.selectedProject.project.milestones.push({id: 0, name: ''})
       if(this.isEmptyArr(this.projectAuthority.project.fields)) this.selectedProject.project.fields.push({id: 0, name: ''})
       // console.log(this.selectedProject.project.fields)
       this.isAuthorized = true;
     },
     async onClickSubmit() {
+      this.dialog = false;
       console.log(this.projectForm())
       let response;
       try {
@@ -161,7 +161,16 @@ export default Vue.extend({
       project_authority.project_users = this.selectedProject.project_users.map((user: lib.ProjectAuthority) => {
         const newUser = {} as lib.ProjectAuthority
         newUser.auth_id = 2;
-        if(adminUserNum.includes(newUser.user_id)) {
+        if(adminUserNum.includes(user.user_id)) {
+          newUser.auth_id = 1;
+          newUser.active = true;
+        }
+        return {...user, ...newUser};
+      });
+      project.authority_users = this.selectedProject.project_users.map((user: lib.ProjectAuthority) => {
+        const newUser = {} as lib.ProjectAuthority
+        newUser.auth_id = 2;
+        if(adminUserNum.includes(user.user_id)) {
           newUser.auth_id = 1;
           newUser.active = true;
         }

@@ -12,6 +12,7 @@ import (
 var home controller.Home
 var auth controller.Auth
 var task controller.Task
+var comment controller.Comment
 var project controller.Project
 var infolog *log.Logger
 
@@ -42,6 +43,8 @@ func Routes() http.Handler{
 	mux.Handle("/api/task", Auth(http.HandlerFunc(task.Index)))
 	mux.Handle("/api/task/create", Auth(http.HandlerFunc(task.Create)))
 	mux.Handle("/api/task/update", Auth(http.HandlerFunc(task.Update)))
+	mux.Handle("/api/comment/create", Auth(http.HandlerFunc(comment.Create)))
+	mux.Handle("/api/comment/update", Auth(http.HandlerFunc(comment.Update)))
 	mux.Handle("/api/session", Auth(http.HandlerFunc(home.Show)))
 	mux.Handle("/api/logout", http.HandlerFunc(auth.Logout))
 	

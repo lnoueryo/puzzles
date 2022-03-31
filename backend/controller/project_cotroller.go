@@ -95,6 +95,18 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 	}
 	s, _ := models.CheckSession(r)
+	activity := models.Activity{
+		UserID: s.UserID,
+		ProjectID: p.ID,
+		ContentID: 6,
+	}
+
+	err = activity.Create(); if err != nil {
+		errMap := map[string]string{"message": "not found"}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(errJson)
+	}
 	pa, err := p.GetProjectAuthority(s); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "couldn't create project"}
@@ -177,6 +189,19 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
     }
 	err = par.BulkUpdateProject(); if err != nil {
 		errMap := map[string]string{"message": err.Error()}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(errJson)
+	}
+	s, _ := models.CheckSession(r)
+	activity := models.Activity{
+		UserID: s.UserID,
+		ProjectID: par.ProjectAuthority.ProjectID,
+		ContentID: 6,
+	}
+
+	err = activity.Create(); if err != nil {
+		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)

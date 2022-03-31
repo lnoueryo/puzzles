@@ -41,8 +41,8 @@
         <div class="tbody" :style="table.tbody.style" v-if="isReadyArr(tasks)">
           <div class="tr d-flex align-center" v-for="(task, i) in tasks" :key="i">
             <nuxt-link :to="{name: 'project-id-task-key', params: {id: $route.params.id, key: task.id}}" v-for="(cell, i) in table.cells" :key="i">
-              <user-cell :cell="cell" :user="task.assigner" v-if="cell.name == 'assigner'"></user-cell>
-              <user-cell :cell="cell" :user="task.assignee" v-else-if="cell.name == 'assignee'"></user-cell>
+              <user-cell :styleValue="cell.header.style" :user="task.assigner" v-if="cell.name == 'assigner'"></user-cell>
+              <user-cell :styleValue="cell.header.style" :user="task.assignee" v-else-if="cell.name == 'assignee'"></user-cell>
               <div class="cell" :style="cell.header.style" v-else>{{ task[cell.name] }}</div>
             </nuxt-link>
           </div>
