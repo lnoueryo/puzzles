@@ -1,9 +1,5 @@
 package config
 
-import (
-	"os"
-)
-
 func configureProdSettings() {
 	App.UseCache = true
 	tc, err := CreateTemplateCache()
@@ -11,7 +7,6 @@ func configureProdSettings() {
 		errorlog.Fatal(err)
 	}
 	App.TemplateCache = tc
-	App.Host = os.Getenv("APP_HOST")
 	App.Addr = ":8080"
 	// DBSet := models.Database{
 	// 	Name: os.Getenv("DB_NAME"),

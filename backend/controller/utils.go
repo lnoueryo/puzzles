@@ -4,6 +4,7 @@ import (
 	"backend/config"
 	"backend/models"
 	"backend/modules/crypto"
+	"backend/modules/mail"
 	"bytes"
 	"encoding/base64"
 	"errors"
@@ -35,12 +36,18 @@ var infolog *log.Logger
 var errorlog *log.Logger
 var DB *gorm.DB
 var ws_array []*websocket.Conn // *websocket.Connを入れる配列
+var email mail.Mail
+var origin string
+var allowOrigin string
 
 
 func init() {
 	infolog = config.App.InfoLog
 	errorlog = config.App.ErrorLog
 	DB = config.DB
+	email = config.App.Email
+	origin = config.App.Origin
+	allowOrigin = config.App.AllowOrigin
 }
 
 func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateData) {

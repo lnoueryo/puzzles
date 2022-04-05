@@ -6,18 +6,22 @@ import (
 	"path/filepath"
 	"github.com/joho/godotenv"
 	"os"
+	"backend/modules/mail"
 )
 
 type AppConfig struct {
-	UseCache bool
-	TemplateCache map[string]*template.Template
-	InfoLog *log.Logger
-	ErrorLog *log.Logger
-	InProduction bool
-	Addr string
-	Static string
-	Media string
-	Host string
+	UseCache 		bool
+	TemplateCache 	map[string]*template.Template
+	InfoLog			*log.Logger
+	ErrorLog		*log.Logger
+	InProduction	bool
+	Addr			string
+	Static			string
+	Media			string
+	Host			string
+	Origin			string
+	AllowOrigin		string
+	Email			mail.Mail
 }
 type APIKey struct {
 	GitHubClientId string
@@ -66,6 +70,9 @@ func commonSettings() {
 	errorlog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	App.InfoLog = infolog
 	App.ErrorLog = errorlog
+	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN")
+	App.Host = os.Getenv("APP_HOST")
+	App.Origin = os.Getenv("APP_ORIGIN")
 
 	// file path
 	App.Static = "public"
@@ -74,6 +81,11 @@ func commonSettings() {
 	// APIKey
 	ApiKey.GitHubClientId = os.Getenv("GITHUB_CLIENT_ID")
 	ApiKey.GitHubSecretId = os.Getenv("GITHUB_SECRET_ID")
+
+	// email
+	App.Email.From = os.Getenv("EMAIL_FROM")
+	App.Email.Username = os.Getenv("EMAIL_USERNAME")
+	App.Email.Password = os.Getenv("EMAIL_PASSWORD")
 }
 
 func CreateTemplateCache() (map[string]*template.Template, error) {

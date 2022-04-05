@@ -25,13 +25,14 @@ type User struct {
 	Sex						string					`json:"sex"`
 	Email					string					`json:"email"`
 	Address					string					`json:"address"`
-	Password				string					`gorm:"->:false;<-:create"json:"password"`
+	Password				string					`gorm:"->:false;<-:create;<-:update;"json:"password"`
 	Image					string					`json:"image"`
+	ImageData				string					`gorm:"<-:false;migration;"json:"image_data"`
 	Description				string					`json:"description"`
 	Organization			string					`gorm:"migration"json:"organization"`
 	Authority				string					`gorm:"migration"json:"authority"`
 	Projects				[]ProjectAuthority		`gorm:"migration"json:"projects"`
-	Organizations			[]Organization			`gorm:"many2many:organization_authorities;"json:"organizations"`
+	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;migrate;"json:"organizations"`
 	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
 	CreatedAt				time.Time				`gorm:"->:false;<-:create;autoCreateTime;"json:"-"`
 	UpdatedAt				time.Time				`gorm:"autoUpdateTime;"json:"updated_at"`
@@ -74,7 +75,15 @@ func (u *User) Create() error {
 }
 
 func (u *User) Update() error {
-	result := DB.Create(u)
+	if u.Password != "" {
+		u.Password = crypto.Encrypt(u.Password)
+		result := DB.Omit("Organizations").Save(u)
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return result.Error
+		}
+		return nil
+	}
+	result := DB.Omit("Organizations", "Password").Save(u)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
@@ -82,7 +91,7 @@ func (u *User) Update() error {
 }
 
 func (u *User)GetMainUser(s Session) error {
-	result := DB.Preload("Organizations", "id = ?", s.Organization).Preload("Organizations.Users").First(&u, "id = ?", s.UserID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", s.Organization).Preload("Organizations").First(&u, "id = ?", s.UserID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	var pa []ProjectAuthority
@@ -93,6 +102,14 @@ func (u *User)GetMainUser(s Session) error {
 	u.Organization = s.Organization
 	u.Authority = s.Authority
 
+	return nil
+}
+
+func (u *User)CheckUser() error {
+
+	result := DB.FirstOrCreate(&u, User{Email: u.Email}); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
+	}
 	return nil
 }
 
@@ -430,5 +447,5 @@ func GetUserJson(r *http.Request) (User, error) {
 		fmt.Println(err)
 		return user, err
 	}
-	return user, err
+	return user, nil
 }

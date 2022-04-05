@@ -6,7 +6,6 @@ import (
 
 func configureLocalSettings() {
 	App.UseCache = false
-	App.Host = os.Getenv("APP_HOST")
 	App.Addr = "127.0.0.1:8080"
 
 	// DB接続

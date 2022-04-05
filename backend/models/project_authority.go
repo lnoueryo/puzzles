@@ -14,9 +14,9 @@ type ProjectAuthority struct {
 	ID				int					`gorm:"AUTO_INCREMENT"json:"id"`
     ProjectID		int					`json:"project_id"`
     UserID			int					`json:"user_id"`
-    AuthID			int					`json:"auth_id"`
+    AuthorityID		int					`json:"auth_id"`
 	Active			bool				`json:"active"`
-	Type			Authority			`gorm:"foreignkey:AuthID;migrate"json:"type"`
+	Type			Authority			`gorm:"foreignkey:AuthorityID;migrate"json:"type"`
 	User			User				`gorm:"foreignkey:UserID;migrate"json:"user"`
 	Project			Project				`gorm:"foreignkey:ProjectID;migrate"json:"project"`
 	ProjectUsers	[]ProjectAuthority	`gorm:"foreignkey:ProjectID;references:ProjectID;migrate;"json:"project_users"`
@@ -42,7 +42,7 @@ func (pa *ProjectAuthority)Update() error {
 			ID: user.ID,
 			ProjectID: user.ProjectID,
 			UserID: user.UserID,
-			AuthID: user.AuthID,
+			AuthorityID: user.AuthorityID,
 			Active: user.Active,
 		}
 		projectAuthorities = append(projectAuthorities, projectAuthority)

@@ -65,7 +65,7 @@ func (p *Project)Update() error {
 			ID: user.ID,
 			ProjectID: user.ProjectID,
 			UserID: user.UserID,
-			AuthID: user.AuthID,
+			AuthorityID: user.AuthorityID,
 			Active: user.Active,
 		}
 		projectAuthorities = append(projectAuthorities, projectAuthority)
@@ -137,8 +137,8 @@ func(p *Project)GetEditProject(s Session, id int) error {
 }
 
 func (pa *ProjectAuthority) BeforeSave(DB *gorm.DB) error {
-	if pa.AuthID == 0 {
-		pa.AuthID = 1
+	if pa.AuthorityID == 0 {
+		pa.AuthorityID = 1
 	}
 	fmt.Println(pa)
     return nil
