@@ -12,7 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 type Organization struct {
 	ID					string		`gorm:"primaryKey;type:varchar(100);unique_index"json:"id"`
 	Name				string		`json:"name"`
@@ -25,21 +24,23 @@ type Organization struct {
 	CreditCard			string		`json:"creditcard"`
 	Expiry				string		`json:"expiry"`
 	Projects			[]Project	`json:"projects"`
-	Users				[]User		`gorm:"many2many:organization_authorities;"json:"users"`
+	Users				[]OrganizationAuthority	`gorm:"foreignkey:OrganizationID;migrate;"json:"users"`
 	CreatedAt			time.Time	`gorm:"autoCreateTime;"json:"created_at"`
 	UpdatedAt			time.Time	`gorm:"autoUpdateTime;"json:"updated_at"`
 }
 type OrganizationAuthority struct {
-	ID				int			`gorm:"AUTO_INCREMENT"json:"id"`
-    OrganizationID	string		`gorm:"not null"json:"-"`
-    UserID			int			`gorm:"not null"json:"-"`
-    AuthID			int			`json:"auth_id"`
-	Active			bool		`json:"active"`
-	Type			Authority	`gorm:"foreignkey:AuthID;migrate"json:"type"`
-	CreatedAt		time.Time	`gorm:"<-:false;autoCreateTime;"json:"-"`
-	UpdatedAt		time.Time	`gorm:"<-;autoUpdateTime;"json:"-"`
+	ID				int				`gorm:"AUTO_INCREMENT"json:"id"`
+	UserID			int				`json:"user_id"`
+	OrganizationID	string			`json:"organization_id"`
+    AuthorityID		int				`json:"auth_id"`
+	Active			bool			`json:"active"`
+	Verification	string			`json:"verification"`
+	User 			User			`gorm:"foreignkey:UserID;migrate"json:"user"`
+	Organization 	Organization	`gorm:"foreignkey:OrganizationID;migrate"json:"organization"`
+	Type			Authority		`gorm:"foreignkey:AuthorityID;migrate"json:"type"`
+	CreatedAt		time.Time		`gorm:"<-:false;autoCreateTime;"json:"-"`
+	UpdatedAt		time.Time		`gorm:"<-;autoUpdateTime;"json:"-"`
 }
-
 
 type Project struct {
 	ID				int				`gorm:"AUTO_INCREMENT"json:"id"`
@@ -63,15 +64,16 @@ type ProjectAuthority struct {
 	ID				int					`gorm:"AUTO_INCREMENT"json:"id"`
     ProjectID		int					`json:"project_id"`
     UserID			int					`json:"user_id"`
-    AuthID			int					`json:"auth_id"`
+    AuthorityID			int					`json:"auth_id"`
 	Active			bool				`json:"active"`
-	Type			Authority			`gorm:"foreignkey:AuthID;migrate"json:"type"`
+	Type			Authority			`gorm:"foreignkey:AuthorityID;migrate"json:"type"`
 	User			User				`gorm:"foreignkey:UserID;migrate"json:"user"`
 	Project			Project				`gorm:"foreignkey:ProjectID;migrate"json:"project"`
 	ProjectUsers	[]ProjectAuthority	`gorm:"foreignkey:ProjectID;references:ProjectID;migrate;"json:"project_users"`
 	CreatedAt		time.Time			`gorm:"<-:create;autoCreateTime;"json:"-"`
 	UpdatedAt		time.Time			`json:"-"`
 }
+
 
 type User struct {
 	ID						int						`gorm:"AUTO_INCREMENT"json:"id"`
@@ -86,7 +88,7 @@ type User struct {
 	Organization			string					`gorm:"migration"json:"organization"`
 	Authority				string					`gorm:"migration"json:"authority"`
 	Projects				[]ProjectAuthority		`gorm:"migration"json:"projects"`
-	Organizations			[]Organization			`gorm:"many2many:organization_authorities;"json:"organizations"`
+	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;migrate;"json:"organizations"`
 	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
 	CreatedAt				time.Time				`gorm:"->:false;<-:create;autoCreateTime;"json:"-"`
 	UpdatedAt				time.Time				`gorm:"autoUpdateTime;"json:"updated_at"`
@@ -162,15 +164,8 @@ type Comment struct {
 	User 	  User		`gorm:"foreignkey:UserID;"json:"user"`
 	ParentID  int		`json:"parent_id"`
 	Replies	[]Comment 	`gorm:"foreignKey:ParentID"json:"replies"`
-	// Replies	[]Comment 	`gorm:"many2many:comment_replies"json:"replies"`
 	CreatedAt time.Time `gorm:"autoCreateTime;"json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime;"json:"updated_at"`
-}
-
-type CommentReply struct {
-	ID   	  int	`gorm:"AUTO_INCREMENT"json:"id"`
-	CommentID int
-	ReplyID	  int
 }
 
 type Authority struct {
@@ -201,28 +196,28 @@ var (
 var structSlice []interface{}
 
 func SeriesOfCreation(SQDB *gorm.DB, MQDB *gorm.DB) {
-	structSlice = append(structSlice, &Organization{},&Project{},&User{},&OrganizationAuthority{},&ProjectAuthority{},&Task{},&Field{},&Type{},&Status{},&Priority{},&Milestone{},&Comment{},&CommentReply{},&Authority{},&Activity{},&ActivityContent{})
+	structSlice = append(structSlice, &Organization{},&Project{},&User{},&OrganizationAuthority{},&ProjectAuthority{},&Task{},&Field{},&Type{},&Status{},&Priority{},&Milestone{},&Comment{},&Authority{},&Activity{},&ActivityContent{})
 	for _, v := range structSlice {
 		Migrate(SQDB, MQDB, v)
 	}
-	CreateOrganization(SQDB, MQDB)
-	CreateProject(SQDB, MQDB)
-	CreateUser(SQDB, MQDB)
-	CreateOrganizationAuthority(SQDB, MQDB)
-	CreateProjectAuthority(SQDB, MQDB)
-	CreateField(SQDB, MQDB)
-	CreateMilestone(SQDB, MQDB)
-	CreateStatus(SQDB, MQDB)
-	CreateType(SQDB, MQDB)
-	CreatePriority(SQDB, MQDB)
-	CreateTask(SQDB, MQDB)
-	// CreateComment(SQDB, MQDB)
-	CreateAuthority(SQDB, MQDB)
+	// CreateOrganization(SQDB, MQDB)
+	// CreateProject(SQDB, MQDB)
+	// CreateUser(SQDB, MQDB)
+	// CreateOrganizationAuthority(SQDB, MQDB)
+	// CreateProjectAuthority(SQDB, MQDB)
+	// CreateField(SQDB, MQDB)
+	// CreateMilestone(SQDB, MQDB)
+	// CreateStatus(SQDB, MQDB)
+	// CreateType(SQDB, MQDB)
+	// CreatePriority(SQDB, MQDB)
+	// CreateTask(SQDB, MQDB)
+	// // CreateComment(SQDB, MQDB)
+	// CreateAuthority(SQDB, MQDB)
 }
 
 func AutoMigrate(SQDB *gorm.DB, MQDB *gorm.DB) {
-	SQDB.AutoMigrate(&Organization{},&Project{},&User{},&OrganizationAuthority{},&ProjectAuthority{},&Task{},&Field{},&Type{},&Status{},&Priority{},&Milestone{},&Comment{},&CommentReply{},&Authority{},&Activity{},&ActivityContent{})
-	MQDB.AutoMigrate(&Organization{},&Project{},&User{},&OrganizationAuthority{},&ProjectAuthority{},&Task{},&Field{},&Type{},&Status{},&Priority{},&Milestone{},&Comment{},&CommentReply{},&Authority{},&Activity{},&ActivityContent{})
+	SQDB.AutoMigrate(&Organization{},&Project{},&User{},&OrganizationAuthority{},&ProjectAuthority{},&Task{},&Field{},&Type{},&Status{},&Priority{},&Milestone{},&Comment{},&Authority{},&Activity{},&ActivityContent{})
+	MQDB.AutoMigrate(&Organization{},&Project{},&User{},&OrganizationAuthority{},&ProjectAuthority{},&Task{},&Field{},&Type{},&Status{},&Priority{},&Milestone{},&Comment{},&Authority{},&Activity{},&ActivityContent{})
 }
 
 func Migrate(SQDB *gorm.DB, MQDB *gorm.DB, tableStruct interface{}) {
@@ -282,7 +277,7 @@ func CreateProjectAuthority(SQDB *gorm.DB, MQDB *gorm.DB) {
 	var newProjectAuthority = ProjectAuthority{
 		ProjectID:		1,
 		UserID:			1,
-		AuthID:	1,
+		AuthorityID:	1,
 		Active: true,
 	}
 	SQDB.Create(&newProjectAuthority)
@@ -293,7 +288,7 @@ func CreateOrganizationAuthority(SQDB *gorm.DB, MQDB *gorm.DB) {
 	var newOrganizationAuthority = OrganizationAuthority{
 		OrganizationID:	"prygen4fDISDVgSYDjxZ5uICD",
 		UserID:			1,
-		AuthID:	1,
+		AuthorityID:	1,
 	}
 	SQDB.Create(&newOrganizationAuthority)
 	MQDB.Create(&newOrganizationAuthority)

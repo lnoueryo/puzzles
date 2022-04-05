@@ -45,8 +45,7 @@ func allDatabase() {
 	// SeriesOfCreation(SQDB, MQDB)
 	start := time.Now()
 	AutoMigrate(SQDB, MQDB)
-	// var c []Comment
-	// DB.Preload(clause.Associations).First(&c, 5)
+	SQlite(SQDB)
 	// fmt.Println(c)
 	// var t Task
 	// DB = DB.Preload("Comments", "parent_id = ?", 1)
@@ -63,15 +62,8 @@ func allDatabase() {
 	// createTasks(SQDB, MQDB)
 	// createProjectUsers(SQDB, MQDB)
 	// ReadOrganization()
-	SQDB.Migrator().DropTable(&Activity{})
-	SQDB.Migrator().CreateTable(&Activity{})
-	MQDB.Migrator().DropTable(&Activity{})
-	MQDB.Migrator().CreateTable(&Activity{})
-
-	SQDB.Migrator().DropTable(&ActivityContent{})
-	SQDB.Migrator().CreateTable(&ActivityContent{})
-	MQDB.Migrator().DropTable(&ActivityContent{})
-	MQDB.Migrator().CreateTable(&ActivityContent{})
+	// MQDB.Migrator().DropTable(&OrganizationAuth{})
+	// MQDB.Migrator().CreateTable(&OrganizationAuth{})
 	fmt.Println((time.Now()).Sub(start))
 	// readTask(MQDB)
 }
@@ -263,7 +255,7 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 				organizationAuthority := OrganizationAuthority{
 					OrganizationID: organization.ID,
 					UserID: userID,
-					AuthID: 2,
+					AuthorityID: 2,
 				}
 				organizationAuthorities = append(organizationAuthorities, organizationAuthority)
 			}
@@ -278,7 +270,7 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 					organizationAuthority := OrganizationAuthority{
 						OrganizationID: organization.ID,
 						UserID: userID,
-						AuthID: 1,
+						AuthorityID: 1,
 					}
 					organizationAuthorities = append(organizationAuthorities, organizationAuthority)
 					continue
@@ -286,7 +278,7 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 				organizationAuthority := OrganizationAuthority{
 					OrganizationID: organization.ID,
 					UserID: userID,
-					AuthID: 2,
+					AuthorityID: 2,
 				}
 				organizationAuthorities = append(organizationAuthorities, organizationAuthority)
 			}
@@ -322,7 +314,7 @@ func createProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 			// 	projectAuthority := ProjectAuthority{
 			// 		ProjectID: project.ID,
 			// 		UserID: id,
-			// 		AuthID: authType,
+			// 		AuthorityID: authType,
 			// 	}
 			// 	projectAuthorities = append(projectAuthorities, projectAuthority)
 			// }
@@ -337,7 +329,7 @@ func createProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 				projectAuthority := ProjectAuthority{
 					ProjectID: project.ID,
 					UserID: user.ID,
-					AuthID: authType,
+					AuthorityID: authType,
 					Active: boolean[active],
 				}
 				projectAuthorities = append(projectAuthorities, projectAuthority)

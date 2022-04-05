@@ -9,8 +9,8 @@ import (
 	"path"
 )
 
-var requiredDirectory = []string{"config", "controller", "models", "modules", "public", "routes", "templates", "upload"}
-var requiredFiles = []string{"Dockerfile", "go.mod", "go.sum", "gorm.db", ".env", "server/main.go"}
+var requiredDirectory = []string{"config", "controller", "credentials", "models", "modules", "public", "routes", "templates"}
+var requiredFiles = []string{"Dockerfile", "go.mod", "go.sum", "gorm.db", ".env", "server/main.go", "cloudbuild.yaml"}
 
 func Deploy() {
 	for _, value := range requiredDirectory {
@@ -29,7 +29,8 @@ func Deploy() {
 		return
 	}
 	fmt.Println(currDir)
-	cmd := exec.Command("gcloud", "run", "deploy")
+	cmd := exec.Command("gcloud", "builds", "submit", "--config", "cloudbuild.yaml", ".")
+	// cmd := exec.Command("gcloud", "beta", "run", "deploy", "--source", ".")
 	stdout, _ := cmd.StdoutPipe()
 	cmd.Stderr = cmd.Stdout
 	err = cmd.Start()

@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Database struct {
@@ -21,7 +23,9 @@ var DB *gorm.DB
 func ConnectMysql(DBSettings Database) (*gorm.DB, error) {
     // // [ユーザ名]:[パスワード]@tcp([ホスト名]:[ポート番号])/[データベース名]?charset=[文字コード]
     dbconf := createMysqlPath(DBSettings)
-	db, err := gorm.Open(mysql.Open(dbconf), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dbconf), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	  })
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -31,7 +35,9 @@ func ConnectMysql(DBSettings Database) (*gorm.DB, error) {
 
 func ConnectSqlite3() (*gorm.DB, error) {
 
-	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	  })
 	if err != nil {
 		panic("failed to connect database")
 	}
