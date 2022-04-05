@@ -8,3 +8,8 @@ main
 backend
 data
 pra
+backend
+credentials
+.terraform
+terraform.tfstate
+terraform.tfstate.backup

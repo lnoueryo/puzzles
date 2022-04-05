@@ -1,0 +1,13 @@
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/puzzles-345814/puzzles', '.']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/puzzles-345814/puzzles']
+# Deploy container image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'puzzles', '--image', 'gcr.io/puzzles-345814/puzzles', '--region', 'asia-northeast1', '--platform', 'managed']
+images:
+- gcr.io/puzzles-345814/puzzles
