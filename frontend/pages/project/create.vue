@@ -80,6 +80,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error;
       } finally {
+        if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project'})
         },
@@ -89,16 +90,6 @@ export default Vue.extend({
         )
       }
     },
-    // projectForm() {
-    //   const project = JSON.parse(JSON.stringify(this.project))
-    //   const isFirstMilestone = !!project.milestones[0].name;
-    //   const isFirstField = !!project.fields[0].name;
-    //   project.milestones = isFirstMilestone ? project.milestones : [];
-    //   project.fields = isFirstField ? project.fields : [];
-    //   project.organization_id = this.organization.id
-    //   project.users.push(this.user);
-    //   return project;
-    // },
     projectForm() {
       const project = {} as lib.Project
       const isFirstMilestone = !!this.selectedProject.project.milestones[0].name;

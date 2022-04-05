@@ -92,7 +92,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import {isReadyObj, isEmptyObj, checkStatus} from '~/modules/utils'
+import {isReadyObj, isEmptyObj} from '~/modules/utils'
 export default Vue.extend({
   data: () => ({
     tab: null,
@@ -104,7 +104,6 @@ export default Vue.extend({
     ]),
     isReadyObj,
     isEmptyObj,
-    checkStatus,
   },
 })
 </script>

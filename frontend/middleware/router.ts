@@ -4,9 +4,10 @@ import { checkStatus, isReadyObj, isEmptyObj } from '~/modules/utils'
 const status = checkStatus();
 const readyObj = isReadyObj();
 const emptyObj = isEmptyObj();
+const allowedPath = ['/login', '/expiry', '/success', '/bad-connection']
 let projectID: string;
 const router: Middleware = async({store, route}) => {
-  if(route.path == '/login') return;
+  if(allowedPath.includes(route.path)) return;
   store.commit('pageReady', false);
   getSession(store);
   selectProject(store, route);
@@ -23,6 +24,7 @@ const getSession = async(store: any) => {
   } catch (error) {
     response = error;
   } finally {
+    if('status' in response === false) return window.$nuxt.$router.push('/bad-connection')
     return status(response.status, () => {
       store.commit('pageReady', true);
     });

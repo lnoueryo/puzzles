@@ -247,6 +247,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error.response;
       } finally {
+        if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id-task', params: {id: this.$route.params.id}});
         }, () => {
@@ -262,6 +263,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error.response;
       } finally {
+        if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {},
         () => {
           this.loading = false;

@@ -140,3 +140,8 @@ export interface Params {
   id: string
   key: string
 }
+
+export interface Response {
+  data: {message: string}
+  status: number
+}

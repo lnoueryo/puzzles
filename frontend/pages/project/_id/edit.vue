@@ -137,6 +137,7 @@ export default Vue.extend({
         // const blob = new Blob([JSON.stringify(response.data, null, '  ')], {type: 'application\/json'});
         // const url = URL.createObjectURL(blob);
         // location.href = url;
+        if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id-task', params: {id: this.$route.params.id}})
         },

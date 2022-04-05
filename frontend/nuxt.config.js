@@ -4,11 +4,22 @@ export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
   router: {
-    middleware: ['router']
+    middleware: ['router'],
+    // extendRoutes(routes, resolve) {
+    //   routes.push({
+    //     name: 'notFound',
+    //     path: '*',
+    //     component: resolve(__dirname, 'pages/error/bad-connection.vue')
+    //   })
+    // }
   },
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
-
+  env: {
+    apiHost: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080'
+    // base: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000',
+    // api: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080',
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - frontend',
@@ -45,6 +56,23 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    [
+      '@nuxtjs/firebase',
+      {
+        config: {
+          apiKey: 'AIzaSyD_55QAis9q0SYUIeq0IywW9l5RZfEel4Q',
+          authDomain: 'puzzles-345814.firebaseapp.com',
+          projectId: 'puzzles-345814',
+          storageBucket: 'puzzles-345814.appspot.com',
+          messagingSenderId: '1079713727627',
+          appId: '1:1079713727627:web:22d158a499f22ec2ca808e',
+          measurementId: 'G-KMGMB72GE5'
+        },
+        services: {
+          auth: false // Just as example. Can be any other service.
+        }
+      }
+    ],
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
@@ -62,7 +90,9 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: 'http://localhost:8080/',
+    prefix: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:3000',
+    baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000', // 正しい
+    browserBaseURL: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080', // 正しい
     credentials: true
   },
 

@@ -63,10 +63,11 @@ const fileReader = (e: File) => {
 const resize = (reader: FileReader) => {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    const imgWidth = 400;
+    const maxWidth = 900;
     image.src = reader.result as string;
     image.onload = () => {
       const imgType = image.src.substring(5, image.src.indexOf(';'));
+      const imgWidth = maxWidth <= image.width ? maxWidth : image.width;
       const imgHeight = image.height * (imgWidth / image.width);
       const canvas = document.createElement('canvas');
       canvas.width = imgWidth;

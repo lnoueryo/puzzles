@@ -88,6 +88,9 @@ export class MainUser {
       return project;
     })
   }
+  updateUser(user: lib.User) {
+    this.mainUser.user = {...this.mainUser.user, ...user}
+  }
 }
 
 interface User {

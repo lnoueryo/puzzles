@@ -88,7 +88,7 @@
         </div>
         <div class="mx-3" style="display: grid;">
           <small>組織名</small>
-          <strong style="text-indent: 1em;">{{ organization.name }}</strong>
+          <strong style="text-indent: 1em;">{{ organization.organization.name }}</strong>
         </div>
       </div>
       <v-menu left bottom v-if="user.authority == '管理者'">
@@ -111,6 +111,7 @@
     <v-footer :absolute="!fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+    <snack-bar></snack-bar>
   </v-app>
 </template>
 
@@ -151,7 +152,11 @@ export default {
         {
           name: 'プロジェクトの作成',
           url: '/project/create'
-        }
+        },
+        {
+          name: '組織に招待する',
+          url: '/organization'
+        },
       ]
     }
   },

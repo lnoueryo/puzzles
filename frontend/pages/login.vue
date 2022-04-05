@@ -1,5 +1,4 @@
 <template>
-
   <form-card @send="onClickSend" style="max-width: 500px">
     <v-form
       ref="form"
@@ -26,7 +25,7 @@
       ></v-text-field>
       <v-text-field
         v-model="password"
-        :rules="[rules.length(6)]"
+        :rules="[rules.length(20)]"
         filled
         color="amber darken-3"
         counter="6"
@@ -50,7 +49,6 @@ declare module 'vue/types/vue' {
   }
 }
 export default Vue.extend({
-  components: { FormCard },
   name: 'login',
   layout: 'login',
   data: () => ({
@@ -94,6 +92,7 @@ export default Vue.extend({
       } catch (error) {
         response = error;
       } finally {
+        if('status' in response === false) return this.$router.push('/bad-connection')
         this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), ((): string => {return '組織ID、メールアドレス、またはパスワードが違います。'}));
       }
     },
