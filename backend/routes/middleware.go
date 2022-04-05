@@ -30,11 +30,19 @@ func Auth(next http.Handler) http.Handler {
 //ServeHTTP handles the request by passing it to the real
 //handler and logging the request details
 func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if allowOrigin == "" {
+		allowOrigin = "https://puzzles.jounetsism.biz"
+	}
+	w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,UPDATE,OPTIONS")
-	w.Header().Set("Content-Type", "application/json")
+	if r.URL.Path == "/api/data/download" {
+		w.Header().Set("Content-Type", "application/zip")
+		w.Header().Set("Content-Disposition", "attachment; filename=a.zip")
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+	}
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return

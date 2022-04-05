@@ -14,10 +14,13 @@ var auth controller.Auth
 var task controller.Task
 var comment controller.Comment
 var project controller.Project
+var data controller.Data
 var infolog *log.Logger
+var allowOrigin string
 
 func init() {
 	infolog = config.App.InfoLog
+	allowOrigin = config.App.AllowOrigin
 }
 
 func Routes() http.Handler{
@@ -33,9 +36,11 @@ func Routes() http.Handler{
 	mux.HandleFunc("/api/login", auth.Login)
 	// mux.HandleFunc("/sign-up", auth.Register)
 	mux.HandleFunc("/oauth/callback", auth.GitHubLogin)
+	mux.HandleFunc("/register/verification", auth.Confirm)
 
 	// Auth
 	mux.Handle("/api/home", Auth(http.HandlerFunc(home.Index)))
+	mux.Handle("/api/user/update", Auth(http.HandlerFunc(home.Update)))
 	mux.Handle("/api/project", Auth(http.HandlerFunc(project.Index)))
 	mux.Handle("/api/project/edit", Auth(http.HandlerFunc(project.Edit)))
 	mux.Handle("/api/project/create", Auth(http.HandlerFunc(project.Create)))
@@ -47,7 +52,11 @@ func Routes() http.Handler{
 	mux.Handle("/api/comment/update", Auth(http.HandlerFunc(comment.Update)))
 	mux.Handle("/api/session", Auth(http.HandlerFunc(home.Show)))
 	mux.Handle("/api/logout", http.HandlerFunc(auth.Logout))
+	mux.Handle("/api/invite", http.HandlerFunc(auth.InviteUser))
 	
+	mux.Handle("/api/data/upload", http.HandlerFunc(data.Upload))
+	mux.Handle("/api/data/download", http.HandlerFunc(data.Download))
+
 	// JSON
 	mux.HandleFunc("/task", task.Index)
 	
