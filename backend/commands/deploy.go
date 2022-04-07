@@ -29,11 +29,36 @@ func Deploy() {
 		return
 	}
 	fmt.Println(currDir)
-	cmd := exec.Command("gcloud", "builds", "submit", "--config", "cloudbuild.yaml", ".")
-	// cmd := exec.Command("gcloud", "beta", "run", "deploy", "--source", ".")
+	SetProject()
+	ExecuteCloudbuild()
+}
+
+func SetProject() {
+	cmd := exec.Command("gcloud", "auth", "activate-service-account", "deploy@puzzles-345814.iam.gserviceaccount.com", "--key-file=./credentials/puzzles-345814-24d9b5fcb5ca.json", "--project=puzzles-345814")
 	stdout, _ := cmd.StdoutPipe()
 	cmd.Stderr = cmd.Stdout
-	err = cmd.Start()
+	err := cmd.Start()
+	if err != nil {
+		tmp := make([]byte, 1024)
+		stdout.Read(tmp)
+		fmt.Print(string(tmp))
+		return
+	}
+	for {
+		tmp := make([]byte, 1024)
+		_, err := stdout.Read(tmp)
+		fmt.Print(string(tmp))
+		if err != nil {
+			break
+		}
+	}
+}
+
+func ExecuteCloudbuild() {
+	cmd := exec.Command("gcloud", "builds", "submit", "--config", "cloudbuild.yaml", ".")
+	stdout, _ := cmd.StdoutPipe()
+	cmd.Stderr = cmd.Stdout
+	err := cmd.Start()
 	if err != nil {
 		tmp := make([]byte, 1024)
 		stdout.Read(tmp)
