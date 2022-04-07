@@ -16,9 +16,9 @@ type ProjectAuthority struct {
     UserID			int					`json:"user_id"`
     AuthorityID		int					`json:"auth_id"`
 	Active			bool				`json:"active"`
-	Type			Authority			`gorm:"foreignkey:AuthorityID;migrate"json:"type"`
-	User			User				`gorm:"foreignkey:UserID;migrate"json:"user"`
-	Project			Project				`gorm:"foreignkey:ProjectID;migrate"json:"project"`
+	Type			Authority			`gorm:"foreignkey:AuthorityID;"json:"type"`
+	User			User				`gorm:"foreignkey:UserID;"json:"user"`
+	Project			Project				`gorm:"foreignkey:ProjectID;"json:"project"`
 	ProjectUsers	[]ProjectAuthority	`gorm:"foreignkey:ProjectID;references:ProjectID;migrate;"json:"project_users"`
 	CreatedAt		time.Time			`gorm:"<-:create;autoCreateTime;"json:"-"`
 	UpdatedAt		time.Time			`json:"-"`

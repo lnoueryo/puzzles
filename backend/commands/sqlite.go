@@ -1,7 +1,10 @@
 package commands
 
 import (
+	md "backend/models"
+	"fmt"
 	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -23,8 +26,8 @@ func SQlite(SQDB *gorm.DB) {
 }
 
 
-func SQCreateOrganization(SQDB *gorm.DB) Organization {
-	var newOrganization = Organization{
+func SQCreateOrganization(SQDB *gorm.DB) md.Organization {
+	var newOrganization = md.Organization{
 		ID:					"prygen4fDISDVgSYDjxZ5uICD",
 		Name:				"+base",
 		Address:			"東京都渋谷区円山町5番5号 Navi渋谷Ⅴ3階",
@@ -38,8 +41,8 @@ func SQCreateOrganization(SQDB *gorm.DB) Organization {
 	return newOrganization
 }
 
-func SQCreateUser(SQDB *gorm.DB) User {
-	var newUser = User{
+func SQCreateUser(SQDB *gorm.DB) md.User {
+	var newUser = md.User{
 		ID: 1,
 		Name:      "井上領",
 		Age:      31,
@@ -51,12 +54,12 @@ func SQCreateUser(SQDB *gorm.DB) User {
 		Description: "hello",
 	}
 	SQDB.Create(&newUser)
-
+	fmt.Println(newUser)
 	return newUser
 }
 
 func SQCreateProject(SQDB *gorm.DB) {
-	var newProject = Project{
+	var newProject = md.Project{
 		Name:      		"性格診断",
 		Image:     		"base.png",
 		OrganizationID: "prygen4fDISDVgSYDjxZ5uICD",
@@ -65,7 +68,7 @@ func SQCreateProject(SQDB *gorm.DB) {
 }
 
 func SQCreateProjectAuthority(SQDB *gorm.DB) {
-	var newProjectAuthority = ProjectAuthority{
+	var newProjectAuthority = md.ProjectAuthority{
 		ProjectID:		1,
 		UserID:			1,
 		AuthorityID:	1,
@@ -75,7 +78,7 @@ func SQCreateProjectAuthority(SQDB *gorm.DB) {
 }
 
 func SQCreateOrganizationAuthority(SQDB *gorm.DB) {
-	var newOrganizationAuthority = OrganizationAuthority{
+	var newOrganizationAuthority = md.OrganizationAuthority{
 		OrganizationID:	"prygen4fDISDVgSYDjxZ5uICD",
 		UserID:			1,
 		AuthorityID:	1,
@@ -84,9 +87,9 @@ func SQCreateOrganizationAuthority(SQDB *gorm.DB) {
 }
 
 func SQCreateStatus(SQDB *gorm.DB) {
-	result := make([]Status, 0)
+	result := make([]md.Status, 0)
 	for _, value := range []string{"相談", "依頼", "再議", "未対応", "対応中", "中断", "確認", "調整", "完了"} {
-		var newStatus = Status{
+		var newStatus = md.Status{
 			Name: value,
 		}
 		result = append(result, newStatus)
@@ -109,7 +112,7 @@ func SQCreateField(SQDB *gorm.DB) {
 
 func SQCreateMilestone(SQDB *gorm.DB) {
 	var milestones []Milestone
-	var projects []Project
+	var projects []md.Project
 	milestoneTypes := []string{"フェーズ1", "フェーズ2", "フェーズ3", "フェーズ4", "テスト", "ベータ版公開"}
 	DB.Find(&projects)
 	for _, milestoneType := range milestoneTypes {
@@ -123,9 +126,9 @@ func SQCreateMilestone(SQDB *gorm.DB) {
 }
 
 func SQCreateType(SQDB *gorm.DB) {
-	result := make([]Type, 0)
+	result := make([]md.Type, 0)
 	for _, value := range []string{"追加", "変更", "バグ", "その他"} {
-		var newType = Type{
+		var newType = md.Type{
 			Name: value,
 		}
 		result = append(result, newType)
@@ -134,9 +137,9 @@ func SQCreateType(SQDB *gorm.DB) {
 }
 
 func SQCreatePriority(SQDB *gorm.DB) {
-	result := make([]Priority, 0)
+	result := make([]md.Priority, 0)
 	for _, value := range []string{"低", "中", "高"} {
-		var newPriority = Priority{
+		var newPriority = md.Priority{
 			Name: value,
 		}
 		result = append(result, newPriority)
@@ -147,7 +150,7 @@ func SQCreatePriority(SQDB *gorm.DB) {
 func SQCreateTask(SQDB *gorm.DB) {
 	fieldID := 1
 	milestoneID := 1
-	var newTask = Task{
+	var newTask = md.Task{
 		AssigneeID:  	1,
 		AssignerID:  	1,
 		StatusID:     1,
@@ -204,9 +207,9 @@ func SQCreateTask(SQDB *gorm.DB) {
 // }
 
 func SQCreateAuthority(SQDB *gorm.DB) {
-	result := make([]Authority, 0)
+	result := make([]md.Authority, 0)
 	for _, value := range []string{"管理者", "一般"} {
-		var newAuthority = Authority{
+		var newAuthority = md.Authority{
 			Name: value,
 		}
 		result = append(result, newAuthority)

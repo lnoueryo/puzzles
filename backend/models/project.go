@@ -1,10 +1,13 @@
 package models
 
 import (
+	"backend/modules/crypto"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"gorm.io/gorm"
@@ -19,9 +22,9 @@ type Project struct {
 	Name			string			`json:"name"`
 	Description		string			`json:"description"`
 	Image			string			`json:"image"`
-	Organization	Organization	`gorm:"->;references:ID;"json:"organization"`
 	ImageData		string			`gorm:"migration;"json:"image_data"`
 	Authority		string			`gorm:"migration"json:"authority"`
+	Organization	Organization	`gorm:"->;references:ID;"json:"organization"`
 	Tasks			[]Task			`json:"tasks"`
 	Milestones		[]Milestone		`json:"milestones"`
 	Fields			[]Field			`json:"fields"`
@@ -30,6 +33,7 @@ type Project struct {
 	CreatedAt		time.Time		`gorm:"autoCreateTime;"json:"created_at"`
 	UpdatedAt		time.Time		`gorm:"autoUpdateTime;"json:"updated_at"`
 }
+
 type ProjectRequest struct {
 	Project
 	ImageData		string			`gorm:"<-:false;migration;"json:"image_data"`
@@ -153,4 +157,28 @@ func GetProjectJson(r *http.Request) (Project, error) {
 		return project, err
 	}
 	return project, nil
+}
+
+func (p *Project) GetImage() {
+	url := "https://loremflickr.com/320/240?random=1"
+
+	response, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	randStr, _ := crypto.MakeRandomStr(15)
+	extension := ".png"
+	filename := randStr + extension
+	path := "upload/projects/"
+
+	file, err := os.Create(path + filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	io.Copy(file, response.Body)
+	p.Image = filename
 }

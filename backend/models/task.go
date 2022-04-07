@@ -43,6 +43,7 @@ type Task struct {
 	UpdatedAt 	  time.Time `gorm:"autoUpdateTime;"json:"updated_at"`
 }
 
+
 func NewTask(r *http.Request) (Task, error) {
 	task, _ := GetTaskJson(r)
 	return task, nil

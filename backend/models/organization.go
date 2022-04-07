@@ -1,8 +1,13 @@
 package models
 
 import (
+	"backend/modules/crypto"
 	"errors"
+	"io"
+	"net/http"
+	"os"
 	"time"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -33,4 +38,28 @@ func (o *Organization)GetOrganization(id string) error {
 		return result.Error
 	}
 	return nil
+}
+
+func (o *Organization) GetImage() {
+	url := "https://loremflickr.com/320/240?random=1"
+
+	response, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	randStr, _ := crypto.MakeRandomStr(15)
+	extension := ".png"
+	filename := randStr + extension
+	path := "upload/organizations/"
+
+	file, err := os.Create(path + filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	io.Copy(file, response.Body)
+	o.Image = filename
 }

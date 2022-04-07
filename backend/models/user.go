@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"regexp"
@@ -25,14 +26,14 @@ type User struct {
 	Sex						string					`json:"sex"`
 	Email					string					`json:"email"`
 	Address					string					`json:"address"`
-	Password				string					`gorm:"->:false;<-:create;<-:update;"json:"password"`
+	Password				string					`json:"password"`
 	Image					string					`json:"image"`
 	ImageData				string					`gorm:"<-:false;migration;"json:"image_data"`
 	Description				string					`json:"description"`
 	Organization			string					`gorm:"migration"json:"organization"`
 	Authority				string					`gorm:"migration"json:"authority"`
-	Projects				[]ProjectAuthority		`gorm:"migration"json:"projects"`
-	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;migrate;"json:"organizations"`
+	Projects				[]ProjectAuthority		`json:"projects"`
+	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;"json:"organizations"`
 	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
 	CreatedAt				time.Time				`gorm:"->:false;<-:create;autoCreateTime;"json:"-"`
 	UpdatedAt				time.Time				`gorm:"autoUpdateTime;"json:"updated_at"`
@@ -448,4 +449,28 @@ func GetUserJson(r *http.Request) (User, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+func (u *User) GetImage() {
+	url := "https://loremflickr.com/320/240?random=1"
+
+	response, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	randStr, _ := crypto.MakeRandomStr(15)
+	extension := ".png"
+	filename := randStr + extension
+	path := "upload/user/"
+
+	file, err := os.Create(path + filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	io.Copy(file, response.Body)
+	u.Image = filename
 }

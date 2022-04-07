@@ -16,12 +16,13 @@ type OrganizationAuthority struct {
     AuthorityID		int				`json:"auth_id"`
 	Active			bool			`json:"active"`
 	Verification	string			`json:"verification"`
-	User 			User			`gorm:"foreignkey:UserID;migrate"json:"user"`
-	Organization 	Organization	`gorm:"foreignkey:OrganizationID;migrate"json:"organization"`
-	Type			Authority		`gorm:"foreignkey:AuthorityID;migrate"json:"type"`
+	User 			User			`gorm:"foreignkey:UserID;"json:"user"`
+	Organization 	Organization	`gorm:"foreignkey:OrganizationID;"json:"organization"`
+	Type			Authority		`gorm:"foreignkey:AuthorityID;"json:"type"`
 	CreatedAt		time.Time		`gorm:"<-;autoCreateTime;"json:"-"`
 	UpdatedAt		time.Time		`gorm:"<-;autoUpdateTime;"json:"-"`
 }
+
 
 func (oa *OrganizationAuthority)Find(verification string) error {
 	result := DB.Preload("User").First(&oa, "verification = ? and active = false", verification); if errors.Is(result.Error, gorm.ErrRecordNotFound) {

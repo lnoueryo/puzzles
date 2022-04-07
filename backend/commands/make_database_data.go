@@ -1,6 +1,7 @@
 package commands
 
 import (
+	md "backend/models"
 	"backend/modules/crypto"
 	"backend/modules/image"
 	"encoding/csv"
@@ -79,18 +80,6 @@ func RecursivePreload(DB *gorm.DB) *gorm.DB {
 	return DB
 }
 
-// func RecursivePreload() string {
-// 	column := "Comments"
-// 	for i := 0; i < 100; i++{
-// 		column += ".Replies"
-// 	}
-// 	return column
-// }
-
-func (pa *ProjectAuthority) AfterFind(tx *gorm.DB) (err error) {
-	fmt.Println(pa)
-	return
-  }
 func createOrganizations(SQDB *gorm.DB, MQDB *gorm.DB) {
 	DeleteOrganizationsImages()
 	f, err := os.Open("data/organizations.csv")
@@ -98,7 +87,7 @@ func createOrganizations(SQDB *gorm.DB, MQDB *gorm.DB) {
         fmt.Println(err)
     }
 	r := csv.NewReader(f)
-	var organizations []Organization
+	var organizations []md.Organization
     for i := 0; ; i++ {
 		record, err := r.Read()
         if err == io.EOF {
@@ -111,7 +100,7 @@ func createOrganizations(SQDB *gorm.DB, MQDB *gorm.DB) {
             continue
         }
 
-        var organization Organization
+        var organization md.Organization
         for i, v := range record {
             switch i {
             case 0:
@@ -144,7 +133,7 @@ func createProjects(SQDB *gorm.DB, MQDB *gorm.DB) {
 	// Migrate(SQDB, MQDB, Project{})
 	// CreateProject(SQDB, MQDB)
 	DeleteProjectsImages()
-	var organizations []Organization
+	var organizations []md.Organization
 	var organizationKeys []string
 	MQDB.Find(&organizations)
 	for i, v := range organizations {
@@ -159,7 +148,7 @@ func createProjects(SQDB *gorm.DB, MQDB *gorm.DB) {
 			fmt.Println(err)
 		}
 		r := csv.NewReader(f)
-		var projects []Project
+		var projects []md.Project
 		for i := 0; ; i++ {
 			rand.Seed(time.Now().UnixNano())
 			orgRandomInt := rand.Intn(len(organizationKeys))
@@ -174,7 +163,7 @@ func createProjects(SQDB *gorm.DB, MQDB *gorm.DB) {
 				continue
 			}
 	
-			var project Project
+			var project md.Project
 			for _, v := range record {
 				project.Name = v
 			}
@@ -196,7 +185,7 @@ func createUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
     }
 	r := csv.NewReader(f)
 	// var users [][]User
-	users := make([][]User, 2, 2)
+	users := make([][]md.User, 2, 2)
     for i := 0; ; i++ {
 		record, err := r.Read()
         if err == io.EOF {
@@ -209,7 +198,7 @@ func createUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
             continue
         }
 
-        var user User
+        var user md.User
         for i, v := range record {
             switch i {
             case 0:
@@ -242,17 +231,17 @@ func createUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 }
 
 func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
-	Migrate(SQDB, MQDB, OrganizationAuthority{})
-	var organizations []Organization
+	Migrate(SQDB, MQDB, md.OrganizationAuthority{})
+	var organizations []md.Organization
 	DB.Preload(clause.Associations).Find(&organizations)
 	for j, organization := range organizations {
-		var organizationAuthorities []OrganizationAuthority
+		var organizationAuthorities []md.OrganizationAuthority
 		if j == 500 {
 			for i := 1; i < 21; i++ {
 				rand.Seed(time.Now().UnixNano())
 				num := rand.Intn(10001)
 				userID := num
-				organizationAuthority := OrganizationAuthority{
+				organizationAuthority := md.OrganizationAuthority{
 					OrganizationID: organization.ID,
 					UserID: userID,
 					AuthorityID: 2,
@@ -267,7 +256,7 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 						CreateOrganizationAuthority(SQDB, MQDB)
 						continue
 					}
-					organizationAuthority := OrganizationAuthority{
+					organizationAuthority := md.OrganizationAuthority{
 						OrganizationID: organization.ID,
 						UserID: userID,
 						AuthorityID: 1,
@@ -275,7 +264,7 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 					organizationAuthorities = append(organizationAuthorities, organizationAuthority)
 					continue
 				}
-				organizationAuthority := OrganizationAuthority{
+				organizationAuthority := md.OrganizationAuthority{
 					OrganizationID: organization.ID,
 					UserID: userID,
 					AuthorityID: 2,
@@ -288,12 +277,12 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 }
 
 func createProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
-	Migrate(SQDB, MQDB, ProjectAuthority{})
+	Migrate(SQDB, MQDB, md.ProjectAuthority{})
 	CreateProjectAuthority(SQDB, MQDB)
-	var organizations []Organization
+	var organizations []md.Organization
 	DB.Preload(clause.Associations).Find(&organizations)
 	for _, organization := range organizations {
-		var projectAuthorities []ProjectAuthority
+		var projectAuthorities []md.ProjectAuthority
 		if len(organization.Projects) == 0 {
 			continue
 		}
@@ -326,7 +315,7 @@ func createProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 				if i == 0 {
 					authType = 1
 				}
-				projectAuthority := ProjectAuthority{
+				projectAuthority := md.ProjectAuthority{
 					ProjectID: project.ID,
 					UserID: user.ID,
 					AuthorityID: authType,
@@ -341,17 +330,17 @@ func createProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 }
 
 func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
-	Migrate(SQDB, MQDB, Task{})
+	Migrate(SQDB, MQDB, md.Task{})
 	CreateTask(SQDB, MQDB)
-	var projects []Project
-	var pas []ProjectAuthority
+	var projects []md.Project
+	var pas []md.ProjectAuthority
 	DB.Preload(clause.Associations).Find(&projects)
 	DB.Preload(clause.Associations).Find(&pas, "active = true")
 	for _ ,project := range projects {
 		if project.ID == 1 {
 			continue
 		}
-		var joinPaSlice []ProjectAuthority
+		var joinPaSlice []md.ProjectAuthority
 		for _ ,pa := range pas {
 			if pa.ProjectID ==  project.ID{
 				joinPaSlice = append(joinPaSlice, pa)
@@ -359,7 +348,7 @@ func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		project.AuthorityUsers = joinPaSlice
 		random := 0
-		var tasks []Task
+		var tasks []md.Task
 		count := 1
 		for {
 			rand.Seed(time.Now().UnixNano())
@@ -382,7 +371,7 @@ func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 				milestoneNum := rand.Intn(len(project.Milestones))
 				milestoneID = project.Milestones[milestoneNum].ID
 			}
-			task := Task{
+			task := md.Task{
 				AssigneeID: project.AuthorityUsers[assigneeNum].User.ID,
 				AssignerID: project.AuthorityUsers[assignerNum].User.ID,
 				FieldID: &fieldID,
@@ -413,19 +402,19 @@ func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 }
 
 func CreateFields(SQDB *gorm.DB, MQDB *gorm.DB) {
-	Migrate(SQDB, MQDB, Field{})
+	Migrate(SQDB, MQDB, md.Field{})
 	CreateField(SQDB, MQDB)
-	var organizations []Organization
+	var organizations []md.Organization
 	fieldTypes := []string{"フロントエンド", "バックエンド", "デザイナー"}
 	DB.Preload(clause.Associations).Find(&organizations)
 	for _, organization := range organizations {
-		var fields []Field
+		var fields []md.Field
 		if organization.ID == "prygen4fDISDVgSYDjxZ5uICD" {
 			continue
 		}
 		for _, project := range organization.Projects {
 			for _, fieldType := range fieldTypes {
-				field := Field{
+				field := md.Field{
 					Name: fieldType,
 					ProjectID: project.ID,
 				}
@@ -440,8 +429,8 @@ func CreateFields(SQDB *gorm.DB, MQDB *gorm.DB) {
 func CreateMilestones(SQDB *gorm.DB, MQDB *gorm.DB) {
 	Migrate(SQDB, MQDB, Milestone{})
 	CreateMilestone(SQDB, MQDB)
-	var milestones []Milestone
-	var projects []Project
+	var milestones []md.Milestone
+	var projects []md.Project
 	milestoneTypes := []string{"フェーズ1", "フェーズ2", "フェーズ3", "フェーズ4", "フェーズ5"}
 	DB.Find(&projects)
 	for _, project := range projects {
@@ -449,7 +438,7 @@ func CreateMilestones(SQDB *gorm.DB, MQDB *gorm.DB) {
 			continue
 		}
 		for _, milestoneType := range milestoneTypes {
-			milestone := Milestone{
+			milestone := md.Milestone{
 				Name: milestoneType,
 				ProjectID: project.ID,
 			}

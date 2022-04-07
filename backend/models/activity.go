@@ -13,10 +13,6 @@ type Activity struct {
 	UpdatedAt	time.Time 		`gorm:"autoUpdateTime;"json:"updated_at"`
 }
 
-type ActivityContent struct {
-	ID			int		`gorm:"AUTO_INCREMENT"json:"id"`
-	Content		string	`json:"content"`
-}
 
 func (a *Activity)Create() error {
 	result := DB.Create(&a); if result.Error != nil {
