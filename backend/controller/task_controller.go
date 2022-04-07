@@ -121,7 +121,7 @@ func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
 	activity := models.Activity{
 		UserID: s.UserID,
 		ProjectID: task.ProjectID,
-		ContentID: 1,
+		ContentID: 2,
 	}
 
 	err = activity.Create(); if err != nil {

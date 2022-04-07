@@ -20,7 +20,7 @@ type Project struct {
 	Description		string			`json:"description"`
 	Image			string			`json:"image"`
 	Organization	Organization	`gorm:"->;references:ID;"json:"organization"`
-	ImageData		string			`gorm:"<-:false;migration;"json:"image_data"`
+	ImageData		string			`gorm:"migration;"json:"image_data"`
 	Authority		string			`gorm:"migration"json:"authority"`
 	Tasks			[]Task			`json:"tasks"`
 	Milestones		[]Milestone		`json:"milestones"`
