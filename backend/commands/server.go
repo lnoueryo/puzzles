@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"sync"
 	"time"
+	"runtime"
 )
 
 // path, err := os.Getwd()
@@ -158,6 +159,9 @@ func loading(cancel chan struct{}, wg *sync.WaitGroup) bool {
 func runBinaryFile(wg *sync.WaitGroup) {
 	wg.Done()
 	main := exec.Command("./main")
+    if runtime.GOOS == "windows" {
+		main = exec.Command("./main.exe")
+    }
 	output, _ := main.StdoutPipe()
 	main.Start()
 	cmd = main
@@ -174,6 +178,9 @@ func runBinaryFile(wg *sync.WaitGroup) {
 
 func compileMain() Stdout {
 	build := exec.Command("go", "build", "-v", "-o", "main", "./server/main.go")
+	if runtime.GOOS == "windows" {
+		build = exec.Command("go", "build", "-v", "-o", "main.exe", "./server/main.go")
+    }
 	stderr, err := build.StderrPipe()
 	if err != nil {
 		fmt.Println(err)
