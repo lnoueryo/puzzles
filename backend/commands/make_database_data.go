@@ -15,7 +15,6 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	// "gorm.io/gorm/clause"
 )
 
 func MakeDBData(name string, arg1 string) error {
@@ -35,7 +34,7 @@ func allDatabase() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	dbconf := `root:@/puzzle?parseTime=true&charset=utf8&loc=Local`
+	dbconf := `root:popo0908@/puzzle?parseTime=true&charset=utf8&loc=Local`
 	MQDB, err := gorm.Open(mysql.Open(dbconf), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
@@ -53,9 +52,10 @@ func allDatabase() {
 	// DB = RecursivePreload(DB)
 	// DB.First(&t, 1)
 	// DB.Preload(RecursivePreload()).Preload("Comments", "parent_id = ?", 1).Preload(clause.Associations).First(&t, 1)
-	// createOrganizations(SQDB, MQDB)
-	// createUsers(SQDB, MQDB)
-	// createProjects(SQDB, MQDB)
+	// CreateOrganizations(SQDB, MQDB)
+	CreateUser(SQDB, MQDB)
+	CreateUsers(SQDB, MQDB)
+	// CreateProjects(SQDB, MQDB)
 	// createProjectAuthority(SQDB, MQDB)
 	// CreateFields(SQDB, MQDB)
 	// CreateMilestones(SQDB, MQDB)
@@ -80,9 +80,9 @@ func RecursivePreload(DB *gorm.DB) *gorm.DB {
 	return DB
 }
 
-func createOrganizations(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateOrganizations(SQDB *gorm.DB, MQDB *gorm.DB) {
 	DeleteOrganizationsImages()
-	f, err := os.Open("data/organizations.csv")
+	f, err := os.Open("data/users.csv")
     if err != nil {
         fmt.Println(err)
     }
@@ -99,37 +99,42 @@ func createOrganizations(SQDB *gorm.DB, MQDB *gorm.DB) {
         if i == 0 {
             continue
         }
+		if record[12] == "" {
+			continue
+		}
 
         var organization md.Organization
         for i, v := range record {
             switch i {
-            case 0:
-                organization.Founded = v
-            case 2:
-                organization.Number = v
-            case 3:
-                organization.Address = v
             case 4:
+                organization.Founded = v
+            case 8:
+                organization.Number = v
+            case 11:
+                organization.Address = v
+            case 12:
                 organization.Name = v
-            case 5:
+            case 13:
                 organization.CreditCard = v
-            case 6:
+            case 14:
                 organization.Expiry = v
             }
-			// fmt.Println(user)
         }
 		organization.GetImage()
 		organization.Plan = "standard"
 		organization.ID, _ = crypto.MakeRandomStr(25)
 		organizations = append(organizations, organization)
 		fmt.Println(organization)
+		if len(organizations) == 100 {
+			break
+		}
     }
 	SQDB.Create(&organizations)
 	MQDB.Create(&organizations)
 
 }
 
-func createProjects(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateProjects(SQDB *gorm.DB, MQDB *gorm.DB) {
 	// Migrate(SQDB, MQDB, Project{})
 	// CreateProject(SQDB, MQDB)
 	DeleteProjectsImages()
@@ -177,7 +182,7 @@ func createProjects(SQDB *gorm.DB, MQDB *gorm.DB) {
 	}
 }
 
-func createUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 	DeleteUsersImages()
 	f, err := os.Open("data/users.csv")
     if err != nil {
@@ -427,7 +432,7 @@ func CreateFields(SQDB *gorm.DB, MQDB *gorm.DB) {
 }
 
 func CreateMilestones(SQDB *gorm.DB, MQDB *gorm.DB) {
-	Migrate(SQDB, MQDB, Milestone{})
+	Migrate(SQDB, MQDB, md.Milestone{})
 	CreateMilestone(SQDB, MQDB)
 	var milestones []md.Milestone
 	var projects []md.Project

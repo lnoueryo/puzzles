@@ -30,8 +30,8 @@ type User struct {
 	Image					string					`json:"image"`
 	ImageData				string					`gorm:"<-:false;-:migration;"json:"image_data"`
 	Description				string					`json:"description"`
-	Organization			string					`gorm:"-:migration"json:"organization"`
-	Authority				string					`gorm:"-:migration"json:"authority"`
+	Organization			string					`gorm:"-:all;"json:"organization"`
+	Authority				string					`gorm:"-:all;"json:"authority"`
 	Projects				[]ProjectAuthority		`json:"projects"`
 	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;"json:"organizations"`
 	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`

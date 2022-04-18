@@ -10,23 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type Field struct {
-	ID			int			`gorm:"AUTO_INCREMENT"json:"id"`
-	ProjectID	int			`json:"project_id"`
-	Name		string		`json:"name"`
-	CreatedAt	time.Time	`gorm:"autoCreateTime;"json:"created_at"`
-	UpdatedAt	time.Time	`gorm:"autoUpdateTime;"json:"updated_at"`
-}
-
-type Milestone struct {
-	ID   	  int		`gorm:"AUTO_INCREMENT"json:"id"`
-	ProjectID int		`json:"project_id"`
-	Name 	  string	`json:"name"`
-	CreatedAt time.Time `gorm:"autoCreateTime;"json:"-"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime;"json:"-"`
-}
-
-
 var (
 	DB = config.DB
 )
@@ -104,7 +87,7 @@ func CreateUser(SQDB *gorm.DB, MQDB *gorm.DB) md.User {
 func CreateProject(SQDB *gorm.DB, MQDB *gorm.DB) {
 	var newProject = md.Project{
 		Name:      		"性格診断",
-		Image:     		"base.png",
+		Image:     		"diagnosis.png",
 		OrganizationID: "prygen4fDISDVgSYDjxZ5uICD",
 	}
 	SQDB.Create(&newProject)
@@ -127,6 +110,7 @@ func CreateOrganizationAuthority(SQDB *gorm.DB, MQDB *gorm.DB) {
 		OrganizationID:	"prygen4fDISDVgSYDjxZ5uICD",
 		UserID:			1,
 		AuthorityID:	1,
+		Active: true,
 	}
 	SQDB.Create(&newOrganizationAuthority)
 	MQDB.Create(&newOrganizationAuthority)

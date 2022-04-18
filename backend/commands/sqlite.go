@@ -98,10 +98,10 @@ func SQCreateStatus(SQDB *gorm.DB) {
 }
 
 func SQCreateField(SQDB *gorm.DB) {
-	var fields []Field
+	var fields []md.Field
 	fieldTypes := []string{"エンジニア", "医療", "データサイエンス", "営業"}
 	for _, fieldType := range fieldTypes {
-		newField := Field{
+		newField := md.Field{
 			Name: fieldType,
 			ProjectID: 1,
 		}
@@ -111,12 +111,12 @@ func SQCreateField(SQDB *gorm.DB) {
 }
 
 func SQCreateMilestone(SQDB *gorm.DB) {
-	var milestones []Milestone
+	var milestones []md.Milestone
 	var projects []md.Project
 	milestoneTypes := []string{"フェーズ1", "フェーズ2", "フェーズ3", "フェーズ4", "テスト", "ベータ版公開"}
 	DB.Find(&projects)
 	for _, milestoneType := range milestoneTypes {
-		milestone := Milestone{
+		milestone := md.Milestone{
 			Name: milestoneType,
 			ProjectID: 1,
 		}
