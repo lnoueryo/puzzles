@@ -22,8 +22,8 @@ type Project struct {
 	Name			string			`json:"name"`
 	Description		string			`json:"description"`
 	Image			string			`json:"image"`
-	ImageData		string			`gorm:"migration;"json:"image_data"`
-	Authority		string			`gorm:"migration"json:"authority"`
+	ImageData		string			`gorm:"-:migration;"json:"image_data"`
+	Authority		string			`gorm:"-:migration"json:"authority"`
 	Organization	Organization	`gorm:"->;references:ID;"json:"organization"`
 	Tasks			[]Task			`json:"tasks"`
 	Milestones		[]Milestone		`json:"milestones"`

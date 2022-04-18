@@ -28,10 +28,10 @@ type User struct {
 	Address					string					`json:"address"`
 	Password				string					`json:"password"`
 	Image					string					`json:"image"`
-	ImageData				string					`gorm:"<-:false;migration;"json:"image_data"`
+	ImageData				string					`gorm:"<-:false;-:migration;"json:"image_data"`
 	Description				string					`json:"description"`
-	Organization			string					`gorm:"migration"json:"organization"`
-	Authority				string					`gorm:"migration"json:"authority"`
+	Organization			string					`gorm:"-:migration"json:"organization"`
+	Authority				string					`gorm:"-:migration"json:"authority"`
 	Projects				[]ProjectAuthority		`json:"projects"`
 	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;"json:"organizations"`
 	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
