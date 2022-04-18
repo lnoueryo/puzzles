@@ -15,10 +15,9 @@ export default {
   },
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
-  env: {
-    apiHost: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080'
-    // base: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000',
-    // api: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080',
+  publicRuntimeConfig: {
+    apiHost: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080',
+    mediaURL: process.env.NODE_ENV === 'production' ? process.env.MEDIA_URL : 'http://localhost:8080/media',
   },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -90,7 +89,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    prefix: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:3000',
+    prefix: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000',
     baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000', // 正しい
     browserBaseURL: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080', // 正しい
     credentials: true

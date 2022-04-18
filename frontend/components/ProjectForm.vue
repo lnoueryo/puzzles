@@ -162,7 +162,7 @@ export default Vue.extend({
       }
     },
     imageSrc() {
-      return this.value.project?.image_data || 'http://localhost:8080/media/projects/' + this.value.project.image;
+      return this.value.project?.image_data || this.$config.mediaURL + '/projects/' + this.value.project.image;
     },
     projectUserItems() {
       return this.projectAuthority.project_users.map((user: ProjectAuthority) => {

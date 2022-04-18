@@ -66,7 +66,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-btn class="mx-2" icon v-bind="attrs" v-on="{ ...on, ...menu }">
                   <v-avatar size="40px">
-                    <img alt="Avatar" :src="'http://localhost:8080/media/users/' + user.image">
+                    <img alt="Avatar" :src="$config.mediaURL + '/users/' + user.image">
                   </v-avatar>
                 </v-btn>
               </template>
@@ -200,7 +200,7 @@ export default {
   //     () => next('/login'));
   //   }
   // },
-  async beforeCreate() {
+  async created() {
     // window.onload = () => {
     //   this.$store.getters['projectCreateSock'].onmessage = (event) => {
     //     const data = JSON.parse(event.data);

@@ -32,7 +32,7 @@
       <v-avatar size="36px" v-if="organization.image">
         <img
           alt="Avatar"
-          :src="'http://localhost:8080/media/organizations/' + organization.image"
+          :src="$config.mediaURL + '/organizations/' + organization.image"
         >
       </v-avatar>
       <v-icon size="36px" v-else>

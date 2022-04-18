@@ -29,7 +29,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn class="mr-1" icon v-bind="attrs" v-on="on" v-if="i < 4">
                 <v-avatar size="36px">
-                  <img alt="Avatar" :src="'http://localhost:8080/media/users/' + _.user.image" v-if="user.image">
+                  <img alt="Avatar" :src="$config.mediaURL + '/users/' + _.user.image" v-if="user.image">
                   <v-icon size="44px" dark v-else>
                     mdi-account-circle
                   </v-icon>
@@ -70,7 +70,7 @@ export default Vue.extend({
   methods: {
     isPicture(src: string) {
       if(src) {
-        return 'http://localhost:8080/media/projects/' + src;
+        return this.$config.mediaURL + '/projects/' + src;
       }
       return require('~/assets/image/project.png');
     }
