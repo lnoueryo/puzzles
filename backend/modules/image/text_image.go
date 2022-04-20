@@ -29,16 +29,17 @@ var (
     }
 )
 
-func CreateImage(text string, filename string) error {
+func CreateImage(text string, filename string) (*bytes.Buffer, error) {
+    buf := &bytes.Buffer{}
     // フォントファイルを読み込み
     ftBinary, err := ioutil.ReadFile("./modules/image/Koruri-Bold.ttf")
     if err != nil {
-        return err
+        return buf, err
     }
 
     ft, err := truetype.Parse(ftBinary)
     if err != nil {
-        return err
+        return buf, err
     }
 
     img := colorImage()
@@ -57,21 +58,13 @@ func CreateImage(text string, filename string) error {
 
     dr.DrawString(initial)
 
-    buf := &bytes.Buffer{}
     err = png.Encode(buf, img)
 
     if err != nil {
-        return err
+        return buf, err
     }
 
-    file, err := os.Create("upload/users/" + filename)
-    if err != nil {
-        return err
-    }
-    defer file.Close()
-
-    file.Write(buf.Bytes())
-	return nil
+	return buf, nil
 }
 
 func ResizeImage() {
