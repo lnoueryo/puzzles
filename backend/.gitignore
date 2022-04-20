@@ -5,7 +5,7 @@ session/*
 upload
 gorm.db
 main
-main.exe
+main.*
 backend
 data
 pra

@@ -3,7 +3,7 @@ package controller
 import (
 	"backend/models"
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"net/http"
 	"strconv"
 )
@@ -63,6 +63,7 @@ func (*Project)Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*Project)Create(w http.ResponseWriter, r *http.Request) {
+	// projectにprojectauthorityを入れてフロントから送る
 	if r.Method != "POST" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -70,12 +71,13 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-
+	
     p, err := models.NewProject(r)
     if err != nil {
-        fmt.Println(err)
+		errorlog.Print(err)
         return
     }
+
 	if p.ImageData != "" {
 		fileName, err := StoreImage("projects", p.ImageData); if err != nil {
 			errorlog.Print(err);
@@ -107,15 +109,14 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	pa, err := p.GetProjectAuthority(s); if err != nil {
+
+	pa, err := models.GetProjectAuthority(p.AuthorityUsers[0].ID); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "couldn't create project"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	pa.Active = true
-	DB.Save(&pa)
 	pJson, _ := json.Marshal(pa)
 	w.WriteHeader(http.StatusCreated)
 	w.Write(pJson)

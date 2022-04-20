@@ -102,7 +102,20 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	if u.Image == "" {
 		u.Image, _ = crypto.MakeRandomStr(20)
-		err = image.CreateImage(u.Name, u.Image)
+		buf, err := image.CreateImage(u.Name, u.Image); if err != nil {
+			errorlog.Print(err);
+			errMap := map[string]string{"message": "couldn't save the image"}
+			errJson, _ := json.Marshal(errMap)
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(errJson)
+			return
+		}
+		path := "users/" + u.Image
+		if credentialsPath != "" {
+			err = StoreImageToGCS(buf.Bytes(), path)
+		} else {
+			err = StoreBinaryImage(buf.Bytes(), path)
+		}
 		if err != nil {
 			errorlog.Print(err);
 			errMap := map[string]string{"message": "couldn't save the image"}

@@ -21,6 +21,7 @@ type AppConfig struct {
 	Host			string
 	Origin			string
 	AllowOrigin		string
+	CredentialsPath	string
 	Email			mail.Mail
 }
 type APIKey struct {
@@ -73,6 +74,7 @@ func commonSettings() {
 	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN")
 	App.Host = os.Getenv("APP_HOST")
 	App.Origin = os.Getenv("APP_ORIGIN")
+	App.CredentialsPath = os.Getenv("CREDENTIALS_PATH")
 
 	// file path
 	App.Static = "public"
