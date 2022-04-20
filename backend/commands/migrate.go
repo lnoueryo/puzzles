@@ -21,19 +21,20 @@ func SeriesOfCreation(SQDB *gorm.DB, MQDB *gorm.DB) {
 	for _, v := range structSlice {
 		Migrate(SQDB, MQDB, v)
 	}
-	// CreateOrganization(SQDB, MQDB)
-	// CreateProject(SQDB, MQDB)
-	// CreateUser(SQDB, MQDB)
-	// CreateOrganizationAuthority(SQDB, MQDB)
-	// CreateProjectAuthority(SQDB, MQDB)
-	// CreateField(SQDB, MQDB)
-	// CreateMilestone(SQDB, MQDB)
-	// CreateStatus(SQDB, MQDB)
-	// CreateType(SQDB, MQDB)
-	// CreatePriority(SQDB, MQDB)
-	// CreateTask(SQDB, MQDB)
-	// // CreateComment(SQDB, MQDB)
-	// CreateAuthority(SQDB, MQDB)
+	CreateActivityContent(SQDB, MQDB)
+	CreateOrganization(SQDB, MQDB)
+	CreateProject(SQDB, MQDB)
+	CreateUser(SQDB, MQDB)
+	CreateOrganizationAuthority(SQDB, MQDB)
+	CreateProjectAuthority(SQDB, MQDB)
+	CreateField(SQDB, MQDB)
+	CreateMilestone(SQDB, MQDB)
+	CreateStatus(SQDB, MQDB)
+	CreateType(SQDB, MQDB)
+	CreatePriority(SQDB, MQDB)
+	CreateTask(SQDB, MQDB)
+	// CreateComment(SQDB, MQDB)
+	CreateAuthority(SQDB, MQDB)
 }
 
 func AutoMigrate(SQDB *gorm.DB, MQDB *gorm.DB) {
@@ -50,6 +51,17 @@ func Migrate(SQDB *gorm.DB, MQDB *gorm.DB, tableStruct interface{}) {
 	MQDB.Migrator().CreateTable(&tableStruct)
 }
 
+func CreateActivityContent(SQDB *gorm.DB, MQDB *gorm.DB) {
+	result := make([]md.ActivityContent, 0)
+	for _, value := range []string{"タスクを作成しました", "タスクを変更しました", "コメントを作成しました", "コメントを変更しました", "プロジェクトを作成しました", "プロジェクトを変更しました"} {
+		var newActivityContent = md.ActivityContent{
+			Content: value,
+		}
+		result = append(result, newActivityContent)
+	}
+	SQDB.Create(&result)
+	MQDB.Create(&result)
+}
 
 func CreateOrganization(SQDB *gorm.DB, MQDB *gorm.DB) md.Organization {
 	var newOrganization = md.Organization{
