@@ -121,7 +121,11 @@ func CheckGoFiles() {
 func preRunServer(wg *sync.WaitGroup){
 	// 現在のファイルを元にコンパイル
 	compileStdErr = compileMain();if compileStdErr.IsError {
-		if _, err := os.Stat("main"); err != nil {
+		_, err := os.Stat("main");
+		if runtime.GOOS == "windows" {
+			_, err = os.Stat("main.exe");
+		}
+		if err != nil {
 			fmt.Println("error: main file doesn't exist😩")
 			os.Exit(2)
 			return
