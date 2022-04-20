@@ -1,7 +1,7 @@
 const isReadyObj = () => {return (obj: {}) => !!obj ? Object.keys(obj).length != 0 : false}
 const isEmptyObj = () => {return (obj: {}) => !!obj ? Object.keys(obj).length === 0 : true}
-const isReadyArr= () => {return (arr: []) => !!arr ? arr.length != 0 : false}
-const isEmptyArr= () => {return (arr: []) => !!arr ? arr.length === 0 : true}
+const isReadyArr = () => {return (arr: []) => !!arr ? arr.length != 0 : false}
+const isEmptyArr = () => {return (arr: []) => !!arr ? arr.length === 0 : true}
 const isNumber = () => {
   return (numVal: any) => {
     const pattern = /^([1-9]\d*|0)(\.\d+)?$/;

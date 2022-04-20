@@ -72,7 +72,7 @@ export const actions: ActionTree<RootState, RootState> = {
         resolve(response);
         commit('userData', response.data);
         if(!response.data.name) return this.$router.push('/profile/edit');
-      } catch (error) {
+      } catch (error: any) {
         reject(error.response);
       }
     })
@@ -83,7 +83,7 @@ export const actions: ActionTree<RootState, RootState> = {
         const response = await this.$axios.post('/api/logout');
         resolve(response)
         dispatch('reset')
-      } catch (error) {
+      } catch (error: any) {
         reject(error.response)
       }
     })
@@ -95,7 +95,7 @@ export const actions: ActionTree<RootState, RootState> = {
         const response = await this.$axios.put('/api/user/update', form);
         resolve(response);
         commit('updateUser', response.data);
-      } catch (error) {
+      } catch (error: any) {
         reject(error.response);
       }
     })
@@ -107,7 +107,7 @@ export const actions: ActionTree<RootState, RootState> = {
         // console.log((new Blob([JSON.stringify (response)])).size);
         resolve(response);
         // commit('userData', response.data);
-      } catch (error) {
+      } catch (error: any) {
         reject(error.response);
       }
     })

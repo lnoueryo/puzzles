@@ -51,7 +51,6 @@ export interface ProjectAuthority {
   type: Authority
   active: boolean
   project: Project
-  project_users: ProjectAuthority[]
 }
 
 export interface Task {

@@ -36,7 +36,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
         resolve(response);
         commit('task/tasks', response.data.tasks, { root: true });
         // commit('project', response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
@@ -49,8 +49,8 @@ export const actions: ActionTree<ProjectState, RootState> = {
           params: {id: id}
         });
         resolve(response);
-        // commit('project', response.data);
-      } catch (error) {
+        commit('project', response.data);
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
@@ -62,7 +62,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
         const response = await this.$axios.post('/api/project/create', form);
         commit('createProject', response.data);
         resolve(response);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
@@ -76,7 +76,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
         if(form.field_delete || form.milestone_delete) dispatch('task/getTasks', window.$nuxt.$route.params.id, {root: true});
         commit('updateProject', response.data);
         resolve(response);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
