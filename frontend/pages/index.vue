@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isReadyObj(organization)">
     <v-carousel cycle height="100" hide-delimiters show-arrows-on-hover interval="4500" class="mb-4">
       <v-carousel-item v-for="(slide, i) in slides" :key="i">
         <v-sheet :color="colors[i]" height="100%">
@@ -45,6 +45,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { isReadyObj } from '~/modules/utils'
 export default Vue.extend({
   // layout: 'dashboard',
   data: () => ({
@@ -65,11 +66,12 @@ export default Vue.extend({
     ],
   }),
   computed: {
+    isReadyObj,
     organization() {
-      return this.$store.getters['organization']
+      return this.$store.getters['organization'].organization;
     },
     projectSlides() {
-      return this.$store.getters['projectSlides']
+      return this.$store.getters['projectSlides'];
     },
   },
 })

@@ -17,7 +17,8 @@ export default {
   target: 'static',
   publicRuntimeConfig: {
     apiHost: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080',
-    mediaURL: process.env.NODE_ENV === 'production' ? process.env.MEDIA_URL : 'http://localhost:8080/media',
+    mediaURL: process.env.MEDIA_URL,
+    // mediaURL: process.env.NODE_ENV === 'production' ? process.env.MEDIA_URL : 'http://localhost:8080/media',
   },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {

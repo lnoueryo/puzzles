@@ -55,8 +55,8 @@
           :items="projectUserItems"
           label="管理者"
           item-text="user.name"
+          item-value="user.id"
           :rules="[rules.requiredSelect]"
-          return-object
           item-disabled="disabled"
           multiple
           v-if="!isEmptyObj(projectAuthority)"
@@ -155,9 +155,19 @@ export default Vue.extend({
     },
     authorityUsers: {
       get(): lib.ProjectAuthority[] {
-        return this.value.project.authority_users;
+        return this.value.project.authority_users.filter((authority_user: lib.ProjectAuthority) => authority_user.auth_id == 1);
       },
-      set(authority_users) {
+      set(_authority_users: number[]) {
+        const original_authority_users = JSON.parse(JSON.stringify(this.projectAuthority.project.authority_users))
+        const authority_users = original_authority_users.map((authority_user: lib.ProjectAuthority) => {
+          if (_authority_users.includes(authority_user.user.id)) {
+            authority_user.auth_id = 1;
+          } else {
+            authority_user.auth_id = 2;
+          }
+          return authority_user;
+        })
+
         this.updateValue({authority_users});
       }
     },
@@ -165,7 +175,7 @@ export default Vue.extend({
       return this.value.project?.image_data || this.$config.mediaURL + '/projects/' + this.value.project.image;
     },
     projectUserItems() {
-      return this.projectAuthority.project_users.map((user: ProjectAuthority) => {
+      return this.projectAuthority.project.authority_users.map((user: ProjectAuthority) => {
         if (user.user_id == this.projectAuthority.user_id) {
           user.disabled = true;
         }

@@ -88,10 +88,10 @@
         </div>
         <div class="mx-3" style="display: grid;">
           <small>組織名</small>
-          <strong style="text-indent: 1em;">{{ organization.organization.name }}</strong>
+          <strong style="text-indent: 1em;">{{ authority.organization.name }}</strong>
         </div>
       </div>
-      <v-menu left bottom v-if="user.authority == '管理者'">
+      <v-menu left bottom v-if="authority.auth_id == 1">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
             <v-icon>mdi-dots-vertical</v-icon>
@@ -168,7 +168,7 @@ export default {
     user() {
       return this.$store.getters['user'];
     },
-    organization() {
+    authority() {
       return this.$store.getters['organization'];
     },
     projectAuthority() {

@@ -12,6 +12,8 @@ var DB *gorm.DB
 var email mail.Mail
 var origin string
 var allowOrigin string
+var StoreImage = config.StoreImage
+var DeleteImage = config.DeleteImage
 
 func init() {
 	DB = config.DB

@@ -62,17 +62,16 @@ export default Vue.extend({
   },
   async created() {
     let timer = setInterval(() => {
-      if(this.isEmptyObj(this.user)) return;
+      if(this.isEmptyObj(this.organization)) return;
       clearInterval(timer)
-      const authority = this.user.authority;
-      const authorityType = '管理者';
-      if(authority != authorityType) return this.$router.back();
+      const authority = this.organization.auth_id;
+      if(authority != 1) return this.$router.back();
       this.isAuthorized = true;
     }, 100);
   },
   methods: {
     async onClickSend() {
-      this.loading = true;
+      // this.loading = true;
       let response;
       console.log(this.projectForm())
       try {
@@ -97,7 +96,9 @@ export default Vue.extend({
       project.milestones = isFirstMilestone ? this.selectedProject.project.milestones : [];
       project.fields = isFirstField ? this.selectedProject.project.fields : [];
       project.organization_id = this.organization.id;
-      project.users = [this.user];
+      project.authority_users = [
+        {user_id: this.user.id, auth_id: 1, active: true} as any
+      ];
       const newProject = {...this.selectedProject.project, ...project}
       return newProject;
     },

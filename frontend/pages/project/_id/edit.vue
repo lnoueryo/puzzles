@@ -83,13 +83,14 @@ export default Vue.extend({
           milestones.push({title: 'マイルストーン' + (i + 1), newData: '', oldData: milestone.name})
         }
       });
-      let administers = this.selectedProject.project.authority_users.map((authority_user, i) => {
+      const filteredNewProject = this.selectedProject.project.authority_users.filter((authority_user) => authority_user.auth_id == 1)
+      let administers = filteredNewProject.map((authority_user, i) => {
         return {title: 'プロジェクト管理者' + (i + 1), newData: authority_user.user.name, oldData: ''};
       })
-      const authorityType = '管理者';
+      const authorityType = 1;
       const newAdministerLength = administers.length - 1;
-      this.projectAuthority.project_users.forEach((authority_user: lib.ProjectAuthority, i: number) => {
-        if(authority_user.type.name != authorityType) return
+      this.projectAuthority.project.authority_users.forEach((authority_user: lib.ProjectAuthority, i: number) => {
+        if(authority_user.auth_id != authorityType) return
         if(newAdministerLength >= i) {
           administers[i] = {...administers[i], ...{oldData: authority_user.user.name}}
         } else {
@@ -109,34 +110,27 @@ export default Vue.extend({
     let timer = setInterval(() => {
       if(this.isEmptyObj(this.projectAuthority)) return;
       clearInterval(timer)
-      const authority = this.user.authority;
-      const authorityType = '管理者';
-      if(authority != authorityType) return this.$router.back();
+      const authority = this.projectAuthority.auth_id;
+      if(authority != 1) return this.$router.back();
       this.preprocessProjectAuthority()
     }, 100);
   },
   methods: {
     preprocessProjectAuthority() {
-      const authorityType = 1;
       this.selectedProject = JSON.parse(JSON.stringify(this.projectAuthority));
-      this.selectedProject.project.authority_users = this.selectedProject.project_users.filter((user) => user.auth_id == authorityType);
       if(this.isEmptyArr(this.projectAuthority.project.milestones)) this.selectedProject.project.milestones.push({id: 0, name: ''})
       if(this.isEmptyArr(this.projectAuthority.project.fields)) this.selectedProject.project.fields.push({id: 0, name: ''})
-      // console.log(this.selectedProject.project.fields)
       this.isAuthorized = true;
     },
     async onClickSubmit() {
-      this.dialog = false;
       console.log(this.projectForm())
+      this.dialog = false;
       let response;
       try {
         response = await this.$store.dispatch('project/updateProject', this.projectForm());
       } catch (error: any) {
         response = error;
       } finally {
-        // const blob = new Blob([JSON.stringify(response.data, null, '  ')], {type: 'application\/json'});
-        // const url = URL.createObjectURL(blob);
-        // location.href = url;
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id-task', params: {id: this.$route.params.id}})
@@ -148,7 +142,6 @@ export default Vue.extend({
       }
     },
     projectForm() {
-      const project_authority = {} as lib.ProjectAuthority;
       const project = {} as lib.Project
       const isFirstField = !!this.selectedProject.project.fields[0].name;
       const isFirstMilestone = !!this.selectedProject.project.milestones[0].name;
@@ -158,29 +151,11 @@ export default Vue.extend({
       if(!fieldDelete) fieldDelete = !!this.projectAuthority.project.fields[0]?.name && !isFirstField;
       let milestoneDelete = this.projectAuthority.project.milestones.length > this.selectedProject.project.milestones.length;
       if(!milestoneDelete) milestoneDelete = !!this.projectAuthority.project.milestones[0]?.name && !isFirstMilestone;
-      const adminUserNum = this.selectedProject.project.authority_users.map((user) => user.user_id)
-      project_authority.project_users = this.selectedProject.project_users.map((user: lib.ProjectAuthority) => {
-        const newUser = {} as lib.ProjectAuthority
-        newUser.auth_id = 2;
-        if(adminUserNum.includes(user.user_id)) {
-          newUser.auth_id = 1;
-          newUser.active = true;
-        }
-        return {...user, ...newUser};
-      });
-      project.authority_users = this.selectedProject.project_users.map((user: lib.ProjectAuthority) => {
-        const newUser = {} as lib.ProjectAuthority
-        newUser.auth_id = 2;
-        if(adminUserNum.includes(user.user_id)) {
-          newUser.auth_id = 1;
-          newUser.active = true;
-        }
-        return {...user, ...newUser};
-      });
+      project.authority_users = this.selectedProject.project.authority_users;
+      console.log(this.selectedProject)
       const newProject = {...this.selectedProject.project, ...project}
-      project_authority.project = newProject
       const request = {
-        project_authority: {...this.selectedProject, ...project_authority},
+        project: newProject,
         field_delete: fieldDelete,
         milestone_delete: milestoneDelete,
       }

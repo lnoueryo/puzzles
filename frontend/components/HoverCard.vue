@@ -25,7 +25,7 @@
       <div class="d-flex align-center justify-space-between ma-2">
         <h3>メンバー：</h3>
         <div>
-          <v-tooltip bottom v-for="(_, i) in project_users" :key="i">
+          <v-tooltip bottom v-for="(_, i) in project.authority_users" :key="i">
             <template v-slot:activator="{ on, attrs }">
               <v-btn class="mr-1" icon v-bind="attrs" v-on="on" v-if="i < 4">
                 <v-avatar size="36px">
@@ -38,9 +38,9 @@
             </template>
             <span>{{ _.user.name }}</span>
           </v-tooltip>
-          <v-btn class="mr-1" icon v-if="5 < project_users.length" style="background-color: #ffffff1f">
+          <v-btn class="mr-1" icon v-if="5 < project.authority_users.length" style="background-color: #ffffff1f">
             <v-avatar size="36px">
-              <span>+{{ project_users.length - 4 }}</span>
+              <span>+{{ project.authority_users.length - 4 }}</span>
             </v-avatar>
           </v-btn>
         </div>
@@ -66,7 +66,7 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-  props: ['project', 'user', 'project_users'],
+  props: ['project', 'user'],
   methods: {
     isPicture(src: string) {
       if(src) {
@@ -74,6 +74,9 @@ export default Vue.extend({
       }
       return require('~/assets/image/project.png');
     }
+  },
+  created() {
+    console.log(this.project)
   }
 })
 </script>

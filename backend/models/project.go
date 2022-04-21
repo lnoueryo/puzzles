@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -17,27 +16,32 @@ import (
 
 
 type Project struct {
-	ID				int				`gorm:"AUTO_INCREMENT"json:"id"`
-    OrganizationID	string			`gorm:"<-:create;"json:"organization_id"`
-	Name			string			`json:"name"`
-	Description		string			`json:"description"`
-	Image			string			`json:"image"`
-	ImageData		string			`gorm:"-:migration;"json:"image_data"`
-	Authority		string			`gorm:"-:migration"json:"authority"`
-	Organization	Organization	`gorm:"->;references:ID;"json:"organization"`
-	Tasks			[]Task			`json:"tasks"`
-	Milestones		[]Milestone		`json:"milestones"`
-	Fields			[]Field			`json:"fields"`
+	ID				int					`gorm:"AUTO_INCREMENT"json:"id"`
+    OrganizationID	string				`gorm:"<-:create;"json:"organization_id"`
+	Name			string				`json:"name"`
+	Description		string				`json:"description"`
+	Image			string				`json:"image"`
+	ImageData		string				`gorm:"-:all;"json:"image_data"`
+	Authority		string				`gorm:"-:all"json:"authority"`
+	Organization	Organization		`gorm:"->;references:ID;"json:"organization"`
+	Tasks			[]Task				`json:"tasks"`
+	Milestones		[]Milestone			`json:"milestones"`
+	Fields			[]Field				`json:"fields"`
 	AuthorityUsers  []ProjectAuthority	`json:"authority_users"`
-	Users			[]User			`gorm:"many2many:project_authorities;"json:"users"`
-	CreatedAt		time.Time		`gorm:"autoCreateTime;"json:"created_at"`
-	UpdatedAt		time.Time		`gorm:"autoUpdateTime;"json:"updated_at"`
+	CreatedAt		time.Time			`gorm:"autoCreateTime;"json:"created_at"`
+	UpdatedAt		time.Time			`gorm:"autoUpdateTime;"json:"updated_at"`
 }
 
 type ProjectRequest struct {
-	Project
-	ImageData		string			`gorm:"<-:false;migration;"json:"image_data"`
-	Authority		string			`gorm:"migration"json:"authority"`
+	Project		Project	`json:"project"`
+	ImageData	string	`gorm:"<-:false;migration;"json:"image_data"`
+	Authority	string	`gorm:"migration"json:"authority"`
+}
+
+type ProjectUpdateRequest struct {
+	Project			Project	`json:"project"`
+	FieldDelete		bool	`json:"field_delete"`
+	MilestoneDelete	bool	`json:"milestone_delete"`
 }
 
 func NewProject(r *http.Request) (Project, error) {
@@ -55,7 +59,6 @@ func (p *Project)GetProjectAuthority(s Session) (ProjectAuthority, error) {
 }
 
 func(p *Project)Create() error {
-	DB.SetupJoinTable(&Project{}, "Users", &ProjectAuthority{})
 	result := DB.Debug().Omit("Users.*").Create(&p); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
@@ -81,25 +84,6 @@ func (p *Project)Update() error {
 		return result.Error
 	}
 	return nil
-	// var projectAuthorities []ProjectAuthority
-	// for _, user := range p.AuthorityUsers {
-	// 	projectAuthority := ProjectAuthority{
-	// 		ID: user.ID,
-	// 		ProjectID: user.ProjectID,
-	// 		UserID: user.UserID,
-	// 		AuthorityID: user.AuthorityID,
-	// 		Active: user.Active,
-	// 	}
-	// 	projectAuthorities = append(projectAuthorities, projectAuthority)
-	// 	fmt.Println(user.AuthorityID)
-	// 	fmt.Println(user.User.Name)
-	// }
-	// result := DB.Save(projectAuthorities); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-	// 	return result.Error
-	// }
-	// result = DB.Save(&p); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-	// 	return result.Error
-	// }
 }
 
 func (p *Project)GetProject(s Session, id int) error {
@@ -181,4 +165,16 @@ func (p *Project) GetImage() {
 
 	io.Copy(file, response.Body)
 	p.Image = filename
+}
+
+func GetProjectUpdateRequestJson(r *http.Request) (ProjectUpdateRequest, error) {
+	var projectUpdateRequest ProjectUpdateRequest
+	err := json.NewDecoder(r.Body).Decode(&projectUpdateRequest)
+	fmt.Println(projectUpdateRequest.Project)
+	if err != nil {
+		message := "couldn't decode json"
+		err := errors.New(message)
+		return projectUpdateRequest, err
+	}
+	return projectUpdateRequest, nil
 }
