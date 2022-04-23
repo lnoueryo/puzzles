@@ -55,7 +55,7 @@
         type="password"
         v-if="!user.name"
       ></v-text-field>
-      <cropper v-model="profile.image_data" :width="450" :currentImage="profile.image"></cropper>
+      <cropper v-model="profile.image_data" :width="450" :currentImage="$config.mediaURL + '/users/' + profile.image"></cropper>
     </v-form>
   </form-card>
 </template>

@@ -61,6 +61,7 @@ export default Vue.extend({
       return this.$store.getters['organization'].users;
     },
     dialogForm() {
+      // imageの比較もする
       let fields = this.selectedProject.project.fields.map((field, i) => {
         return {title: '分野' + (i + 1), newData: field.name, oldData: ''};
       })
@@ -102,6 +103,7 @@ export default Vue.extend({
         ...fields,
         ...milestones,
         ...administers,
+        {title: 'イメージの変更', newData: this.selectedProject.project.image_data || this.selectedProject.project.image, oldData: this.selectedProject.project.image, image: true},
         {title: 'プロジェクトの概要', newData: this.selectedProject.project.description, oldData: this.projectAuthority.project.description},
       ];
     }
@@ -123,7 +125,6 @@ export default Vue.extend({
       this.isAuthorized = true;
     },
     async onClickSubmit() {
-      console.log(this.projectForm())
       this.dialog = false;
       let response;
       try {

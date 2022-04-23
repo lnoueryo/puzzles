@@ -145,7 +145,8 @@ func DeleteOnGCS(name string, dir string) {
 	}
 	// オブジェクトのReaderを作成
 	bucketName := "puzzle-media"
-	path := "/" + dir + "/" + name
+	path := dir + "/" + name
+	infolog.Print(path)
 	src := client.Bucket(bucketName).Object(path)
 	if err := src.Delete(ctx); err != nil {
 		errorlog.Print(err)

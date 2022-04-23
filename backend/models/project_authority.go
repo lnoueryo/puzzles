@@ -70,7 +70,7 @@ func (pur *ProjectUpdateRequest)BulkUpdateProject() error {
 			result := tx.Debug().Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers.Project").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 				return result.Error
 			}
-			DeleteImage(pur.Project.Image, "projects")
+			DeleteImage("9MSwg3CWQlIQYiVNkZcK.jpeg", "projects")
 			return nil
 		}
 		result := tx.Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers.Project").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {

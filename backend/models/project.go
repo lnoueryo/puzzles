@@ -170,7 +170,6 @@ func (p *Project) GetImage() {
 func GetProjectUpdateRequestJson(r *http.Request) (ProjectUpdateRequest, error) {
 	var projectUpdateRequest ProjectUpdateRequest
 	err := json.NewDecoder(r.Body).Decode(&projectUpdateRequest)
-	fmt.Println(projectUpdateRequest.Project)
 	if err != nil {
 		message := "couldn't decode json"
 		err := errors.New(message)

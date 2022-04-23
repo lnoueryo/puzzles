@@ -22,7 +22,7 @@
         </v-btn>
       </div>
       <div class="pa-2 d-flex justify-space-between">
-        <img style="max-width: 200px;width: 100%" :src="mediaUser" alt="">
+        <img style="max-width: 200px;width: 100%" :src="currentImage" alt="">
         <img style="max-width: 200px;width: 100%" :src="value" alt="">
       </div>
     </div>
@@ -73,9 +73,6 @@ export default Vue.extend({
   computed: {
     cropperPosition() {
       return this.addPixel()
-    },
-    mediaUser() {
-      return this.$store.getters['mediaUser'] + this.currentImage;
     },
   },
   methods: {

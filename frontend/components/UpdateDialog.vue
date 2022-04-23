@@ -15,7 +15,21 @@
               </div>
             </div>
             <div v-for="(content, i) in editedData" :key="i">
-              <div class="d-flex" style="width: 100%">
+              <div class="d-flex" style="width: 100%" v-if="content['image']">
+                <div style="width: 50%" v-if="content.change">
+                  <div>{{ content.title }}</div>
+                  <div>
+                    <img style="max-width: 300px" :src="$config.mediaURL + '/projects/' + content.oldData" alt="">
+                  </div>
+                </div>
+                <div style="width: 50%" v-if="content.change">
+                  <div :class="[{'red--text': content.change}, {'text--primary': !content.change}]">{{ content.title }}</div>
+                  <div>
+                    <img style="max-width: 300px" :src="content.newData" alt="">
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex" style="width: 100%" v-else>
                 <div style="width: 50%">
                   <div>{{ content.title }}</div>
                   <p>{{ content.oldData }}</p>

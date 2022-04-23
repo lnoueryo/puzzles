@@ -62,15 +62,7 @@
           v-if="!isEmptyObj(projectAuthority)"
         >
         </v-select>
-        <v-file-input
-          accept="image/*"
-          label="File input"
-          filled
-          @change="onChangeFile"
-          prepend-icon=""
-          clearable
-        ></v-file-input>
-        <img :src="imageSrc" alt="">
+        <cropper v-model="image" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.project.image"></cropper>
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
           <v-btn text :to="to">
@@ -169,6 +161,14 @@ export default Vue.extend({
         })
 
         this.updateValue({authority_users});
+      }
+    },
+    image: {
+      get() {
+        return this.value.project.image_data;
+      },
+      set(image_data) {
+        this.updateValue({image_data});
       }
     },
     imageSrc() {
