@@ -92,10 +92,9 @@ func (u *User) Update() error {
 }
 
 func (u *User)GetMainUser(s Session) error {
-	result := DB.Preload("Projects.Project.AuthorityUsers." + clause.Associations).Preload("Projects.Project.AuthorityUsers").Preload("Projects.Project.Fields").Preload("Projects.Project.Milestones").Preload("Projects." + clause.Associations).Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", s.Organization).Preload("Organizations").First(&u, "id = ?", s.UserID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Preload("Projects.Project.AuthorityUsers." + clause.Associations).Preload("Projects.Project.AuthorityUsers", "active = ?", true).Preload("Projects.Project.Fields").Preload("Projects.Project.Milestones").Preload("Projects." + clause.Associations).Preload("Projects", "active = ?", true).Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", s.Organization).Preload("Organizations").First(&u, "id = ?", s.UserID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
-
 	return nil
 }
 

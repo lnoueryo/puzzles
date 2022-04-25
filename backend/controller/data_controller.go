@@ -290,14 +290,32 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 		}
 		if file.Filename == "comments.csv" {
 			comments, errArray := dp.UpsertComment(f);
-			err := DB.Save(&comments).Error; if err != nil {
-				message := "Commentテーブルの書き込みに失敗しました。"
-				errorlog.Print(message)
-				errorlog.Print(err)
-				errArray = append(errArray, message)
+			var bulk []models.Comment
+			for _, comment := range comments {
+				bulk = append(bulk, comment)
+				if len(bulk) > 500 {
+					err := DB.Save(&bulk).Error; if err != nil {
+						message := "Commentテーブルの書き込みに失敗しました。"
+						errorlog.Print(message)
+						errorlog.Print(err)
+						errArray = append(errArray, message)
+					}
+					if len(errArray) != 0 {
+						errorArray = append(errorArray, errArray)
+					}
+					bulk = nil
+				}
 			}
-			if len(errArray) != 0 {
-				errorArray = append(errorArray, errArray)
+			if len(bulk) != 0 {
+				err := DB.Save(&bulk).Error; if err != nil {
+					message := "Commentテーブルの書き込みに失敗しました。"
+					errorlog.Print(message)
+					errorlog.Print(err)
+					errArray = append(errArray, message)
+				}
+				if len(errArray) != 0 {
+					errorArray = append(errorArray, errArray)
+				}
 			}
 			continue
 		}

@@ -194,6 +194,7 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
+		return
 	}
 	s, _ := models.CheckSession(r)
 	activity := models.Activity{
@@ -203,10 +204,12 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = activity.Create(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
+		return
 	}
 
 	pa, err := models.GetProjectAuthority(pur.Project.ID, s.UserID); if err != nil {
@@ -215,6 +218,7 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
+		return
 	}
 
 	projectJson, _ := json.Marshal(pa)

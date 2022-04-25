@@ -34,6 +34,7 @@ func allDatabase() {
 	if err != nil {
 		panic("failed to connect database")
 	}
+	// dbconf := `puzzle:g4Jr94dQM&1AqCxRq|OQ@tcp(35.221.69.155:3306)/puzzle?parseTime=true&charset=utf8&loc=Local`
 	dbconf := `root:popo0908@/puzzle?parseTime=true&charset=utf8&loc=Local`
 	MQDB, err := gorm.Open(mysql.Open(dbconf), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
@@ -45,7 +46,7 @@ func allDatabase() {
 	// SeriesOfCreation(SQDB, MQDB)
 	start := time.Now()
 	AutoMigrate(SQDB, MQDB)
-	SQlite(SQDB)
+	// SQlite(SQDB)
 	// fmt.Println(c)
 	// var t Task
 	// DB = DB.Preload("Comments", "parent_id = ?", 1)
@@ -53,14 +54,16 @@ func allDatabase() {
 	// DB.First(&t, 1)
 	// DB.Preload(RecursivePreload()).Preload("Comments", "parent_id = ?", 1).Preload(clause.Associations).First(&t, 1)
 	// CreateOrganizations(SQDB, MQDB)
-	CreateUser(SQDB, MQDB)
-	CreateUsers(SQDB, MQDB)
+	// CreateOrganizationUsers(SQDB, MQDB)
+	// CreateProjectUsers(SQDB, MQDB)
+	// CreateUser(SQDB, MQDB)
+	// CreateUsers(SQDB, MQDB)
 	// CreateProjects(SQDB, MQDB)
 	// createProjectAuthority(SQDB, MQDB)
 	// CreateFields(SQDB, MQDB)
 	// CreateMilestones(SQDB, MQDB)
 	// createFieldUsers(SQDB, MQDB)
-	// createTasks(SQDB, MQDB)
+	// CreateComments(SQDB, MQDB)
 	// createProjectUsers(SQDB, MQDB)
 	// ReadOrganization()
 	// MQDB.Migrator().DropTable(&OrganizationAuth{})
@@ -235,21 +238,22 @@ func CreateUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 	}
 }
 
-func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 	Migrate(SQDB, MQDB, md.OrganizationAuthority{})
 	var organizations []md.Organization
 	DB.Preload(clause.Associations).Find(&organizations)
+	rand.Seed(time.Now().UnixNano())
 	for j, organization := range organizations {
 		var organizationAuthorities []md.OrganizationAuthority
 		if j == 500 {
 			for i := 1; i < 21; i++ {
-				rand.Seed(time.Now().UnixNano())
 				num := rand.Intn(10001)
 				userID := num
 				organizationAuthority := md.OrganizationAuthority{
 					OrganizationID: organization.ID,
 					UserID: userID,
 					AuthorityID: 2,
+					Active: true,
 				}
 				organizationAuthorities = append(organizationAuthorities, organizationAuthority)
 			}
@@ -265,6 +269,7 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 						OrganizationID: organization.ID,
 						UserID: userID,
 						AuthorityID: 1,
+						Active: true,
 					}
 					organizationAuthorities = append(organizationAuthorities, organizationAuthority)
 					continue
@@ -273,48 +278,34 @@ func createOrganizationUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 					OrganizationID: organization.ID,
 					UserID: userID,
 					AuthorityID: 2,
+					Active: true,
 				}
 				organizationAuthorities = append(organizationAuthorities, organizationAuthority)
 			}
 		}
-		DB.Create(&organizationAuthorities)
+		MQDB.Create(&organizationAuthorities)
 	}
 }
 
-func createProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
+	// Migrate(SQDB, MQDB, md.ProjectAuthority{})
+	// var organizations []md.Organization
+	// DB.Preload("Users." + clause.Associations).Preload(clause.Associations).Find(&organizations)
+	// fmt.Println(organizations[0])
+	// return
 	Migrate(SQDB, MQDB, md.ProjectAuthority{})
 	CreateProjectAuthority(SQDB, MQDB)
 	var organizations []md.Organization
 	DB.Preload(clause.Associations).Find(&organizations)
+	rand.Seed(time.Now().UnixNano())
 	for _, organization := range organizations {
 		var projectAuthorities []md.ProjectAuthority
 		if len(organization.Projects) == 0 {
 			continue
 		}
 		for _, project := range organization.Projects {
-			// limit := 0
-			// userIDSlice := []int{}
-			// for _, user := range organization.Users {
-			// 	userIDSlice = append(userIDSlice, user.ID)
-			// }
-			// rand.Seed(time.Now().UnixNano())
-			// rand.Shuffle(len(userIDSlice), func(i, j int) { userIDSlice[i], userIDSlice[j] = userIDSlice[j], userIDSlice[i] })
-			// for i, id := range userIDSlice {
-			// 	rand.Seed(time.Now().UnixNano())
-			// 	authType := 2
-			// 	if i == 0 {
-			// 		authType = 1
-			// 	}
-			// 	projectAuthority := ProjectAuthority{
-			// 		ProjectID: project.ID,
-			// 		UserID: id,
-			// 		AuthorityID: authType,
-			// 	}
-			// 	projectAuthorities = append(projectAuthorities, projectAuthority)
-			// }
 			for i, user := range organization.Users {
 				boolean := []bool{true,false}
-				rand.Seed(time.Now().UnixNano())
 				active := rand.Intn(2)
 				authType := 2
 				if i == 0 {
@@ -322,41 +313,31 @@ func createProjectUsers(SQDB *gorm.DB, MQDB *gorm.DB) {
 				}
 				projectAuthority := md.ProjectAuthority{
 					ProjectID: project.ID,
-					UserID: user.ID,
+					UserID: user.UserID,
 					AuthorityID: authType,
 					Active: boolean[active],
 				}
 				projectAuthorities = append(projectAuthorities, projectAuthority)
 			}
 		}
-		fmt.Println(projectAuthorities)
 		DB.Create(&projectAuthorities)
 	}
 }
 
-func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 	Migrate(SQDB, MQDB, md.Task{})
 	CreateTask(SQDB, MQDB)
 	var projects []md.Project
-	var pas []md.ProjectAuthority
 	DB.Preload(clause.Associations).Find(&projects)
-	DB.Preload(clause.Associations).Find(&pas, "active = true")
-	for _ ,project := range projects {
+	rand.Seed(time.Now().UnixNano())
+	for _ , project := range projects {
 		if project.ID == 1 {
 			continue
 		}
-		var joinPaSlice []md.ProjectAuthority
-		for _ ,pa := range pas {
-			if pa.ProjectID ==  project.ID{
-				joinPaSlice = append(joinPaSlice, pa)
-			}
-		}
-		project.AuthorityUsers = joinPaSlice
 		random := 0
 		var tasks []md.Task
 		count := 1
 		for {
-			rand.Seed(time.Now().UnixNano())
 			assigneeNum := rand.Intn(len(project.AuthorityUsers))
 			assignerNum := rand.Intn(len(project.AuthorityUsers))
 			random = rand.Intn(600)
@@ -377,8 +358,8 @@ func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 				milestoneID = project.Milestones[milestoneNum].ID
 			}
 			task := md.Task{
-				AssigneeID: project.AuthorityUsers[assigneeNum].User.ID,
-				AssignerID: project.AuthorityUsers[assignerNum].User.ID,
+				AssigneeID: project.AuthorityUsers[assigneeNum].UserID,
+				AssignerID: project.AuthorityUsers[assignerNum].UserID,
 				FieldID: &fieldID,
 				MilestoneID: &milestoneID,
 				StatusID: statusID,
@@ -399,36 +380,36 @@ func createTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 			if random == 0 {
 				break
 			}
+			if len(tasks) == 900 {
+				break
+			}
 		}
-		fmt.Println(tasks)
 		MQDB.Create(&tasks)
-		SQDB.Create(&tasks)
+		// SQDB.Create(&tasks)
 	}
 }
 
 func CreateFields(SQDB *gorm.DB, MQDB *gorm.DB) {
 	Migrate(SQDB, MQDB, md.Field{})
 	CreateField(SQDB, MQDB)
-	var organizations []md.Organization
+	var fields []md.Field
+	var projects []md.Project
 	fieldTypes := []string{"フロントエンド", "バックエンド", "デザイナー"}
-	DB.Preload(clause.Associations).Find(&organizations)
-	for _, organization := range organizations {
-		var fields []md.Field
-		if organization.ID == "prygen4fDISDVgSYDjxZ5uICD" {
+	DB.Find(&projects)
+	for _, project := range projects {
+		if project.ID == 1 {
 			continue
 		}
-		for _, project := range organization.Projects {
-			for _, fieldType := range fieldTypes {
-				field := md.Field{
-					Name: fieldType,
-					ProjectID: project.ID,
-				}
-				fields = append(fields, field)
+		for _, fieldType := range fieldTypes {
+			field := md.Field{
+				Name: fieldType,
+				ProjectID: project.ID,
 			}
+			fields = append(fields, field)
 		}
-		SQDB.Create(&fields)
-		MQDB.Create(&fields)
 	}
+	SQDB.Create(&fields)
+	MQDB.Create(&fields)
 }
 
 func CreateMilestones(SQDB *gorm.DB, MQDB *gorm.DB) {
@@ -452,4 +433,64 @@ func CreateMilestones(SQDB *gorm.DB, MQDB *gorm.DB) {
 	}
 	SQDB.Create(&milestones)
 	MQDB.Create(&milestones)
+}
+
+func CreateComments(SQDB *gorm.DB, MQDB *gorm.DB) {
+	Migrate(SQDB, MQDB, md.Comment{})
+	var comments []md.Comment
+	var projects []md.Project
+	DB.Preload(clause.Associations).Find(&projects)
+	rand.Seed(time.Now().UnixNano())
+	for _, project := range projects {
+		for i, task := range project.Tasks {
+			end := 0
+			for {
+				userNum := rand.Intn(len(project.AuthorityUsers))
+				end = rand.Intn(2)
+				parentID := 0
+				comment := md.Comment{
+					Content: strconv.Itoa(i),
+					TaskID: task.ID,
+					UserID: project.AuthorityUsers[userNum].UserID,
+					ParentID: &parentID,
+				}
+				comments = append(comments, comment)
+				if end == 0 {
+					break
+				}
+			}
+			MQDB.Create(&comments)
+			TreeComments(MQDB, project, comments, 2)
+			comments = nil
+		}
+	}
+}
+
+func TreeComments(MQDB *gorm.DB, project md.Project, comments []md.Comment, endNum int) {
+	rand.Seed(time.Now().UnixNano())
+	treeEnd := rand.Intn(endNum)
+	if treeEnd != 0 {
+		return
+	}
+	var newComments []md.Comment
+	for i, comment := range comments {
+		end := 0
+		for {
+			end = rand.Intn(1)
+			userNum := rand.Intn(len(project.AuthorityUsers))
+			comment := md.Comment{
+				Content: strconv.Itoa(i),
+				TaskID: comment.TaskID,
+				UserID: project.AuthorityUsers[userNum].UserID,
+				ParentID: &comment.ID,
+			}
+			newComments = append(newComments, comment)
+			if end == 0 {
+				break
+			}
+		}
+		MQDB.Create(&newComments)
+		TreeComments(MQDB, project, comments, endNum*2)
+		newComments = nil
+	}
 }
