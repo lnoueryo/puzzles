@@ -7,11 +7,16 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"github.com/joho/godotenv"
 )
 
 var requiredDirectory = []string{"config", "controller", "credentials", "models", "modules", "public", "routes", "templates"}
 var requiredFiles = []string{"Dockerfile", "go.mod", "go.sum", "gorm.db", ".env", "server/main.go", "cloudbuild.yaml"}
-
+func init() {
+	err := godotenv.Load(".env.dev"); if err != nil {
+		panic("not found .env.dev")
+	}
+}
 func Deploy() {
 	for _, value := range requiredDirectory {
 		Dir(value, "backend/"+value)
@@ -34,7 +39,7 @@ func Deploy() {
 }
 
 func SetProject() {
-	cmd := exec.Command("gcloud", "auth", "activate-service-account", "deploy@puzzles-345814.iam.gserviceaccount.com", "--key-file=./credentials/puzzles-345814-24d9b5fcb5ca.json", "--project=puzzles-345814")
+	cmd := exec.Command("gcloud", "auth", "activate-service-account", "deploy@puzzles-345814.iam.gserviceaccount.com", "--key-file=" + os.Getenv("CREDENTIALS_PATH"), "--project=puzzles-345814")
 	stdout, _ := cmd.StdoutPipe()
 	cmd.Stderr = cmd.Stdout
 	err := cmd.Start()

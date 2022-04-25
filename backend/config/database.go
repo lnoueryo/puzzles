@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -51,5 +52,8 @@ func ConnectSqlite3() (*gorm.DB, error) {
 
 func createMysqlPath(DBSettings Database) string {
 	path := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?%v", DBSettings.User, DBSettings.Password, DBSettings.Host, DBSettings.Port, DBSettings.Name, DBSettings.Query)
+	if os.Getenv("DB") == "CLOUDSQL" {
+		path = fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s?%s", DBSettings.User, DBSettings.Password, DBSettings.Host, DBSettings.Name, DBSettings.Query)
+	}
 	return path
 }
