@@ -1,25 +1,20 @@
-provider "google" {
-  project = "puzzles-345814"
-  region  = "asia-northeast1"
-  zone    = "asia-northeast1-a"
-}
 resource "google_cloud_run_service" "default" {
   name     = var.name
   location = var.location
 
-  # metadata {
-  #   annotations = {
-  #     "run.googleapis.com/cloudsql-instances" = "trim-tide-313616:asia-northeast1:gmap"
-  #   }
-  # }
-
   template {
     spec {
+      service_account_name = var.service_account_name
       containers {
-        image = "gcr.io/puzzles-345814/puzzles"
+        image = var.image
         resources {
           limits = { "memory" : "1Gi" }
         }
+      }
+    }
+    metadata {
+      annotations = {
+        "run.googleapis.com/cloudsql-instances" = var.cloud_sql_instance
       }
     }
   }
@@ -43,7 +38,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
 resource "google_cloud_run_domain_mapping" "default" {
   location = google_cloud_run_service.default.location
-  name     = "puzzles-api.jounetsism.biz"
+  name     = var.domain
 
   metadata {
     namespace = var.project

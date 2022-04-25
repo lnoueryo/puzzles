@@ -1,21 +1,15 @@
 variable "name" {
     type = string
 }
-variable "image" {
-    type = string
-}
 variable "location" {
     type = string
 }
 variable "project" {
     type = string
 }
-variable "service_account_name" {
+variable "database_user" {
     type = string
 }
-variable "cloud_sql_instance" {
-    type = string
-}
-variable "domain" {
+variable "database_password" {
     type = string
 }
