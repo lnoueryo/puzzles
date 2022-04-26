@@ -100,7 +100,7 @@ export const actions: ActionTree<TaskState, RootState> = {
         })
         resolve(response);
         commit('tasks', response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
@@ -113,7 +113,7 @@ export const actions: ActionTree<TaskState, RootState> = {
         console.log(response.data)
         commit('updateTask', response.data);
         resolve(response);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
@@ -126,7 +126,7 @@ export const actions: ActionTree<TaskState, RootState> = {
         commit('addTask', response.data);
         resolve(response);
         // commit('tasks', response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
@@ -147,8 +147,7 @@ export const actions: ActionTree<TaskState, RootState> = {
         const response = await this.$axios.post('/api/comment/create', form);
         commit('updateTask', response.data);
         resolve(response);
-        // commit('tasks', response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
@@ -161,7 +160,7 @@ export const actions: ActionTree<TaskState, RootState> = {
         // commit('updateTask', response.data);
         resolve(response);
         // commit('tasks', response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
