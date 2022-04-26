@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"backend/models"
+	"backend/modules/session"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -15,8 +15,15 @@ type Logger struct {
 // Auth checks if it's valid session
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, isSession := models.CheckSession(r)
-		if !isSession {
+		cookie, err := r.Cookie("_cookie");if err != nil {
+			errMap := map[string]string{"message": "session is expired"}
+			errJson, _ := json.Marshal(errMap)
+			w.WriteHeader(http.StatusNotModified)
+			w.Write(errJson)
+			return
+		}
+		_, err = session.CheckSession(cookie.Value, projectenv)
+		if err != nil {
 			errMap := map[string]string{"message": "session is expired"}
 			errJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusNotModified)
@@ -48,11 +55,25 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	start := time.Now()
-	session, isSession := models.CheckSession(r)
-	if !isSession {
+	cookie, err := r.Cookie("_cookie");if err != nil {
+		errMap := map[string]string{"message": "session is expired"}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotModified)
+		w.Write(errJson)
+		return
+	}
+	s, err := session.CheckSession(cookie.Value, projectenv)
+	if err != nil {
+		errMap := map[string]string{"message": "session is expired"}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotModified)
+		w.Write(errJson)
+		return
+	}
+	if err != nil {
 		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, r.RemoteAddr, time.Since(start))
 	} else {
-		infolog.Printf("%v %v %v %v %v %v", r.Method, r.URL.Path, session.Name, session.Email, r.RemoteAddr, time.Since(start))
+		infolog.Printf("%v %v %v %v %v %v", r.Method, r.URL.Path, s.Name, s.Email, r.RemoteAddr, time.Since(start))
 	}
 	l.handler.ServeHTTP(w, r)
 }

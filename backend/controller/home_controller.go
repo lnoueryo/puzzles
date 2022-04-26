@@ -31,7 +31,7 @@ func (_ *Home) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var org models.Organization
-	s, _ := models.CheckSession(r)
+	s, _ := GetSession(r)
 	err := org.GetOrganization(s.Organization); if err != nil {
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -53,8 +53,9 @@ func (_ *Home) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var u models.User
-	s, _ := models.CheckSession(r)
-	err := u.GetMainUser(s); if err != nil {
+	s, _ := GetSession(r)
+	infolog.Print(s)
+	err := u.GetMainUser(s.UserID, s.Organization); if err != nil {
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)

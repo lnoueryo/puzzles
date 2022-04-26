@@ -37,9 +37,9 @@ func (*Project)Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var p models.Project
-	s, _ := models.CheckSession(r)
+	s, _ := GetSession(r)
 
-	err = p.GetProject(s, id); if err != nil {
+	err = p.GetProject(id, s.UserID); if err != nil {
 		message := "bad connection"
 		errorlog.Print(message)
 		errMap := map[string]string{"message": message}
@@ -96,7 +96,7 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	s, _ := models.CheckSession(r)
+	s, _ := GetSession(r)
 	activity := models.Activity{
 		UserID: s.UserID,
 		ProjectID: p.ID,
@@ -147,9 +147,9 @@ func (*Project)Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var p models.Project
-	s, _ := models.CheckSession(r)
+	s, _ := GetSession(r)
 
-	err = p.GetEditProject(s, id); if err != nil {
+	err = p.GetEditProject(id, s.UserID); if err != nil {
 		message := "bad connection"
 		errorlog.Print(message)
 		errMap := map[string]string{"message": message}
@@ -196,7 +196,7 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-	s, _ := models.CheckSession(r)
+	s, _ := GetSession(r)
 	activity := models.Activity{
 		UserID: s.UserID,
 		ProjectID: pur.Project.ID,

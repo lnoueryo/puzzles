@@ -3,6 +3,7 @@ module backend
 go 1.16
 
 require (
+	cloud.google.com/go/datastore v1.6.0 // indirect
 	cloud.google.com/go/storage v1.22.0 // indirect
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect

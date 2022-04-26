@@ -23,6 +23,7 @@ type AppConfig struct {
 	AllowOrigin		string
 	CredentialsPath	string
 	Email			mail.Mail
+	Project			string
 }
 type APIKey struct {
 	GitHubClientId string
@@ -75,6 +76,7 @@ func commonSettings() {
 	App.Host = os.Getenv("APP_HOST")
 	App.Origin = os.Getenv("APP_ORIGIN")
 	App.CredentialsPath = os.Getenv("CREDENTIALS_PATH")
+	App.Project = os.Getenv("PROJECT")
 
 	// file path
 	App.Static = "public"

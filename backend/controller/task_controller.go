@@ -77,7 +77,7 @@ func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	s, _ := models.CheckSession(r)
+	s, _ := GetSession(r)
 	activity := models.Activity{
 		UserID: s.UserID,
 		ProjectID: task.ProjectID,
@@ -117,7 +117,7 @@ func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	s, _ := models.CheckSession(r)
+	s, _ := GetSession(r)
 	activity := models.Activity{
 		UserID: s.UserID,
 		ProjectID: task.ProjectID,

@@ -6,6 +6,7 @@ import (
 	"backend/modules/crypto"
 	"backend/modules/mail"
 	"backend/modules/oauth"
+	"backend/modules/session"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -36,6 +37,7 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
+	infolog.Print(s)
 	sessionJson, _ := json.Marshal(s)
 	w.WriteHeader(http.StatusOK)
 	w.Write(sessionJson)
@@ -46,8 +48,8 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	s, isSession := models.CheckSession(r)
-	if !isSession {
+	s, err := GetSession(r)
+	if err != nil {
 		errMessage := "session is expired"
 		errorlog.Print(errMessage)
 		errMap := map[string]string{"message": errMessage}
@@ -57,7 +59,7 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	infolog.Println("delete")
-	err := s.DeleteSession(w, r)
+	_, err = session.DeleteSession(s.ID, project)
 	if err != nil {
 		errorlog.Print(err)
 		errMessage := "session is expired"
@@ -191,66 +193,3 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, url, 301)
 }
-
-// func (au *Auth) Register(w http.ResponseWriter, r *http.Request) {
-
-// 	if r.Method == "GET" {
-// 		_, isSession := models.CheckSession(r)
-// 		if isSession {
-// 			http.Redirect(w, r, "/", http.StatusFound)
-// 			return
-// 		}
-// 		stringMap := make(map[string]string)
-// 		stringMap["name"] = ""
-// 		stringMap["email"] = ""
-// 		stringMap["message"] = ""
-// 		RenderTemplate(w, r, "sign-up.html", &TemplateData{
-// 			StringMap: stringMap,
-// 		})
-// 		return
-// 	}
-
-// 	if r.Method == "POST" {
-// 		u, err := models.NewUser(r)
-// 		if err != nil {
-// 			errorlog.Print(err)
-// 		}
-
-// 		err = u.Validate(r)
-// 		if err != nil {
-// 			errorlog.Print(err)
-// 			redirectRegister(w, r, err.Error())
-// 			return
-// 		}
-
-// 		var user *models.User
-// 		// Database
-// 		result := DB.Where("email = ?", r.Form.Get("email")).First(&user)
-// 		if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-// 			err = errors.New("email address is already registered")
-// 			redirectRegister(w, r, err.Error())
-// 			return
-// 		}
-// 		err = image.CreateImage(u.Name, u.Image)
-// 		if err != nil {
-// 			// err = errors.New("couldn't register your account")
-// 			redirectRegister(w, r, err.Error())
-// 			return
-// 		}
-// 		err = u.Create()
-// 		if err != nil {
-// 			os.Remove("/upload/user/" + u.Image)
-// 			err = errors.New("couldn't register your account")
-// 			errorlog.Print(err)
-// 			redirectRegister(w, r, err.Error())
-// 			return
-// 		}
-// 		err = models.CreateSession(&u, w)
-// 		if err != nil {
-// 			errorlog.Print(err)
-// 		}
-// 		http.Redirect(w, r, "/", http.StatusFound)
-// 		return
-// 	}
-// 	http.NotFound(w, r)
-// }

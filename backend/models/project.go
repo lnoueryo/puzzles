@@ -49,10 +49,10 @@ func NewProject(r *http.Request) (Project, error) {
 	return project, nil
 }
 
-func (p *Project)GetProjectAuthority(s Session) (ProjectAuthority, error) {
+func (p *Project)GetProjectAuthority(uid int) (ProjectAuthority, error) {
 	fmt.Println(p)
 	var pa ProjectAuthority
-	result := DB.Preload("Project.Milestones").Preload("Project.Fields").Preload("ProjectUsers.Type").Preload("ProjectUsers.User").Preload("ProjectUsers").Preload(clause.Associations).Find(&pa, "user_id = ? and project_id = ?", s.UserID, p.ID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Preload("Project.Milestones").Preload("Project.Fields").Preload("ProjectUsers.Type").Preload("ProjectUsers.User").Preload("ProjectUsers").Preload(clause.Associations).Find(&pa, "user_id = ? and project_id = ?", uid, p.ID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return pa, result.Error
 	}
 	return pa, nil
@@ -86,7 +86,7 @@ func (p *Project)Update() error {
 	return nil
 }
 
-func (p *Project)GetProject(s Session, id int) error {
+func (p *Project)GetProject(id int, uid int) error {
 	result := DB.Preload("Tasks", func(DB *gorm.DB) *gorm.DB {
 		return DB.Preload(clause.Associations)
 	  }).Preload(clause.Associations).First(&p, "id = ?", id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -98,7 +98,7 @@ func (p *Project)GetProject(s Session, id int) error {
 		return result.Error
 	}
 	for _ ,pa := range pas {
-		if s.UserID == pa.User.ID {
+		if uid == pa.User.ID {
 			p.Authority = pa.Type.Name
 		}
 	}
@@ -106,7 +106,7 @@ func (p *Project)GetProject(s Session, id int) error {
 	return nil
 }
 
-func(p *Project)GetEditProject(s Session, id int) error {
+func(p *Project)GetEditProject(id int, uid int) error {
 	result := DB.Preload(clause.Associations).First(&p, "id = ?", id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
@@ -116,7 +116,7 @@ func(p *Project)GetEditProject(s Session, id int) error {
 		return result.Error
 	}
 	for _ ,pa := range pas {
-		if s.UserID == pa.User.ID {
+		if uid == pa.User.ID {
 			p.Authority = pa.Type.Name
 		}
 	}

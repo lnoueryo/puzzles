@@ -12,6 +12,7 @@ var DB *gorm.DB
 var email mail.Mail
 var origin string
 var allowOrigin string
+var project string
 var StoreImage = config.StoreImage
 var DeleteImage = config.DeleteImage
 
@@ -20,6 +21,7 @@ func init() {
 	email = config.App.Email
 	origin = config.App.Origin
 	allowOrigin = config.App.AllowOrigin
+	project = config.App.Project
 }
 
 func timeToString(t time.Time) string {

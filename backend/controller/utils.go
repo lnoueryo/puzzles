@@ -4,10 +4,13 @@ import (
 	"backend/config"
 	"backend/models"
 	"backend/modules/mail"
+	"backend/modules/session"
 	"bytes"
+	"errors"
 	"html/template"
 	"log"
 	"net/http"
+
 	"golang.org/x/net/websocket"
 	"gorm.io/gorm"
 )
@@ -21,7 +24,7 @@ type TemplateData struct {
 	Error     string
 	JSON      []byte
 	Users     []models.User
-	Session   models.Session
+	Session   session.Session
 }
 
 var infolog *log.Logger
@@ -32,6 +35,7 @@ var email mail.Mail
 var origin string
 var allowOrigin string
 var credentialsPath string
+var project string
 var StoreImage = config.StoreImage
 var StoreImageToGCS = config.StoreImageToGCS
 var StoreBinaryImage = config.StoreBinaryImage
@@ -45,6 +49,7 @@ func init() {
 	origin = config.App.Origin
 	allowOrigin = config.App.AllowOrigin
 	credentialsPath = config.App.CredentialsPath
+	project = config.App.Project
 }
 
 func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateData) {
@@ -68,4 +73,17 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *Tem
 	if err != nil {
 		errorlog.Print("could not get template")
 	}
+}
+
+func GetSession(r *http.Request) (session.Session, error) {
+	var s session.Session
+	cookie, err := r.Cookie("_cookie");if err != nil {
+		err := errors.New("session is expired")
+		return s, err
+	}
+	s, err = session.CheckSession(cookie.Value, project)
+	if err != nil {
+		return s, err
+	}
+	return s, err
 }

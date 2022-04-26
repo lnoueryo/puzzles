@@ -3,10 +3,10 @@ package models
 import (
 	"backend/modules/crypto"
 	"backend/modules/mail"
+	"backend/modules/session"
 	"encoding/json"
 	"errors"
 	"net/http"
-
 	"gorm.io/gorm"
 )
 
@@ -17,11 +17,17 @@ type MailRequest struct {
 }
 func InviteUser(r *http.Request) error {
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		s, _ := CheckSession(r)
+		cookie, err := r.Cookie("_cookie");if err != nil {
+			return err
+		}
+		s, err := session.CheckSession(cookie.Value, project)
+		if err != nil {
+			return err
+		}
 		requestMail, _ := GetMailJson(r)
 		var u User
 		// 送信する
-		err := tx.FirstOrCreate(&u, User{Email: requestMail.Email}).Error; if err != nil {
+		err = tx.FirstOrCreate(&u, User{Email: requestMail.Email}).Error; if err != nil {
 			return err
 		}
 		verification, _ := crypto.MakeRandomStr(30)

@@ -2,8 +2,9 @@ package models
 
 import (
 	"backend/modules/crypto"
-	"crypto/sha256"
-	"encoding/gob"
+	"backend/modules/session"
+	// "crypto/sha256"
+	// "encoding/gob"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -31,7 +32,6 @@ type User struct {
 	ImageData				string					`gorm:"<-:false;-:migration;"json:"image_data"`
 	Description				string					`json:"description"`
 	Organization			string					`gorm:"-:all;"json:"organization"`
-	Authority				string					`gorm:"-:all;"json:"authority"`
 	Projects				[]ProjectAuthority		`json:"projects"`
 	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;"json:"organizations"`
 	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
@@ -91,8 +91,8 @@ func (u *User) Update() error {
 	return nil
 }
 
-func (u *User)GetMainUser(s Session) error {
-	result := DB.Preload("Projects.Project.AuthorityUsers." + clause.Associations).Preload("Projects.Project.AuthorityUsers", "active = ?", true).Preload("Projects.Project.Fields").Preload("Projects.Project.Milestones").Preload("Projects." + clause.Associations).Preload("Projects", "active = ?", true).Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", s.Organization).Preload("Organizations").First(&u, "id = ?", s.UserID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+func (u *User)GetMainUser(userID int, orgID string) error {
+	result := DB.Preload("Projects.Project.AuthorityUsers." + clause.Associations).Preload("Projects.Project.AuthorityUsers", "active = ?", true).Preload("Projects.Project.Fields").Preload("Projects.Project.Milestones").Preload("Projects." + clause.Associations).Preload("Projects", "active = ?", true).Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", orgID).Preload("Organizations").First(&u, "id = ?", userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
@@ -106,9 +106,9 @@ func (u *User)CheckUser() error {
 	return nil
 }
 
-func GetProjectAuthorities(s Session) error {
+func GetProjectAuthorities(uid int) error {
 	var pas []ProjectAuthority
-	result := DB.Preload("Project.Milestones").Preload("Project.Fields").Preload("ProjectUsers.Type").Preload("ProjectUsers.User").Preload("ProjectUsers", "active = ?", true).Preload(clause.Associations).Find(&pas, "user_id = ? and active = true", s.UserID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Preload("Project.Milestones").Preload("Project.Fields").Preload("ProjectUsers.Type").Preload("ProjectUsers.User").Preload("ProjectUsers", "active = ?", true).Preload(clause.Associations).Find(&pas, "user_id = ? and active = true", uid); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
@@ -376,22 +376,8 @@ func GetJsonForm(r *http.Request) (Login, error) {
 	return login, err
 }
 
-func (u *User)CreateSession(w http.ResponseWriter) (Session, error) {
-	// sessionID 作成
-	var s Session
-	var oa OrganizationAuthority
-	sessionId := string(u.ID) + timeToString(u.CreatedAt) + timeToString(time.Now())
-	hashedByteSessionId := sha256.Sum256([]byte(sessionId))
-	hashedSessionId := fmt.Sprintf("%x", (hashedByteSessionId))
-	result := DB.Preload("Type").Preload(clause.Associations).Find(&oa, "user_id = ? and organization_id = ?", u.ID, u.Organization)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return s, result.Error
-	}
-	fmt.Println(oa)
-	u.Authority = oa.Type.Name
-	// session用ファイル作成
-	s = Session{
-		ID:				hashedSessionId,
+func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
+	s := session.Session{
 		UserID:			u.ID,
 		Name:			u.Name,
 		Age:			u.Age,
@@ -401,29 +387,12 @@ func (u *User)CreateSession(w http.ResponseWriter) (Session, error) {
 		Image:			u.Image,
 		Description:	u.Description,
 		Organization:	u.Organization,
-		Authority:		u.Authority,
 		CreatedAt:		time.Now(),
 	}
-	// sessionフォルダの有無判定
-	_, err := os.Stat("session")
-	if err != nil {
-		os.Mkdir("session", 0777)
-	}
-	filepath := fmt.Sprintf("./session/%v.txt", hashedSessionId)
-	f, err := os.Create(filepath)
-	if err != nil {
-		return s, err
-	}
-	defer f.Close()
-	enc := gob.NewEncoder(f)
-
-	if err := enc.Encode(s); err != nil {
-		return s, err
-	}
-	// Path is needed for all path
+	s.CreateSession(project)
 	cookie := http.Cookie{
 		Name:     "_cookie",
-		Value:    hashedSessionId,
+		Value:    s.ID,
 		HttpOnly: true,
 		Secure:   true,
 		Path:     "/",
@@ -432,6 +401,62 @@ func (u *User)CreateSession(w http.ResponseWriter) (Session, error) {
 	http.SetCookie(w, &cookie)
 	return s, nil
 }
+// func (u *User)CreateSession(w http.ResponseWriter) (Session, error) {
+// 	// sessionID 作成
+// 	var s Session
+// 	var oa OrganizationAuthority
+// 	sessionId := string(u.ID) + timeToString(u.CreatedAt) + timeToString(time.Now())
+// 	hashedByteSessionId := sha256.Sum256([]byte(sessionId))
+// 	hashedSessionId := fmt.Sprintf("%x", (hashedByteSessionId))
+// 	result := DB.Preload("Type").Preload(clause.Associations).Find(&oa, "user_id = ? and organization_id = ?", u.ID, u.Organization)
+// 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+// 		return s, result.Error
+// 	}
+// 	fmt.Println(oa)
+// 	u.Authority = oa.Type.Name
+// 	// session用ファイル作成
+// 	s = Session{
+// 		ID:				hashedSessionId,
+// 		UserID:			u.ID,
+// 		Name:			u.Name,
+// 		Age:			u.Age,
+// 		Sex:			u.Sex,
+// 		Email:			u.Email,
+// 		Address:		u.Address,
+// 		Image:			u.Image,
+// 		Description:	u.Description,
+// 		Organization:	u.Organization,
+// 		Authority:		u.Authority,
+// 		CreatedAt:		time.Now(),
+// 	}
+// 	// sessionフォルダの有無判定
+// 	_, err := os.Stat("session")
+// 	if err != nil {
+// 		os.Mkdir("session", 0777)
+// 	}
+// 	filepath := fmt.Sprintf("./session/%v.txt", hashedSessionId)
+// 	f, err := os.Create(filepath)
+// 	if err != nil {
+// 		return s, err
+// 	}
+// 	defer f.Close()
+// 	enc := gob.NewEncoder(f)
+
+// 	if err := enc.Encode(s); err != nil {
+// 		return s, err
+// 	}
+// 	// Path is needed for all path
+// 	cookie := http.Cookie{
+// 		Name:     "_cookie",
+// 		Value:    hashedSessionId,
+// 		HttpOnly: true,
+// 		Secure:   true,
+// 		Path:     "/",
+// 		SameSite: 4,
+// 	}
+// 	http.SetCookie(w, &cookie)
+// 	return s, nil
+// }
 
 func GetUserJson(r *http.Request) (User, error) {
 	var user User

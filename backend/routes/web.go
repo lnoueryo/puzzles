@@ -3,9 +3,7 @@ package routes
 import (
 	"backend/config"
 	"backend/controller"
-	"log"
 	"net/http"
-
 	"golang.org/x/net/websocket"
 )
 
@@ -15,13 +13,9 @@ var task controller.Task
 var comment controller.Comment
 var project controller.Project
 var data controller.Data
-var infolog *log.Logger
-var allowOrigin string
-
-func init() {
-	infolog = config.App.InfoLog
-	allowOrigin = config.App.AllowOrigin
-}
+var infolog = config.App.InfoLog
+var allowOrigin = config.App.AllowOrigin
+var projectenv = config.App.Project
 
 func Routes() http.Handler{
 	mux := http.NewServeMux()
@@ -49,6 +43,7 @@ func Routes() http.Handler{
 	mux.Handle("/api/task/create", Auth(http.HandlerFunc(task.Create)))
 	mux.Handle("/api/task/update", Auth(http.HandlerFunc(task.Update)))
 	mux.Handle("/api/comment/create", Auth(http.HandlerFunc(comment.Create)))
+	mux.Handle("/api/comment/show", Auth(http.HandlerFunc(comment.Show)))
 	mux.Handle("/api/comment/update", Auth(http.HandlerFunc(comment.Update)))
 	mux.Handle("/api/session", Auth(http.HandlerFunc(home.Show)))
 	mux.Handle("/api/logout", http.HandlerFunc(auth.Logout))
