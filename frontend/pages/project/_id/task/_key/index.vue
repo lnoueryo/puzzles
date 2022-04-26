@@ -52,8 +52,8 @@
           <div style="width: 100%">
             <div class="mb-2">コメント</div>
               <tree-comments
-                v-if="isReadyArr(task.comments)"
-                :comments="task.comments"
+                v-if="isReadyArr(comments)"
+                :comments="comments"
                 :hierarchy="0"
                 :selectedComment="selectedComment"
                 @index="receiveCommentKey"
@@ -169,7 +169,6 @@ export default Vue.extend({
       status_id: 1,
     },
     comment: '',
-    comments: [],
   }),
   computed: {
     ...mapGetters('task', [
@@ -182,6 +181,9 @@ export default Vue.extend({
     ...mapGetters([
       'user',
       'projectAuthority'
+    ]),
+    ...mapGetters('comment', [
+      'comments',
     ]),
     isReadyObj,
     isReadyArr,
@@ -229,7 +231,21 @@ export default Vue.extend({
       }
     }
   },
-  created() {
+  async created() {
+    let response
+    try {
+      response = await this.$store.dispatch('comment/getComments', this.$route.params.key);
+    } catch (error: any) {
+      response = error.response;
+    } finally {
+      if('status' in response === false) return this.$router.push('/bad-connection')
+      this.checkStatus(response.status, () => {
+        
+      }, () => {
+        this.loading = false;
+        alert('エラーです。');
+      })
+    }
     let timer = setInterval(() => {
       if(this.isEmptyObj(this.task)) return;
       clearInterval(timer)
