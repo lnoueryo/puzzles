@@ -20,3 +20,9 @@ DB_PORT=3306
 DB_QUERY=parseTime=true
 
 deploy時は.env.devを上げないため.envを読みに行く。
+
+// golang測定用
+start := time.Now();
+// 処理
+end := time.Now();
+infolog.Printf("%f秒\n",(end.Sub(start)).Seconds())

@@ -51,12 +51,7 @@ func NewTask(r *http.Request) (Task, error) {
 
 func GetTasks(projectID int) ([]Task, error) {
 	var t []Task
-	// tx := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations)
-	// tx = RecursivePreload(tx)
-	// result := tx.Find(&t, "project_id = ?", projectID)
-	result := DB.Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
-	// result := DB.Preload("Comments.Replies").Preload("Comments.User").Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
-	// result := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
+	result := DB.Preload("Comments", "id = ?", 0).Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return t, result.Error
 	}
