@@ -75,7 +75,7 @@ func DLComment(comments []models.Comment) *bytes.Buffer {
 		Content := comment.Content
 		TaskID := strconv.Itoa(comment.TaskID)
 		UserID := strconv.Itoa(comment.UserID)
-		ParentID := strconv.Itoa(comment.ParentID)
+		ParentID := strconv.Itoa(*comment.ParentID)
 		CreatedAt := comment.CreatedAt.String()
 		UpdatedAt := comment.UpdatedAt.String()
 		row = append(row, ID, Content, TaskID, UserID, ParentID, CreatedAt, UpdatedAt)

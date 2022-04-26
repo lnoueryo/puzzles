@@ -165,7 +165,7 @@ func UpsertComment(file io.Reader) ([]models.Comment, []string) {
 			Content: row[1],
 			TaskID: TaskID,
 			UserID: UserID,
-			ParentID: ParentID,
+			ParentID: &ParentID,
 			CreatedAt: CreatedAt,
 			UpdatedAt: UpdatedAt,
 		}
