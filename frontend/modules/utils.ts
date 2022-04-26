@@ -96,7 +96,7 @@ const handleError = (status: number) => {
 }
 const checkStatus = () => {return (status: number, func: Function, error: Function = handleError) => {
 
-  if(status === OK || status === created || status === accepted) {
+  if(status === OK || status === created || status === accepted || status === noContent) {
     return func()
   }
   if(status === notModified) return window.$nuxt.$router.push('/login');

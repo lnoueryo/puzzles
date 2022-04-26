@@ -115,7 +115,7 @@ export interface Comment {
   id: number
   content: string
   user: User
-  parent_id: boolean
+  parent_id: number
   replies: Comment[]
 }
 

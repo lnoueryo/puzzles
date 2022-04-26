@@ -57,6 +57,7 @@
                 :hierarchy="0"
                 :selectedComment="selectedComment"
                 @index="receiveCommentKey"
+                :editMode="editMode"
               ></tree-comments>
               <div v-else>
                 <div class="pa-2" style="width: 100%;min-height: 100px;background-color: #303030;border-radius: 5px;">なし</div>
@@ -69,8 +70,9 @@
       <v-card tile style="height: 200px">
         <div class="d-flex">
           <div style="width: 50%">
-            <v-btn block　@click="onCreateComment">送信</v-btn>
-            <v-textarea label="コメント" outlined v-model="comment"></v-textarea>
+            <v-btn block　@click="updateComment" v-if="editMode">更新</v-btn>
+            <v-btn block　@click="onCreateComment" v-else>送信</v-btn>
+            <v-textarea label="コメント" outlined v-model="bindContent"></v-textarea>
           </div>
           <div class="px-2" style="width: 50%">
             <div class="d-flex">
@@ -168,7 +170,6 @@ export default Vue.extend({
       actual_time: 0,
       status_id: 1,
     },
-    comment: '',
   }),
   computed: {
     ...mapGetters('task', [
@@ -176,7 +177,6 @@ export default Vue.extend({
       'statuses',
       'types',
       'priorities',
-      'selectedComment',
     ]),
     ...mapGetters([
       'user',
@@ -184,6 +184,9 @@ export default Vue.extend({
     ]),
     ...mapGetters('comment', [
       'comments',
+      'selectedComment',
+      'content',
+      'editMode',
     ]),
     isReadyObj,
     isReadyArr,
@@ -224,10 +227,18 @@ export default Vue.extend({
     },
     newCommentForm() {
       return {
-        content: this.comment,
+        content: this.bindContent,
         task_id: this.task?.id,
         user_id: this.user.id,
         parent_id: this.selectedComment.id,
+      }
+    },
+    bindContent: {
+      get() {
+        return this.content;
+      },
+      set(v) {
+        this.$store.commit('comment/content', v);
       }
     }
   },
@@ -251,8 +262,6 @@ export default Vue.extend({
       clearInterval(timer)
       this.selectedTask.actual_time = this.task.actual_time
       this.selectedTask.status_id = this.task.status_id
-      console.log(this.task.status_id)
-      console.log(this.selectedTask)
     }, 100)
   },
   methods: {
@@ -275,10 +284,11 @@ export default Vue.extend({
     async onCreateComment() {
       let response;
       try {
-        response = this.$store.dispatch('task/createComment', this.newCommentForm);
+        response = await this.$store.dispatch('comment/createComment', this.newCommentForm);
       } catch (error: any) {
         response = error.response;
       } finally {
+        console.log(response)
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {},
         () => {
@@ -288,33 +298,8 @@ export default Vue.extend({
       }
     },
     receiveCommentKey(commentKey: {parent: number}) {
-      this.$store.commit('task/selectComment', commentKey)
-    },
-    onCreateReply() {
-      // const comment = this.task.comments.find((reply: lib.Comment) => {
-      //   let id = this.selectedComment.parent;
-      //   if(this.selectedComment.parent === 0) id = this.selectedComment.id;
-      //   return reply.id === id;
-      // });
-      // let copyComment = JSON.parse(JSON.stringify(comment));
-      // if(this.selectedComment.parent === 0) {
-      //   copyComment.replies.push(this.newCommentForm);
-      // } else {
-      //   copyComment.replies = this.addReply(comment.replies, this.selectedComment, 0);
-      // }
-      console.log(this.selectedComment)
-      let response;
-      try {
-        response = this.$store.dispatch('task/updateComment', this.newCommentForm);
-      } catch (error: any) {
-        response = error.response;
-      } finally {
-        this.checkStatus(response.status, () => {},
-        () => {
-          this.loading = false;
-          alert('エラーです。');
-        })
-      }
+      console.log(commentKey)
+      this.$store.commit('comment/selectComment', commentKey)
     },
     addReply(replies: lib.Comment[], commentKey: {id: number, index: number}, currentIndex: number) {
       if(replies.length == 0 || commentKey.index < currentIndex) return replies;
@@ -322,7 +307,7 @@ export default Vue.extend({
         const newReply = JSON.parse(JSON.stringify(reply))
         if(commentKey.id == reply.id) {
           const newComment = this.newCommentForm as lib.Comment;
-          newComment.parent_id = false;
+          newComment.parent_id = 0;
           newReply.replies.push(newComment);
         } else if(reply.replies.length != 0) {
           console.log(this.addReply(reply.replies, commentKey, currentIndex + 1))
@@ -330,6 +315,23 @@ export default Vue.extend({
         }
         return newReply;
       }) as lib.Comment[]
+    },
+    async updateComment() {
+
+      let response;
+      try {
+        response = await this.$store.dispatch('comment/updateComment');
+      } catch (error: any) {
+        response = error.response;
+      } finally {
+        console.log(response)
+        if('status' in response === false) return this.$router.push('/bad-connection')
+        this.checkStatus(response.status, () => {this.$store.dispatch('comment/editMode', false)},
+        () => {
+          // this.loading = false;
+          alert('エラーです。');
+        })
+      }
     },
   }
 })

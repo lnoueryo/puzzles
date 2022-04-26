@@ -16,6 +16,10 @@ $ npm run start
 # generate static project
 $ npm run generate
 ```
+const t0 = performance.now();
+doSomething();
+const t1 = performance.now();
+console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
 
 For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
