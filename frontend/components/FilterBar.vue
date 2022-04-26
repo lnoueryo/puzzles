@@ -16,7 +16,7 @@
       <v-col class="d-flex" cols="12" sm="4">
         <v-select
           v-model="selectAssignee"
-          :items="projectAuthority.project_users"
+          :items="projectAuthority.project.authority_users"
           item-text="user.name"
           item-value="user.name"
           label="担当者"

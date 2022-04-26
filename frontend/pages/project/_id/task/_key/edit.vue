@@ -70,7 +70,7 @@ export default Vue.extend({
     },
     taskForm() {
       const additionalInfo = {
-        id: this.$route.params.key,
+        id: Number(this.$route.params.key),
         assigner_id: this.user.id,
         project_id: Number(this.$route.params.id),
       }
@@ -100,7 +100,7 @@ export default Vue.extend({
       return newTask;
     },
     dialogForm() {
-    const newAssignee = this.projectAuthority.project_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id);
+    const newAssignee = this.projectAuthority.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id);
     const newStatus = this.statuses.find((status: lib.Status) => status.id === this.selectedTask.status_id);
     const newType = this.types.find((type: lib.Type) => type.id === this.selectedTask.type_id);
     const newPriority = this.priorities.find((priority: lib.Priority) => priority.id === this.selectedTask.priority_id);
@@ -116,7 +116,6 @@ export default Vue.extend({
         {title: '分野', newData: newField?.name, oldData: this.task.field },
         {title: '期日', newData: this.selectedTask.deadline, oldData: this.changeToDateISOFormat(this.task.deadline) },
         {title: '推定時間', newData: this.selectedTask.estimated_time, oldData: this.task.estimated_time },
-        {title: '分野', newData: newField.name, oldData: this.task.field },
         {title: 'タスクの詳細', newData: this.selectedTask.detail, oldData: this.task.detail },
       ]
     }
@@ -148,7 +147,6 @@ export default Vue.extend({
       // if(validation) {
       //   return;
       // }
-      console.log(this.taskForm)
       let response
       try {
         response = await this.$store.dispatch('task/updateTask', this.taskForm);

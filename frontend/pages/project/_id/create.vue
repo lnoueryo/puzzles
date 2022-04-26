@@ -69,7 +69,7 @@ export default Vue.extend({
         deadline: this.selectedTask.deadline ? new Date(this.selectedTask.deadline) : null,
       }
       const assigner = this.user;
-      const assignee = this.projectAuthority.project_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
+      const assignee = this.projectAuthority.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
       const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
       const type = this.types.find((type: {id: number}) => type.id === this.selectedTask.type_id);
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);

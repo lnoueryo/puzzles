@@ -27,7 +27,7 @@
               <v-select
                 ref="assignee"
                 v-model="assignee"
-                :items="projectAuthority.project_users"
+                :items="projectAuthority.project.authority_users"
                 item-text="user.name"
                 item-value="user_id"
                 label="担当者"

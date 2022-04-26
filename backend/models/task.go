@@ -72,7 +72,7 @@ func (t *Task)GetTask() error {
 }
 
 func (t *Task)Create() error {
-	result := DB.Debug().Omit("Assignee", "Assigner").Create(&t); if result.Error != nil {
+	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Type", "Priority").Create(&t); if result.Error != nil {
 		return result.Error
 	}
 	return nil
@@ -80,7 +80,7 @@ func (t *Task)Create() error {
 
 func (t *Task)Update() error {
 	fmt.Println(t.EstimatedTime)
-	result := DB.Debug().Omit("Assignee", "Assigner").Save(&t); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Type", "Priority").Save(&t).Clauses(clause.Returning{}); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil

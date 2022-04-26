@@ -123,7 +123,7 @@ func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
 		ProjectID: task.ProjectID,
 		ContentID: 2,
 	}
-
+	infolog.Print(task)
 	err = activity.Create(); if err != nil {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)

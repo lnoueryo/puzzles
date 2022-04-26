@@ -95,7 +95,6 @@ export class Tasks {
     newTask.field = (task.field as lib.Field)?.name;
     newTask.status = (task.status as lib.Status)?.name;
     newTask.type = (task.type as lib.Type)?.name;
-    newTask.comments = task.comments
     newTask.created_at = this.changeTimeFormat(task.created_at);
     newTask.updated_at = this.changeTimeFormat(task.updated_at);
     newTask.start_time = this.changeTimeFormat(task.start_time);
@@ -120,7 +119,6 @@ export class Tasks {
     this.tasks.all = this.tasks.all.map((task) => {
       if(task.id == updatedTask.id) {
         const newTask = this.preprocessTask(updatedTask);
-        task.comments = {...{}, ...newTask.comments}
         task = {...{}, ...newTask}
         console.log(task)
       }
