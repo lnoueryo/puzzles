@@ -106,11 +106,13 @@ export const actions: ActionTree<TaskState, RootState> = {
       }
     })
   },
-  async updateTask({commit}, form) {
+  async updateTask({commit, rootGetters }, form) {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.put('/api/task/update', form);
-        console.log(response.data)
+        response.data.assignee = rootGetters.project.authority_users.find((authority_user: lib.ProjectAuthority) => {
+          return authority_user.user_id == response.data.assignee_id;
+        }).user
         commit('updateTask', response.data);
         resolve(response);
       } catch (error: any) {
