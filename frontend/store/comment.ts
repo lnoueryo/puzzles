@@ -96,8 +96,22 @@ export const actions: ActionTree<TaskState, RootState> = {
   async deleteComment({commit}, comment) {
     return new Promise(async(resolve, reject) => {
       try {
-        const response = await this.$axios.delete('/api/comment/delete', {params: {id: comment.id}});
+        const commentIDs = [comment.id]
+        const treeComments = (comments: lib.Comment[]) => {
+          comments.forEach((comment) => {
+            commentIDs.push(comment.id)
+            console.log(commentIDs)
+            if(comment.replies?.length != 0) {
+              treeComments(comment.replies)
+            }
+          });
+        }
+        if(comment.replies?.length != 0) {
+          treeComments(comment.replies)
+        }
+        const response = await this.$axios.delete('/api/comment/delete', {params: {id: commentIDs}});
         commit('deleteComment', comment.id);
+        commit('selectComment', {id: 0, index: 0, parent: 0})
         resolve(response);
       } catch (error: any) {
         console.log(error);

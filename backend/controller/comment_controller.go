@@ -128,28 +128,34 @@ func (_ *Comment)Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := r.URL.Query()
-    idSlice, ok := query["id"]; if !ok {
+    idSlice, ok := query["id[]"]; if !ok {
 		errMap := map[string]string{"message": "not found"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(sessionJson)
 		return
     }
-	id, err := strconv.Atoi(idSlice[0])
-	if err != nil {
-		errMap := map[string]string{"message": "bad connection"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(sessionJson)
-		return
+	var IDs []int
+	for _, ID := range idSlice {
+		id, err := strconv.Atoi(ID)
+		if err != nil {
+			errMap := map[string]string{"message": "bad connection"}
+			sessionJson, _ := json.Marshal(errMap)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(sessionJson)
+			return
+		}
+		IDs = append(IDs, id)
 	}
-	c, err := models.DeleteComment(id); if err != nil {
+
+	c, err := models.DeleteComment(IDs); if err != nil {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 		return
 	}
+
 	commentJson, _ := json.Marshal(c)
 	w.WriteHeader(http.StatusNoContent)
 	w.Write(commentJson)

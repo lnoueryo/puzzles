@@ -317,7 +317,6 @@ export default Vue.extend({
       }) as lib.Comment[]
     },
     async updateComment() {
-
       let response;
       try {
         response = await this.$store.dispatch('comment/updateComment');

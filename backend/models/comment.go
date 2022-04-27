@@ -19,8 +19,7 @@ type Comment struct {
 	UserID 	  int		`json:"user_id"`
 	ParentID  *int		`json:"parent_id"`
 	User 	  User		`gorm:"foreignkey:UserID;"json:"user"`
-	// Replies	[]Comment 	`gorm:"foreignKey:ParentID"json:"replies"`
-	Replies	[]Comment 	`gorm:"foreignKey:ParentID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"json:"replies"`
+	Replies	[]Comment 	`gorm:"foreignKey:ParentID;"json:"replies"`
 	CreatedAt time.Time `gorm:"autoCreateTime;"json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime;"json:"updated_at"`
 }
@@ -55,10 +54,10 @@ func (c *Comment)Update() error {
 	return nil
 }
 
-func DeleteComment(id int) (Comment, error) {
+func DeleteComment(id []int) (Comment, error) {
 	fmt.Print(id)
 	var c Comment
-	result := DB.Debug().Clauses(clause.Returning{}).Delete(&c, id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Debug().Delete(&c, id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return c, result.Error
 	}
 	return c, nil
