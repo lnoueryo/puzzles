@@ -46,9 +46,19 @@ const getTask = (store: any, route: any) => {
   let timer = setInterval(async() => {
     if(emptyObj(store.getters.project)) return;
     clearInterval(timer);
-    await store.dispatch('task/getTasks', route.params.id);
-    projectID = store.getters.project.id;
-    setCondition(store);
+    let response;
+    try {
+      response = await store.dispatch('task/getTasks', route.params.id);
+      projectID = store.getters.project.id;
+      setCondition(store);
+    } catch (error: any) {
+      response = error.response
+    } finally {
+      if('status' in response === false) return window.$nuxt.$router.push('/bad-connection')
+      status(response.status, () => {}, () => {
+        alert('エラーです。');
+      })
+    }
   }, 100)
 }
 
