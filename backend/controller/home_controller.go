@@ -53,9 +53,16 @@ func (_ *Home) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var u models.User
-	s, _ := GetSession(r)
+	s, err := GetSession(r)
+	if err != nil {
+		errMap := map[string]string{"message": "session is expired"}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotModified)
+		w.Write(errJson)
+		return
+	}
 	infolog.Print(s)
-	err := u.GetMainUser(s.UserID, s.Organization); if err != nil {
+	err = u.GetMainUser(s.UserID, s.Organization); if err != nil {
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"backend/config"
 	"backend/models"
 	"backend/modules/crypto"
 	"backend/modules/mail"
@@ -59,18 +58,21 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	infolog.Println("delete")
-	_, err = session.DeleteSession(s.ID, project)
+	err = session.DeleteSession(s.ID, project)
 	if err != nil {
 		errorlog.Print(err)
+	}
+	cookie, err := r.Cookie("_cookie")
+	if err != nil {
 		errMessage := "session is expired"
 		errMap := map[string]string{"message": errMessage}
 		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusNoContent)
 		w.Write(errJson)
 		return
 	}
-	infolog.Println("delete")
-	// infolog.Print()
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
 	message := "logout is successful"
 	successMap := map[string]string{"message": message}
 	successJson, _ := json.Marshal(successMap)
@@ -85,31 +87,6 @@ func (au *Auth) GitHubLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	// databaseの処理Createを記載する↓↓
 	http.Redirect(w, r, "/?access_token="+userInfo.AccessToken, http.StatusFound)
-}
-
-func redirectLogin(w http.ResponseWriter, r *http.Request, message string) {
-	// Params for rendering the page
-	stringMap := make(map[string]string)
-	email := r.FormValue("email")
-	stringMap["email"] = email
-	stringMap["message"] = message
-	stringMap["github"] = "https://github.com/login/oauth/authorize?client_id=cfd4c11c88620861e0ad&redirect_uri=" + config.App.Host + "/oauth/callback"
-	RenderTemplate(w, r, "login.html", &TemplateData{
-		StringMap: stringMap,
-	})
-}
-
-func redirectRegister(w http.ResponseWriter, r *http.Request, message string) {
-	// Params for rendering the page
-	stringMap := make(map[string]string)
-	name := r.FormValue("name")
-	email := r.FormValue("email")
-	stringMap["name"] = name
-	stringMap["email"] = email
-	stringMap["message"] = message
-	RenderTemplate(w, r, "sign-up.html", &TemplateData{
-		StringMap: stringMap,
-	})
 }
 
 func (*Auth) InviteUser(w http.ResponseWriter, r *http.Request) {

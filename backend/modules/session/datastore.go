@@ -34,22 +34,21 @@ func DSGetSession(project string, ID string) (Session, error) {
 	defer dsClient.Close()
 	key := datastore.NameKey("Session", ID, nil)
 	if err := dsClient.Get(ctx, key, &s); err != nil {
-		return s, nil
+		return s, err
 	}
 
 	return s, nil
 }
 
-func DSDeleteSession(project string, ID string) (Session, error) {
-	var s Session
+func DSDeleteSession(project string, ID string) error {
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, project);if err != nil {
-		return s, err
+		return err
 	}
 	defer dsClient.Close()
-	key := datastore.NameKey("Session", s.ID, nil)
+	key := datastore.NameKey("Session", ID, nil)
 	err = dsClient.Delete(ctx, key);if err != nil {
-		return s, err
+		return err
 	}
-	return s, nil
+	return nil
 }

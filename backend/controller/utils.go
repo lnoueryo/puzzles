@@ -85,5 +85,5 @@ func GetSession(r *http.Request) (session.Session, error) {
 	if err != nil {
 		return s, err
 	}
-	return s, err
+	return s, nil
 }

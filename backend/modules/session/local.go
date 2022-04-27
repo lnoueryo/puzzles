@@ -1,13 +1,10 @@
 package session
 
 import (
-	"context"
 	"encoding/gob"
 	"errors"
 	"fmt"
 	"os"
-
-	"cloud.google.com/go/datastore"
 )
 
 
@@ -43,6 +40,7 @@ func GetSession(ID string, project string) (Session, error) {
 		s, err := DSGetSession(ID, project);if err != nil {
 			return s, err
 		}
+		return s, nil
 	}
 	var s Session
 	filepath := fmt.Sprintf("./session/%v.txt", ID)
@@ -52,23 +50,15 @@ func GetSession(ID string, project string) (Session, error) {
 	return s, nil
 }
 
-func DeleteSession(ID string, project string) (Session, error) {
+func DeleteSession(ID string, project string) error {
 	if project != "" {
-		s, err := DSDeleteSession(ID, project);if err != nil {
-			return s, err
+		err := DSDeleteSession(ID, project);if err != nil {
+			return err
 		}
 	}
-	var s Session
-	ctx := context.Background()
-	dsClient, err := datastore.NewClient(ctx, project);if err != nil {
-		return s, err
-	}
-	defer dsClient.Close()
-	key := datastore.NameKey("Session", s.ID, nil)
-	err = dsClient.Delete(ctx, key);if err != nil {
-		return s, err
-	}
-	return s,nil
+	filepath := fmt.Sprintf("./session/%v.txt", ID)
+	os.Remove(filepath)
+	return nil
 }
 
 func (s *Session) ReadSession(filename string) error {
