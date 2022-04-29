@@ -27,7 +27,7 @@
               <v-select
                 ref="assignee"
                 v-model="assignee"
-                :items="projectAuthority.project.authority_users"
+                :items="project.authority_users"
                 item-text="user.name"
                 item-value="user_id"
                 label="担当者"
@@ -112,12 +112,12 @@
                 id="field"
                 ref="field"
                 v-model="field"
-                :items="projectAuthority.project.fields"
+                :items="project.fields"
                 item-text="name"
                 item-value="id"
                 label="分野"
                 prepend-icon="mdi-shape"
-                :disabled="isEmptyArr(projectAuthority.project.fields)"
+                :disabled="isEmptyArr(project.fields)"
               >
               </v-select>
             </v-col>
@@ -125,12 +125,12 @@
               <v-select
                 ref="milestone"
                 v-model="milestone"
-                :items="projectAuthority.project.milestones"
+                :items="project.milestones"
                 item-text="name"
                 item-value="id"
                 label="マイルストーン"
                 prepend-icon="mdi-flag-triangle"
-                :disabled="isEmptyArr(projectAuthority.project.fields)"
+                :disabled="isEmptyArr(project.fields)"
               ></v-select>
             </v-col>
           </v-row>
@@ -186,7 +186,7 @@ export default Vue.extend({
       'priorities',
     ]),
     ...mapGetters([
-      'projectAuthority',
+      'project',
     ]),
     isEmptyArr,
     isNumber,
@@ -275,7 +275,7 @@ export default Vue.extend({
       return this.changeToISOFormat('')
     },
     showConfigLink() {
-      if(this.projectAuthority.authority != '管理者') {
+      if(this.projectAuthority != '管理者') {
         return;
       }
       const fields = this.projectAuthority.project.fields;

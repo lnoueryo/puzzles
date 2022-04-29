@@ -17,7 +17,7 @@
         </div>
       </div>
       <div v-if="!noTask">
-        <div class="py-16" v-if="isEmptyObj(projectAuthority) && isEmptyArr(tasks)">
+        <div class="py-16" v-if="isEmptyObj(project) && isEmptyArr(tasks)">
           <v-skeleton-loader
             class="mx-auto"
             type="table"
@@ -33,7 +33,7 @@
             ></v-progress-circular>
           </div>
         </div>
-        <div class="py-8" v-if="isReadyObj(projectAuthority) && isEmptyArr(tasks)">
+        <div class="py-8" v-if="isReadyObj(project) && isEmptyArr(tasks)">
           <div>
             一致する検索結果が得られませんでした。
           </div>
@@ -75,7 +75,7 @@
     </div>
     <div v-else>
       <v-row class="py-16" style="position: relative;" justify="center">
-        <v-btn :to="'/project/' + projectAuthority.project_id + '/create'" color="#295caa">新しいタスクを作成する</v-btn>
+        <v-btn :to="'/project/' + project.id + '/create'" color="#295caa">新しいタスクを作成する</v-btn>
       </v-row>
     </div>
   </div>
@@ -102,14 +102,14 @@ export default Vue.extend({
       'totalPageNum',
     ]),
     ...mapGetters([
-      'projectAuthority',
+      'project',
     ]),
     isReadyArr,
     isReadyObj,
     isEmptyArr,
     isEmptyObj,
     noTask() {
-      if(this.isReadyObj(this.projectAuthority)) {
+      if(this.isReadyObj(this.project)) {
         return this.isEmptyArr(this.allTasks);
       }
       return false;

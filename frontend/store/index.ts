@@ -20,8 +20,7 @@ export const getters: GetterTree<RootState, RootState> = {
   user: state => state.user.user,
   organization: state => state.user.organization,
   projects: state => state.user.projects,
-  projectAuthority: state => state.user.selectedProject,
-  project: state => state.user.selectedProject.project,
+  project: state => state.user.selectedProject,
   projectIndex: state => state.user.projectIndex,
   projectSlides: state => state.user.projectSlides,
   pageReady: state => state.pageReady,
@@ -68,7 +67,6 @@ export const actions: ActionTree<RootState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.get('/api/session');
-        // console.log((new Blob([JSON.stringify (response)])).size);
         resolve(response);
         commit('userData', response.data);
         if(!response.data.user.name) return this.$router.push('/profile/edit');

@@ -1,12 +1,12 @@
 <template>
   <div v-if="pageReady">
-    <!-- <v-app-bar
+    <v-app-bar
       dense
       dark
       height="80"
     >
       <div class="text-center d-flex justyfy-space-between" style="max-width: 200px;width: 100%">
-        <v-btn class="mr-3" :to="'/project/' + projectAuthority.project_id + '/create'" color="#295caa">
+        <v-btn class="mr-3" :to="'/project/' + project.id + '/create'" color="#295caa">
           <v-icon>mdi-clipboard-plus-outline</v-icon>
           タスク作成
         </v-btn>
@@ -85,7 +85,7 @@
       <v-tab-item v-for="i in 3" :key="i" :value="'tab-' + i">
         <filter-table></filter-table>
       </v-tab-item>
-    </v-tabs-items> -->
+    </v-tabs-items>
   </div>
 </template>
 
@@ -101,7 +101,6 @@ export default Vue.extend({
   computed: {
     ...mapGetters([
       'user',
-      'projectAuthority',
       'project',
       'projectIndex',
       'projectReady',

@@ -5,13 +5,9 @@ export class MainUser {
     organization: {} as lib.OrganizationAuthority,
     projects: [] as lib.Project[],
     selectedProject: {},
+    projectAuthority: {} as lib.ProjectAuthority,
     projectIndex: 0,
   }
-  // private _user = {}
-  // private _organization = {}
-  // private _projects: lib.ProjectAuthority[] = []
-  // public _selectedProject = {}
-  // private _projectIndex: number = 0;
   insertUser(user: lib.MainUserInfo) {
     this.preprocessUser(user);
   }
@@ -21,6 +17,7 @@ export class MainUser {
       organization: {} as lib.OrganizationAuthority,
       projects: [] as lib.Project[],
       selectedProject: {},
+      projectAuthority: {} as lib.ProjectAuthority,
       projectIndex: 0,
     }
   }
@@ -53,7 +50,7 @@ export class MainUser {
     return projectSlides;
   }
   get selectedProject() {
-    return this.mainUser.selectedProject as lib.ProjectAuthority;
+    return this.mainUser.selectedProject as lib.Project;
   }
   get projectIndex() {
     return this.mainUser.projectIndex;

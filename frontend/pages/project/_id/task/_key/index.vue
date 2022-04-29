@@ -70,8 +70,8 @@
       <v-card tile style="height: 200px">
         <div class="d-flex">
           <div style="width: 50%">
-            <v-btn block　@click="updateComment" v-if="editMode">更新</v-btn>
-            <v-btn block　@click="onCreateComment" v-else>送信</v-btn>
+            <v-btn block @click="updateComment" v-if="editMode">更新</v-btn>
+            <v-btn block @click="onCreateComment" v-else>送信</v-btn>
             <v-textarea label="コメント" outlined v-model="bindContent"></v-textarea>
           </div>
           <div class="px-2" style="width: 50%">
@@ -180,7 +180,7 @@ export default Vue.extend({
     ]),
     ...mapGetters([
       'user',
-      'projectAuthority'
+      'project'
     ]),
     ...mapGetters('comment', [
       'comments',
@@ -206,8 +206,8 @@ export default Vue.extend({
       const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
       const type = this.types.find((type: {id: number}) => type.id === this.task.type_id);
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.task.priority_id);
-      const field = this.projectAuthority.project.fields.find((field: lib.Field) => field.id === this.task.field_id) || {};
-      const milestone = this.projectAuthority.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.task.milestone_id) || {};
+      const field = this.project.fields.find((field: lib.Field) => field.id === this.task.field_id) || {};
+      const milestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.task.milestone_id) || {};
       const actual_time = Number(this.selectedTask.actual_time);
       const created_at = new Date(this.task.created_at);
       const status_id = this.selectedTask.status_id;

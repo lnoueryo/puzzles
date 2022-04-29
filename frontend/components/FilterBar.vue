@@ -4,7 +4,7 @@
       <v-col class="d-flex" cols="12" sm="4">
       <v-select
           v-model="selectField"
-          :items="projectAuthority.project.fields"
+          :items="project.fields"
           item-text="name"
           item-value="name"
           label="分野"
@@ -16,7 +16,7 @@
       <v-col class="d-flex" cols="12" sm="4">
         <v-select
           v-model="selectAssignee"
-          :items="projectAuthority.project.authority_users"
+          :items="project.authority_users"
           item-text="user.name"
           item-value="user.name"
           label="担当者"
@@ -89,16 +89,15 @@ export default Vue.extend({
   computed: {
     ...mapGetters('task', [
       'statuses',
-      // 'selectStatus',
     ]),
     ...mapGetters([
-      'projectAuthority',
+      'project',
     ]),
     isReadyObj,
     isEmptyArr,
     noField() {
-      if(this.isReadyObj(this.projectAuthority)) {
-        return this.isEmptyArr(this.projectAuthority.project.fields);
+      if(this.isReadyObj(this.project)) {
+        return this.isEmptyArr(this.project.fields);
       }
       return false;
     },

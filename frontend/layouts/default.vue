@@ -11,12 +11,12 @@
               <div class="d-flex mx-2" v-bind="attrs" v-on="{ ...on, ...menu }">
                 <div style="display: grid;">
                   <small>プロジェクト名</small>
-                  <!-- <div v-if="isReadyObj(projectAuthority)">
-                    <strong style="text-indent: 1em;">{{projectAuthority.project.name}}</strong>
+                  <div v-if="isReadyObj(project)">
+                    <strong style="text-indent: 1em;">{{project.name}}</strong>
                   </div>
                   <div v-else>
                     <strong style="text-indent: 1em;">プロジェクトを選択</strong>
-                  </div> -->
+                  </div>
                 </div>
                 <v-icon class="mx-2">mdi-chevron-down</v-icon>
               </div>
@@ -171,8 +171,8 @@ export default {
     authority() {
       return this.$store.getters['organization'];
     },
-    projectAuthority() {
-      return this.$store.getters['projectAuthority'];
+    project() {
+      return this.$store.getters['project'];
     },
     projects() {
       return this.$store.getters['projects'];
