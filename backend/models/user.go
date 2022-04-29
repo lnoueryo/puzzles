@@ -1,10 +1,9 @@
 package models
 
 import (
+	"backend/config"
 	"backend/modules/crypto"
 	"backend/modules/session"
-	// "crypto/sha256"
-	// "encoding/gob"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -92,7 +91,7 @@ func (u *User) Update() error {
 }
 
 func (u *User)GetMainUser(userID int, orgID string) error {
-	result := DB.Preload("Projects.Project.AuthorityUsers." + clause.Associations).Preload("Projects.Project.AuthorityUsers", "active = ?", true).Preload("Projects.Project.Fields").Preload("Projects.Project.Milestones").Preload("Projects." + clause.Associations).Preload("Projects", "active = ?", true).Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", orgID).Preload("Organizations").First(&u, "id = ?", userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Preload("Organizations.Organization.Projects.AuthorityUsers.User" + clause.Associations).Preload("Organizations.Organization.Projects.AuthorityUsers." + clause.Associations).Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).Preload("Organizations.Organization.Projects.Fields").Preload("Organizations.Organization.Projects.Milestones").Preload("Organizations.Organization.Projects." + clause.Associations).Preload("Organizations.Organization.Projects").Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", orgID).Preload("Organizations").First(&u, "id = ?", userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
@@ -389,7 +388,7 @@ func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
 		Organization:	u.Organization,
 		CreatedAt:		time.Now(),
 	}
-	s.CreateSession(project)
+	s.CreateSession(config.App.Project)
 	cookie := http.Cookie{
 		Name:     "_cookie",
 		Value:    s.ID,

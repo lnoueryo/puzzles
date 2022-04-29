@@ -42,7 +42,7 @@ func TryToLogin(w http.ResponseWriter, r *http.Request) (*User, error) {
 		return u, err
 	}
 
-	u.Organization = l.Organization
+	// u.Organization = l.Organization
 	return u, nil
 }
 

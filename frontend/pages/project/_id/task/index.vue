@@ -1,6 +1,6 @@
 <template>
   <div v-if="pageReady">
-    <v-app-bar
+    <!-- <v-app-bar
       dense
       dark
       height="80"
@@ -85,7 +85,7 @@
       <v-tab-item v-for="i in 3" :key="i" :value="'tab-' + i">
         <filter-table></filter-table>
       </v-tab-item>
-    </v-tabs-items>
+    </v-tabs-items> -->
   </div>
 </template>
 

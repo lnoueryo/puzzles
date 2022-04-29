@@ -8,7 +8,7 @@ export interface User {
   image: string,
   description: string,
   organization: string
-  organizations: Organization[]
+  organizations: OrganizationAuthority[]
   projects: ProjectAuthority[]
   authority: string
 }
@@ -23,6 +23,7 @@ export interface Organization {
   founded: string,
   credit_card: string,
   expiry_date: string,
+  projects: ProjectAuthority[]
 }
 
 export interface Project {
@@ -109,6 +110,7 @@ export interface Priority {
 
 export interface OrganizationAuthority {
   type: string
+  organization: Organization
 }
 
 export interface Comment {
@@ -143,4 +145,10 @@ export interface Params {
 export interface Response {
   data: {message: string}
   status: number
+}
+
+export interface MainUserInfo {
+  user: User
+  organization: OrganizationAuthority
+  projects: Project[]
 }

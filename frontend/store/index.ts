@@ -33,7 +33,7 @@ export const getters: GetterTree<RootState, RootState> = {
 
 export const mutations: MutationTree<RootState> = {
   reset: (state) => Object.assign(state, initialState()),
-  userData: (state, userData: lib.User) => state.user.insertUser(userData),
+  userData: (state, userData: lib.MainUserInfo) => state.user.insertUser(userData),
   selectProject: (state, params) => state.user.selectProject(params),
   pageReady: (state, pageReady) => state.pageReady = pageReady,
   projectReady: (state, projectReady) => state.projectReady = projectReady,
@@ -71,7 +71,7 @@ export const actions: ActionTree<RootState, RootState> = {
         // console.log((new Blob([JSON.stringify (response)])).size);
         resolve(response);
         commit('userData', response.data);
-        if(!response.data.name) return this.$router.push('/profile/edit');
+        if(!response.data.user.name) return this.$router.push('/profile/edit');
       } catch (error: any) {
         reject(error.response);
       }

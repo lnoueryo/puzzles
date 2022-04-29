@@ -11,12 +11,12 @@
               <div class="d-flex mx-2" v-bind="attrs" v-on="{ ...on, ...menu }">
                 <div style="display: grid;">
                   <small>プロジェクト名</small>
-                  <div v-if="isReadyObj(projectAuthority)">
+                  <!-- <div v-if="isReadyObj(projectAuthority)">
                     <strong style="text-indent: 1em;">{{projectAuthority.project.name}}</strong>
                   </div>
                   <div v-else>
                     <strong style="text-indent: 1em;">プロジェクトを選択</strong>
-                  </div>
+                  </div> -->
                 </div>
                 <v-icon class="mx-2">mdi-chevron-down</v-icon>
               </div>
@@ -29,8 +29,8 @@
             <v-list-item v-if="isEmptyArr(projects)" to="/project/create">
               <v-list-item-title >プロジェクトの作成</v-list-item-title>
             </v-list-item>
-            <v-list-item v-for="(_, index) in projects" :key="index" @click="onSelectProject(_.project)">
-              <v-list-item-title>{{ _.project.name }}</v-list-item-title>
+            <v-list-item v-for="(project, index) in projects" :key="index" @click="onSelectProject(project)">
+              <v-list-item-title>{{ project.name }}</v-list-item-title>
             </v-list-item>
           </v-list-item-group>
         </v-list>

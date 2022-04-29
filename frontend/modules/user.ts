@@ -1,9 +1,9 @@
 import * as lib from './store/type'
 export class MainUser {
   private mainUser = {
-    user: {},
-    organization: {},
-    projects: [] as lib.ProjectAuthority[],
+    user: {} as lib.User,
+    organization: {} as lib.OrganizationAuthority,
+    projects: [] as lib.Project[],
     selectedProject: {},
     projectIndex: 0,
   }
@@ -12,27 +12,23 @@ export class MainUser {
   // private _projects: lib.ProjectAuthority[] = []
   // public _selectedProject = {}
   // private _projectIndex: number = 0;
-  insertUser(user: lib.User) {
+  insertUser(user: lib.MainUserInfo) {
     this.preprocessUser(user);
   }
   init() {
     this.mainUser = {
-      user: {},
-      organization: {},
-      projects: [] as lib.ProjectAuthority[],
+      user: {} as lib.User,
+      organization: {} as lib.OrganizationAuthority,
+      projects: [] as lib.Project[],
       selectedProject: {},
       projectIndex: 0,
     }
   }
-  preprocessUser(user: lib.User) {
-    this.mainUser.organization = user.organizations[0] as lib.Organization;
-    this.mainUser.projects = user.projects;
-    this.mainUser.projects = this.mainUser.projects.sort((a: lib.ProjectAuthority, b: lib.ProjectAuthority) => {
-      return new Date(b.project.created_at).valueOf() - new Date(a.project.created_at).valueOf();
+  preprocessUser(user: lib.MainUserInfo) {
+    this.mainUser = {...this.mainUser, ...user}
+    this.mainUser.projects = this.mainUser.projects.sort((a: lib.Project, b: lib.Project) => {
+      return new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf();
     });
-    user.organizations = [];
-    user.projects = [];
-    this.mainUser.user = user as User;
   }
   get user() {
     return this.mainUser.user;
@@ -45,13 +41,13 @@ export class MainUser {
   }
   get projectSlides() {
     const divideConst = 3;
-    const projectSlides: lib.ProjectAuthority[][] = []
-    this.projects.forEach((projectAuthority: lib.ProjectAuthority, index: number) => {
+    const projectSlides: lib.Project[][] = []
+    this.projects.forEach((project: lib.Project, index: number) => {
       const arrayIndex = Math.floor(index / divideConst);
       if(index % divideConst == 0) {
-        projectSlides.splice(arrayIndex, 0, [projectAuthority]);
+        projectSlides.splice(arrayIndex, 0, [project]);
       } else {
-        projectSlides[arrayIndex].push(projectAuthority);
+        projectSlides[arrayIndex].push(project);
       }
     });
     return projectSlides;
@@ -68,22 +64,17 @@ export class MainUser {
     if(Object.keys(params).length != 0) id = Number(params.id);
     this.mainUser.selectedProject = this.mainUser.projects.find((project, index) => {
       this.mainUser.projectIndex = index;
-      return project.project_id == id
+      return project.id == id
     }) ?? {}
-    // console.log(this.mainUser.projects,123)
-    // console.log(params,123)
-    // console.log(Object.keys(this.mainUser.selectedProject).length == 0)
     if(Object.keys(this.mainUser.selectedProject).length == 0) this.mainUser.projectIndex = -1;
-    console.log(this.mainUser.projectIndex)
   }
-  createProject(projectAuthority: lib.ProjectAuthority) {
-    this.mainUser.projects.unshift(projectAuthority)
+  createProject(project: lib.Project) {
+    this.mainUser.projects.unshift(project)
   }
-  updateProject(projectAuthority: lib.ProjectAuthority) {
+  updateProject(project: lib.ProjectAuthority) {
     this.mainUser.projects = this.mainUser.projects.map((project) => {
-      if(project.project_id == projectAuthority.project_id) {
-        project.project = {...project.project, ...projectAuthority.project}
-        project = {...project, ...projectAuthority}
+      if(project.id == project.id) {
+        project = {...project, ...project}
       }
       return project;
     })

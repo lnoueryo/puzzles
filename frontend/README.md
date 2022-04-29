@@ -2,6 +2,8 @@
 
 ## Build Setup
 
+firebase deploy --only hosting
+
 ```bash
 # install dependencies
 $ npm install

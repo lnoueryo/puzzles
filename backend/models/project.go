@@ -50,7 +50,6 @@ func NewProject(r *http.Request) (Project, error) {
 }
 
 func (p *Project)GetProjectAuthority(uid int) (ProjectAuthority, error) {
-	fmt.Println(p)
 	var pa ProjectAuthority
 	result := DB.Preload("Project.Milestones").Preload("Project.Fields").Preload("ProjectUsers.Type").Preload("ProjectUsers.User").Preload("ProjectUsers").Preload(clause.Associations).Find(&pa, "user_id = ? and project_id = ?", uid, p.ID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return pa, result.Error

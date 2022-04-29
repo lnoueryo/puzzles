@@ -73,21 +73,21 @@ export default Vue.extend({
     async onClickSend() {
       // this.loading = true;
       let response;
-      console.log(this.projectForm())
-      try {
-        response = await this.$store.dispatch('project/createProject', this.projectForm());
-      } catch (error: any) {
-        response = error;
-      } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
-        this.checkStatus(response.status, () => {
-          this.$router.push({name: 'project'})
-        },
-        () => {
-          this.loading = false;
-        }
-        )
-      }
+      console.log(this.organization.organization_id)
+      // try {
+      //   response = await this.$store.dispatch('project/createProject', this.projectForm());
+      // } catch (error: any) {
+      //   response = error;
+      // } finally {
+      //   if('status' in response === false) return this.$router.push('/bad-connection')
+      //   this.checkStatus(response.status, () => {
+      //     this.$router.push({name: 'project'})
+      //   },
+      //   () => {
+      //     this.loading = false;
+      //   }
+      //   )
+      // }
     },
     projectForm() {
       const project = {} as lib.Project
@@ -95,7 +95,7 @@ export default Vue.extend({
       const isFirstField = !!this.selectedProject.project.fields[0].name;
       project.milestones = isFirstMilestone ? this.selectedProject.project.milestones : [];
       project.fields = isFirstField ? this.selectedProject.project.fields : [];
-      project.organization_id = this.organization.id;
+      project.organization_id = this.organization.organization_id;
       project.authority_users = [
         {user_id: this.user.id, auth_id: 1, active: true} as any
       ];

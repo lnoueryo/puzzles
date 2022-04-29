@@ -29,6 +29,7 @@
         <v-carousel-item v-for="(projects, i) in projectSlides" :key="i">
           <v-sheet height="100%" color="transparent">
             <v-row class="fill-height" align="center" justify="center">
+              <!-- <hover-card :key="i" v-bind="project"></hover-card> -->
             <template v-for="(_, i) in projects">
               <hover-card :key="i" v-bind="_"></hover-card>
             </template>

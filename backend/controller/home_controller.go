@@ -18,6 +18,12 @@ type Message struct {
 	Message string
 }
 
+type MainUser struct {
+	User models.User 							`json:"user"`
+	Organization models.OrganizationAuthority 	`json:"organization"`
+	Projects []models.Project 					`json:"projects"`
+}
+
 
 type Home struct{}
 
@@ -69,9 +75,34 @@ func (_ *Home) Show(w http.ResponseWriter, r *http.Request) {
 		w.Write(sessionJson)
 		return
 	}
-	uJson, _ := json.Marshal(u)
+	var mainUser MainUser
+	mainUser.Projects = ProjectFilter(u.Organizations[0].Organization.Projects, func(userID int) bool {
+        return userID == u.ID
+    })
+	u.Organizations[0].Organization.Projects = nil
+	mainUser.Organization = u.Organizations[0]
+	u.Organizations = nil
+	mainUser.User = u
+	uJson, _ := json.Marshal(mainUser)
 	w.WriteHeader(http.StatusOK)
 	w.Write(uJson)
+}
+
+func ProjectFilter(projects []models.Project, f func(int) bool) []models.Project {
+	var userProjects []models.Project
+	for _, project := range projects {
+		isUser := false
+		for _, user := range project.AuthorityUsers {
+			if f(user.UserID) {
+				isUser = true
+				break
+			}
+		}
+		if isUser {
+			userProjects = append(userProjects, project)
+		}
+	}
+	return userProjects
 }
 
 func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
