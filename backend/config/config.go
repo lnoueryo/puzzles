@@ -1,12 +1,13 @@
 package config
 
 import (
+	"backend/modules/mail"
 	"html/template"
 	"log"
-	"path/filepath"
-	"github.com/joho/godotenv"
 	"os"
-	"backend/modules/mail"
+	"path/filepath"
+
+	"github.com/joho/godotenv"
 )
 
 type AppConfig struct {
@@ -37,18 +38,18 @@ var errorlog *log.Logger
 
 func init() {
 
-	commonSettings()
-
+	
 	appEnv, err := readEnvFile(); if err!= nil {
 		// if .env is not in local and production environment
 		panic("Not found .env")
 	}
-
+	
 	if appEnv == "local" {
-		configureLocalSettings()
+			configureLocalSettings()
 	} else {
 		configureProdSettings()
 	}
+	commonSettings()
 }
 
 func readEnvFile() (string, error) {

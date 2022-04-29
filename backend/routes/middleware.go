@@ -38,9 +38,6 @@ func Auth(next http.Handler) http.Handler {
 //ServeHTTP handles the request by passing it to the real
 //handler and logging the request details
 func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if allowOrigin == "" {
-		allowOrigin = "https://puzzles.jounetsism.biz"
-	}
 	w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
