@@ -19,6 +19,7 @@ func (c *Comment)Create(w http.ResponseWriter, r *http.Request) {
 	}
 
     comment, err := models.NewComment(r);if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -26,6 +27,7 @@ func (c *Comment)Create(w http.ResponseWriter, r *http.Request) {
         return
     }
 	err = comment.Create(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -78,6 +80,7 @@ func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
     }
 	id, err := strconv.Atoi(idSlice[0])
 	if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)
@@ -101,6 +104,7 @@ func (c *Comment)Update(w http.ResponseWriter, r *http.Request) {
 	}
 
     comment, err := models.NewComment(r);if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -108,6 +112,7 @@ func (c *Comment)Update(w http.ResponseWriter, r *http.Request) {
         return
     }
 	err = comment.Update(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -139,6 +144,7 @@ func (_ *Comment)Delete(w http.ResponseWriter, r *http.Request) {
 	for _, ID := range idSlice {
 		id, err := strconv.Atoi(ID)
 		if err != nil {
+			errorlog.Print(err)
 			errMap := map[string]string{"message": "bad connection"}
 			sessionJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusBadRequest)
@@ -149,6 +155,7 @@ func (_ *Comment)Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c, err := models.DeleteComment(IDs); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)

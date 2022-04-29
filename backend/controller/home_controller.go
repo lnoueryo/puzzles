@@ -39,6 +39,7 @@ func (_ *Home) Index(w http.ResponseWriter, r *http.Request) {
 	var org models.Organization
 	s, _ := GetSession(r)
 	err := org.GetOrganization(s.Organization); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)
@@ -61,14 +62,16 @@ func (_ *Home) Show(w http.ResponseWriter, r *http.Request) {
 	var u models.User
 	s, err := GetSession(r)
 	if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "session is expired"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotModified)
 		w.Write(errJson)
 		return
 	}
-	infolog.Print(s)
+
 	err = u.GetMainUser(s.UserID, s.Organization); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)
@@ -114,6 +117,7 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u, err := models.GetUserJson(r); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)
@@ -122,7 +126,7 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 	}
 	if u.ImageData != "" && u.Image != "" {
 		fileName, err := StoreImage("users", u.ImageData); if err != nil {
-			errorlog.Print(err);
+			errorlog.Print(err)
 			errMap := map[string]string{"message": "couldn't save the image"}
 			errJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusNotFound)
@@ -130,7 +134,7 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		err = os.Remove("./upload/users/" + u.Image); if err != nil {
-			errorlog.Print(err);
+			errorlog.Print(err)
 			errMap := map[string]string{"message": "couldn't save the image"}
 			errJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusNotFound)
@@ -142,7 +146,7 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 	if u.Image == "" {
 		u.Image, _ = crypto.MakeRandomStr(20)
 		buf, err := image.CreateImage(u.Name, u.Image); if err != nil {
-			errorlog.Print(err);
+			errorlog.Print(err)
 			errMap := map[string]string{"message": "couldn't save the image"}
 			errJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusNotFound)
@@ -165,6 +169,7 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	err = u.Update(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)

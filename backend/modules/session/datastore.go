@@ -2,7 +2,6 @@ package session
 
 import (
 	"context"
-	"fmt"
 	"cloud.google.com/go/datastore"
 )
 
@@ -19,7 +18,6 @@ func (s *Session)DSCreateSession(project string) error {
 	k := datastore.NameKey("Session", s.ID, nil)
 
 	if _, err := dsClient.Put(ctx, k, s); err != nil {
-		fmt.Print(err,1)
 		return err
 	}
 	return nil

@@ -3,7 +3,6 @@ package routes
 import (
 	"backend/modules/session"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -58,7 +57,6 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		l.handler.ServeHTTP(w, r)
 		return
 	}
-	fmt.Print(cookie)
 	s, err := session.CheckSession(cookie.Value, projectenv)
 	if err != nil {
 		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, r.RemoteAddr, time.Since(start))

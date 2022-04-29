@@ -36,7 +36,6 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-	infolog.Print(s)
 	sessionJson, _ := json.Marshal(s)
 	w.WriteHeader(http.StatusOK)
 	w.Write(sessionJson)
@@ -49,6 +48,7 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	s, err := GetSession(r)
 	if err != nil {
+		errorlog.Print(err)
 		errMessage := "session is expired"
 		errorlog.Print(errMessage)
 		errMap := map[string]string{"message": errMessage}
@@ -64,6 +64,7 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	cookie, err := r.Cookie("_cookie")
 	if err != nil {
+		errorlog.Print(err)
 		errMessage := "session is expired"
 		errMap := map[string]string{"message": errMessage}
 		errJson, _ := json.Marshal(errMap)
@@ -99,9 +100,9 @@ func (*Auth) InviteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := models.InviteUser(r); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": err.Error()}
 		errJson, _ := json.Marshal(errMap)
-		errorlog.Print(errJson)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 		return

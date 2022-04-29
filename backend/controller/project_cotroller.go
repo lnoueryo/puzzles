@@ -30,6 +30,7 @@ func (*Project)Index(w http.ResponseWriter, r *http.Request) {
     }
 	id, err := strconv.Atoi(idSlice[0])
 	if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)
@@ -40,6 +41,7 @@ func (*Project)Index(w http.ResponseWriter, r *http.Request) {
 	s, _ := GetSession(r)
 
 	err = p.GetProject(id, s.UserID); if err != nil {
+		errorlog.Print(err)
 		message := "bad connection"
 		errorlog.Print(message)
 		errMap := map[string]string{"message": message}
@@ -104,6 +106,7 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = activity.Create(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -140,6 +143,7 @@ func (*Project)Edit(w http.ResponseWriter, r *http.Request) {
     }
 	id, err := strconv.Atoi(idSlice[0])
 	if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)
@@ -150,6 +154,7 @@ func (*Project)Edit(w http.ResponseWriter, r *http.Request) {
 	s, _ := GetSession(r)
 
 	err = p.GetEditProject(id, s.UserID); if err != nil {
+		errorlog.Print(err)
 		message := "bad connection"
 		errorlog.Print(message)
 		errMap := map[string]string{"message": message}

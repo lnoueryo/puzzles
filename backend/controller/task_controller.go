@@ -27,6 +27,7 @@ func (*Task) Index(w http.ResponseWriter, r *http.Request) {
     }
 	id, err := strconv.Atoi(idSlice[0])
 	if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusBadRequest)
@@ -34,6 +35,7 @@ func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	t, err := models.GetTasks(id); if err != nil {
+		errorlog.Print(err)
 		message := "bad connection"
 		errorlog.Print(message)
 		errMap := map[string]string{"message": message}
@@ -57,6 +59,7 @@ func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
 	}
 
     task, err := models.NewTask(r);if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -64,6 +67,7 @@ func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
         return
     }
 	project, err := task.CountProjectTask(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -72,6 +76,7 @@ func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
     }
 	task.Key = project.Name + "_" + strconv.Itoa(len(project.Tasks) + 1)
 	err = task.Create(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -85,6 +90,7 @@ func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = activity.Create(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -105,6 +111,7 @@ func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
 	}
 
     task, err := models.NewTask(r);if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -112,6 +119,7 @@ func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
         return
     }
 	err = task.Update(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -125,6 +133,7 @@ func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
 	}
 	infolog.Print(task)
 	err = activity.Create(); if err != nil {
+		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
