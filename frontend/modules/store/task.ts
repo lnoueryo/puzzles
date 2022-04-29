@@ -1,10 +1,10 @@
 import { Cell, Table } from './type'
 
 export const resetActive = (cells: Cell[]) => {
-  return cells.map((cell) => {
-    cell.header.active = 0;
-    return cell;
-  })
+  for (let index = 0; index < cells.length; index++) {
+    cells[index].header.active = 0;
+  }
+  return cells
 }
 
 export const statuses = [

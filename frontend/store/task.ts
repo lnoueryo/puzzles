@@ -49,8 +49,8 @@ export const mutations: MutationTree<TaskState> = {
   sortTask: (state, index) => {
     const cell = state.table.cells[index];
     if(cell.header.active != 1) {
-      state.tasks.resetSort();
       if(cell.header.active === 2) {
+        state.tasks.resetSort();
         const cellKey = {index: 0, active: 0}
         lib.storeCondition({cellKey})
         return state.table.cells = lib.resetActive(state.table.cells)
@@ -140,33 +140,8 @@ export const actions: ActionTree<TaskState, RootState> = {
     const item = JSON.parse(itemStr);
     if(item?.assignee) commit('selectAssignee', item?.assignee);
     if(item?.field) commit('selectField', item?.field);
-    if(item?.status)commit('selectStatus', item.status);
+    if(item?.status) commit('selectStatus', item.status);
     if(item?.cellKey?.index && item?.cellKey?.active) commit('cellKey', item.cellKey);
-  },
-  async createComment({commit}, form) {
-    return new Promise(async(resolve, reject) => {
-      try {
-        const response = await this.$axios.post('/api/comment/create', form);
-        commit('updateTask', response.data);
-        resolve(response);
-      } catch (error: any) {
-        console.log(error);
-        reject(error.response);
-      }
-    })
-  },
-  async updateComment({commit}, form) {
-    return new Promise(async(resolve, reject) => {
-      try {
-        const response = await this.$axios.put('/api/comment/update', form);
-        // commit('updateTask', response.data);
-        resolve(response);
-        // commit('tasks', response.data);
-      } catch (error: any) {
-        console.log(error);
-        reject(error.response);
-      }
-    })
   },
 }
 
