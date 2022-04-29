@@ -91,7 +91,14 @@ func (u *User) Update() error {
 }
 
 func (u *User)GetMainUser(userID int, orgID string) error {
-	result := DB.Preload("Organizations.Organization.Projects.AuthorityUsers.User" + clause.Associations).Preload("Organizations.Organization.Projects.AuthorityUsers." + clause.Associations).Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).Preload("Organizations.Organization.Projects.Fields").Preload("Organizations.Organization.Projects.Milestones").Preload("Organizations.Organization.Projects." + clause.Associations).Preload("Organizations.Organization.Projects").Preload("Organizations." + clause.Associations).Preload("Organizations", "organization_id = ?", orgID).Preload("Organizations").First(&u, "id = ?", userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Preload("Organizations.Organization.Projects.AuthorityUsers." + clause.Associations).
+	Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).
+	Preload("Organizations.Organization.Projects." + clause.Associations).
+	Preload("Organizations.Organization.Projects").
+	Preload("Organizations." + clause.Associations).
+	Preload("Organizations", "organization_id = ?", orgID).
+	Preload("Organizations").
+	First(&u, "id = ?", userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
