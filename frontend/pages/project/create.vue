@@ -32,16 +32,14 @@ export default Vue.extend({
     isAuthorized: false,
     loading: false,
     selectedProject: {
-      project: {
-        organization_id: '',
-        name: '',
-        description: '',
-        image: '',
-        image_data: '',
-        milestones: [{id: 0, name: ''}],
-        fields: [{id: 0, name: ''}],
-        users: [] as lib.User[]
-      },
+      organization_id: '',
+      name: '',
+      description: '',
+      image: '',
+      image_data: '',
+      milestones: [{id: 0, name: ''}],
+      fields: [{id: 0, name: ''}],
+      users: [] as lib.User[]
     },
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
@@ -54,6 +52,7 @@ export default Vue.extend({
     ...mapGetters([
       'user',
       'organization',
+      'projectAuthority',
     ]),
     isEmptyObj,
     isEmptyArr,
@@ -91,10 +90,10 @@ export default Vue.extend({
     },
     projectForm() {
       const project = {} as lib.Project
-      const isFirstMilestone = !!this.selectedProject.project.milestones[0].name;
-      const isFirstField = !!this.selectedProject.project.fields[0].name;
-      project.milestones = isFirstMilestone ? this.selectedProject.project.milestones : [];
-      project.fields = isFirstField ? this.selectedProject.project.fields : [];
+      const isFirstMilestone = !!this.selectedProject.milestones[0].name;
+      const isFirstField = !!this.selectedProject.fields[0].name;
+      project.milestones = isFirstMilestone ? this.selectedProject.milestones : [];
+      project.fields = isFirstField ? this.selectedProject.fields : [];
       project.organization_id = this.organization.organization_id;
       project.authority_users = [
         {user_id: this.user.id, auth_id: 1, active: true} as any

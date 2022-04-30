@@ -59,10 +59,10 @@
           :rules="[rules.requiredSelect]"
           item-disabled="disabled"
           multiple
-          v-if="!isEmptyObj(projectAuthority)"
+          v-if="!isEmptyObj(project)"
         >
         </v-select>
-        <cropper v-model="image" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.project.image"></cropper>
+        <cropper v-model="image" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.image"></cropper>
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
           <v-btn text :to="to">
@@ -109,13 +109,14 @@ export default Vue.extend({
   }),
   computed: {
     ...mapGetters([
+      'project',
       'projectAuthority',
       'user',
     ]),
     isEmptyObj,
     name: {
       get() {
-        return this.value.project.name;
+        return this.value.name;
       },
       set(name) {
         this.updateValue({name});
@@ -123,7 +124,7 @@ export default Vue.extend({
     },
     description: {
       get() {
-        return this.value.project.description;
+        return this.value.description;
       },
       set(description) {
         this.updateValue({description});
@@ -131,7 +132,7 @@ export default Vue.extend({
     },
     fields: {
       get(): lib.Field[] {
-        return this.value.project.fields;
+        return this.value.fields;
       },
       set(fields) {
         this.updateValue({fields});
@@ -139,7 +140,7 @@ export default Vue.extend({
     },
     milestones: {
       get(): lib.Milestone[] {
-        return this.value.project.milestones;
+        return this.value.milestones;
       },
       set(milestones) {
         this.updateValue({milestones});
@@ -147,10 +148,10 @@ export default Vue.extend({
     },
     authorityUsers: {
       get(): lib.ProjectAuthority[] {
-        return this.value.project.authority_users.filter((authority_user: lib.ProjectAuthority) => authority_user.auth_id == 1);
+        return this.value.authority_users.filter((authority_user: lib.ProjectAuthority) => authority_user.auth_id == 1);
       },
       set(_authority_users: number[]) {
-        const original_authority_users = JSON.parse(JSON.stringify(this.projectAuthority.project.authority_users))
+        const original_authority_users = JSON.parse(JSON.stringify(this.project.authority_users))
         const authority_users = original_authority_users.map((authority_user: lib.ProjectAuthority) => {
           if (_authority_users.includes(authority_user.user.id)) {
             authority_user.auth_id = 1;
@@ -165,17 +166,17 @@ export default Vue.extend({
     },
     image: {
       get() {
-        return this.value.project.image_data;
+        return this.value.image_data;
       },
       set(image_data) {
         this.updateValue({image_data});
       }
     },
     imageSrc() {
-      return this.value.project?.image_data || this.$config.mediaURL + '/projects/' + this.value.project.image;
+      return this.value.project?.image_data || this.$config.mediaURL + '/projects/' + this.value.image;
     },
     projectUserItems() {
-      return this.projectAuthority.project.authority_users.map((user: ProjectAuthority) => {
+      return this.project.authority_users.map((user: ProjectAuthority) => {
         if (user.user_id == this.projectAuthority.user_id) {
           user.disabled = true;
         }
@@ -188,11 +189,11 @@ export default Vue.extend({
   },
   methods: {
     updateValue(value: {}) {
-      const newProject = {...this.value.project, ...value};
+      const newProject = {...this.value, ...value};
       this.$emit('input', {...this.value, ...{project: newProject}});
     },
     async onChangeFile(e: File) {
-      if(!e) return this.value.project.image_data = '';
+      if(!e) return this.value.image_data = '';
       const image_data = await resizeFile(e);
       const newProject = {...this.value.project, ...{image_data}};
       const newValue = {...this.value, ...{project: newProject}};

@@ -95,9 +95,12 @@ export const actions: ActionTree<TaskState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         commit('reset')
+        const t0 = performance.now();
         const response = await this.$axios.get('/api/task', {
           params: {id: id}
         })
+        const t1 = performance.now();
+        console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
         resolve(response);
         commit('tasks', response.data);
       } catch (error: any) {

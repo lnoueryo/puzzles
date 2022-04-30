@@ -21,6 +21,7 @@ export const getters: GetterTree<RootState, RootState> = {
   organization: state => state.user.organization,
   projects: state => state.user.projects,
   project: state => state.user.selectedProject,
+  projectAuthority: state => state.user.projectAuthority,
   projectIndex: state => state.user.projectIndex,
   projectSlides: state => state.user.projectSlides,
   pageReady: state => state.pageReady,

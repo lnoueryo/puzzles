@@ -17,6 +17,9 @@
           <div class="pl-4">
             <v-btn :to="{name: 'project-id-task-key-edit', params: {id: $route.params.id, key: $route.params.key}}">編集</v-btn>
           </div>
+          <div class="pl-4">
+            <v-btn :to="{name: 'project-id-task', params: {id: $route.params.id}}">戻る</v-btn>
+          </div>
         </div>
       </div>
       <v-divider></v-divider>
@@ -48,7 +51,7 @@
             <div class="pa-3" style="min-height: 300px;background-color: #303030;border-radius: 5px;" v-html="task.detail"></div>
           </div>
         </div>
-        <div class="d-flex py-2" style="width: 100%">
+        <!-- <div class="d-flex py-2" style="width: 100%">
           <div style="width: 100%">
             <div class="mb-2">コメント</div>
               <tree-comments
@@ -63,7 +66,7 @@
                 <div class="pa-2" style="width: 100%;min-height: 100px;background-color: #303030;border-radius: 5px;">なし</div>
               </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </form-card>
     <v-bottom-sheet transition v-model="sheet" persistent inset hide-overlay>
@@ -193,6 +196,7 @@ export default Vue.extend({
     isEmptyObj,
     checkStatus,
     taskForm() {
+      const t0 = performance.now();
       const additionalInfo = {
         id: this.$route.params.key,
         assigner_id: this.user.id,
@@ -223,6 +227,8 @@ export default Vue.extend({
         status_id,
       }
       const newTask = {...this.task, ...additionalInfo, ...cleansedData, ...requiredDataforDisplay}
+      const t1 = performance.now();
+      console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
       return newTask;
     },
     newCommentForm() {

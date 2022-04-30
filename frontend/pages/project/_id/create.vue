@@ -46,7 +46,7 @@ export default Vue.extend({
     ]),
     ...mapGetters([
       'user',
-      'projectAuthority',
+      'project',
     ]),
     isReadyObj,
     isEmptyArr,
@@ -55,7 +55,7 @@ export default Vue.extend({
     changeToDateISOFormat,
     changeToTimeStampFormat,
     pageReady() {
-      return this.isReadyObj(this.projectAuthority);
+      return this.isReadyObj(this.project);
     },
     taskForm() {
       const additionalInfo = {
@@ -69,12 +69,12 @@ export default Vue.extend({
         deadline: this.selectedTask.deadline ? new Date(this.selectedTask.deadline) : null,
       }
       const assigner = this.user;
-      const assignee = this.projectAuthority.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
+      const assignee = this.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
       const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
       const type = this.types.find((type: {id: number}) => type.id === this.selectedTask.type_id);
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
-      const field = this.projectAuthority.project.fields.find((field: lib.Field) => field.id === this.selectedTask.field_id) || {};
-      const milestone = this.projectAuthority.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
+      const field = this.project.fields.find((field: lib.Field) => field.id === this.selectedTask.field_id) || {};
+      const milestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
       const actual_time = 0
       const requiredDataforDisplay = {
         assigner,

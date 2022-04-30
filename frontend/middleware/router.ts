@@ -67,6 +67,7 @@ const setCondition = (store: any) => {
 }
 
 const selectTask = (store: any, route: any) => {
+  store.commit('task/selectTask', {});
   if('key' in route.params === false) return;
   let timer = setInterval(() => {
     if(store.getters['task/allTasks'].length === 0) return;

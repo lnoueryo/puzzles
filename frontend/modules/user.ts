@@ -52,16 +52,25 @@ export class MainUser {
   get selectedProject() {
     return this.mainUser.selectedProject as lib.Project;
   }
+  get projectAuthority() {
+    return this.mainUser.projectAuthority as lib.ProjectAuthority;
+  }
   get projectIndex() {
     return this.mainUser.projectIndex;
   }
   selectProject(params: lib.Params) {
     this.mainUser.projectIndex = 0;
     let id = 0;
-    if(Object.keys(params).length != 0) id = Number(params.id);
+    if('id' in params) id = Number(params.id);
     this.mainUser.selectedProject = this.mainUser.projects.find((project, index) => {
       this.mainUser.projectIndex = index;
-      return project.id == id
+      if(project.id == id) {
+        this.mainUser.projectAuthority = project.authority_users.find((authority_user) => {
+          return authority_user.user_id == this.user.id;
+        }) as lib.ProjectAuthority
+        return true;
+      }
+      return false;
     }) ?? {}
     if(Object.keys(this.mainUser.selectedProject).length == 0) this.mainUser.projectIndex = -1;
   }

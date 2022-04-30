@@ -83,9 +83,14 @@ export class Tasks {
     this.tasks.sortedTasks.sort(compare);
   }
   preprocessTasks = (tasks: lib.Task[]): Task[] => {
-    const newTasks = tasks.map((task) => {
-      return this.preprocessTask(task)
-    })
+    // const newTasks = tasks.map((task) => {
+    //   return this.preprocessTask(task)
+    // })
+    const newTasks = []
+    for (let index = 0; index < tasks.length; index++) {
+      newTasks.push(this.preprocessTask(tasks[index]));
+    
+    }
     return newTasks;
   }
   preprocessTask = (task: lib.Task) => {
@@ -102,12 +107,22 @@ export class Tasks {
     return {...task, ...newTask};
   }
   selectTask(params: lib.Params) {
+    const t0 = performance.now();
     let key = 0;
-    if(Object.keys(params).length != 0) key = Number(params.key);
-    this.tasks.selectedTask = this.tasks.all.find((task, index) => {
+    if('key' in params) key = Number(params.key);
+    // this.tasks.selectedTask = this.tasks.all.find((task, index) => {
+    //   this.tasks.taskIndex = index;
+    //   return task.id == key
+    // }) ?? {}
+    for (let index = 0; index < this.tasks.all.length; index++) {
       this.tasks.taskIndex = index;
-      return task.id == key
-    }) ?? {}
+      if(this.tasks.all[index].id == key) {
+        this.tasks.selectedTask = this.tasks.all[index]
+        break
+      }
+    }
+    const t1 = performance.now();
+    console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
     if(Object.keys(this.tasks.selectedTask).length == 0) this.tasks.taskIndex = -1;
   }
   addTask(task: lib.Task) {
@@ -208,7 +223,6 @@ export class Tasks {
     this.tasks.selectField = name;
   }
   selectStatus(statusArr: string[]) {
-    console.log(statusArr)
     this.tasks.pageIndex = 0;
     this.tasks.selectStatus = statusArr;
   }

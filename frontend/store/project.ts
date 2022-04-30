@@ -19,8 +19,8 @@ export const getters: GetterTree<ProjectState, RootState> = {
 
 export const mutations: MutationTree<ProjectState> = {
   reset: (state) => Object.assign(state, initialState()),
-  createProject: (state, projectAuthority: lib.ProjectAuthority) => state.user.createProject(projectAuthority),
-  updateProject: (state, projectAuthority: lib.ProjectAuthority) => state.user.updateProject(projectAuthority),
+  createProject: (state, project: lib.Project) => state.user.createProject(project),
+  updateProject: (state, project: lib.Project) => state.user.updateProject(project),
 }
 
 export const actions: ActionTree<ProjectState, RootState> = {
