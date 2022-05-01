@@ -107,6 +107,7 @@ export class Tasks {
     return {...task, ...newTask};
   }
   selectTask(params: lib.Params) {
+    this.tasks.selectedTask = {}
     const t0 = performance.now();
     let key = 0;
     if('key' in params) key = Number(params.key);
@@ -115,8 +116,8 @@ export class Tasks {
     //   return task.id == key
     // }) ?? {}
     for (let index = 0; index < this.tasks.all.length; index++) {
-      this.tasks.taskIndex = index;
       if(this.tasks.all[index].id == key) {
+        this.tasks.taskIndex = index;
         this.tasks.selectedTask = this.tasks.all[index]
         break
       }

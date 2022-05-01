@@ -110,6 +110,7 @@ export interface Priority {
 
 export interface OrganizationAuthority {
   type: string
+  user_id: number
   organization: Organization
 }
 

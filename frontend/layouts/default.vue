@@ -1,109 +1,113 @@
 <template>
   <v-app dark>
-    <v-app-bar :clipped-left="clipped" fixed app elevation="0" v-if="pageReady">
-      <nuxt-link to="/">
-        <v-toolbar-title class="mr-4" v-text="title" />
-      </nuxt-link>
-      <v-menu>
-        <template v-slot:activator="{ on: menu }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <div class="d-flex mx-2" v-bind="attrs" v-on="{ ...on, ...menu }">
-                <div style="display: grid;">
-                  <small>プロジェクト名</small>
-                  <div v-if="isReadyObj(project)">
-                    <strong style="text-indent: 1em;">{{project.name}}</strong>
+    <v-app-bar class="justify-content: space-between" :clipped-left="clipped" fixed app elevation="0" v-if="pageReady">
+      <div class="d-flex justify-space-between" style="width: 100%">
+        <div class="d-flex">
+          <nuxt-link to="/">
+            <v-toolbar-title class="mr-4" v-text="title" />
+          </nuxt-link>
+          <v-menu>
+            <template v-slot:activator="{ on: menu }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <div class="d-flex mx-2" v-bind="attrs" v-on="{ ...on, ...menu }">
+                    <div style="display: grid;">
+                      <small>プロジェクト名</small>
+                      <div v-if="isReadyObj(project)">
+                        <strong style="text-indent: 1em;">{{project.name}}</strong>
+                      </div>
+                      <div v-else>
+                        <strong style="text-indent: 1em;">プロジェクトを選択</strong>
+                      </div>
+                    </div>
+                    <v-icon class="mx-2">mdi-chevron-down</v-icon>
                   </div>
-                  <div v-else>
-                    <strong style="text-indent: 1em;">プロジェクトを選択</strong>
-                  </div>
-                </div>
-                <v-icon class="mx-2">mdi-chevron-down</v-icon>
-              </div>
+                </template>
+                <span>プロジェクトの変更</span>
+              </v-tooltip>
             </template>
-            <span>プロジェクトの変更</span>
-          </v-tooltip>
-        </template>
-        <v-list>
-          <v-list-item-group active-class="border" color="indigo" :value="list">
-            <v-list-item v-if="isEmptyArr(projects)" to="/project/create">
-              <v-list-item-title >プロジェクトの作成</v-list-item-title>
-            </v-list-item>
-            <v-list-item v-for="(project, index) in projects" :key="index" @click="onSelectProject(project)">
-              <v-list-item-title>{{ project.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-menu>
-      <v-toolbar flat color="transparent">
-      <div style="max-width: 700px;width: 100%;">
-      <v-text-field
-        v-model="search"
-        class="mx-4"
-        hide-details
-        label="コメントやタスクを検索"
-        prepend-inner-icon="mdi-magnify"
-        solo-inverted
-        clearable
-        color="amber darken-3"
-      ></v-text-field>
-      </div>
-      </v-toolbar>
-      <div class="d-flex mx-4 align-center">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn class="mx-2" icon v-bind="attrs" v-on="on">
-              <v-badge color="green" :content="messages" :value="messages" overlap>
-              <v-icon>mdi-bell</v-icon>
-              </v-badge>
-            </v-btn>
-          </template>
-          <span>通知の確認</span>
-        </v-tooltip>
-        <v-menu>
-          <template v-slot:activator="{ on: menu }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn class="mx-2" icon v-bind="attrs" v-on="{ ...on, ...menu }">
-                  <v-avatar size="40px">
-                    <img alt="Avatar" :src="$config.mediaURL + '/users/' + user.image">
-                  </v-avatar>
-                </v-btn>
-              </template>
-              <span>プロフィール設定</span>
-            </v-tooltip>
-          </template>
-          <v-list>
-            <v-list-item v-for="(config, index) in configs" :key="index" :to="config.url">
-              <v-list-item-title>{{ config.name }}</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="logout">
-              <v-list-item-title>ログアウト</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <div class="mx-3" style="display: grid;">
-          <small>名前</small>
-          <strong style="text-indent: 1em;">{{user.name}}</strong>
+            <v-list>
+              <v-list-item-group active-class="border" color="indigo" :value="list">
+                <v-list-item v-if="isEmptyArr(projects)" to="/project/create">
+                  <v-list-item-title >プロジェクトの作成</v-list-item-title>
+                </v-list-item>
+                <v-list-item v-for="(project, index) in projects" :key="index" @click="onSelectProject(project)">
+                  <v-list-item-title>{{ project.name }}</v-list-item-title>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-menu>
         </div>
-        <div class="mx-3" style="display: grid;">
-          <small>組織名</small>
-          <strong style="text-indent: 1em;">{{ authority.organization.name }}</strong>
-        </div>
-      </div>
-      <v-menu left bottom v-if="authority.auth_id == 1">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on">
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
+        <!-- <v-toolbar flat color="transparent">
+          <div style="width: 100%;">
+            <v-text-field
+              v-model="search"
+              class="mx-4"
+              hide-details
+              label="コメントやタスクを検索"
+              prepend-inner-icon="mdi-magnify"
+              solo-inverted
+              clearable
+              color="amber darken-3"
+            ></v-text-field>
+          </div>
+        </v-toolbar> -->
+        <div class="d-flex mx-4 align-center">
+          <!-- <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn class="mx-2" icon v-bind="attrs" v-on="on">
+                <v-badge color="green" :content="messages" :value="messages" overlap>
+                <v-icon>mdi-bell</v-icon>
+                </v-badge>
+              </v-btn>
+            </template>
+            <span>通知の確認</span>
+          </v-tooltip> -->
+          <v-menu>
+            <template v-slot:activator="{ on: menu }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="mx-2" icon v-bind="attrs" v-on="{ ...on, ...menu }">
+                    <v-avatar size="40px">
+                      <img alt="Avatar" :src="$config.mediaURL + '/users/' + user.image">
+                    </v-avatar>
+                  </v-btn>
+                </template>
+                <span>プロフィール設定</span>
+              </v-tooltip>
+            </template>
+            <v-list>
+              <v-list-item v-for="(config, index) in configs" :key="index" :to="config.url">
+                <v-list-item-title>{{ config.name }}</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="logout">
+                <v-list-item-title>ログアウト</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <div class="mx-3" style="display: grid;">
+            <small>名前</small>
+            <strong style="text-indent: 1em;">{{user.name}}</strong>
+          </div>
+          <div class="mx-3" style="display: grid;">
+            <small>組織名</small>
+            <strong style="text-indent: 1em;">{{ authority.organization.name }}</strong>
+          </div>
+          <v-menu left bottom v-if="authority.auth_id == 1">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
 
-        <v-list>
-          <v-list-item v-for="(item, i) in administer" :key="i" :to="item.url">
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+            <v-list>
+              <v-list-item v-for="(item, i) in administer" :key="i" :to="item.url">
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </div>
     </v-app-bar>
     <v-main>
         <Nuxt />

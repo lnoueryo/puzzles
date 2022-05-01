@@ -1,6 +1,6 @@
 <template>
   <div v-if="isReadyObj(organization)">
-    <v-carousel cycle height="100" hide-delimiters show-arrows-on-hover interval="4500" class="mb-4">
+    <!-- <v-carousel cycle height="100" hide-delimiters show-arrows-on-hover interval="4500" class="mb-4">
       <v-carousel-item v-for="(slide, i) in slides" :key="i">
         <v-sheet :color="colors[i]" height="100%">
           <v-row class="fill-height" align="center" justify="center">
@@ -10,7 +10,7 @@
           </v-row>
         </v-sheet>
       </v-carousel-item>
-    </v-carousel>
+    </v-carousel> -->
     <v-row justify="center" align="center" class="my-6">
       <v-avatar size="36px" v-if="organization.image">
         <img alt="Avatar" :src="$config.mediaURL + '/organizations/' + organization.image">

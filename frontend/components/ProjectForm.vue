@@ -1,12 +1,14 @@
 <template>
   <div>
     <v-card class="mx-auto my-4 px-8 py-4" style="max-width: 700px;">
-      <v-card-actions>
-        <v-btn text :to="to">
-          <slot name="back"></slot>
-        </v-btn>
-        <v-spacer></v-spacer>
-      </v-card-actions>
+      <div class="px-4" style="position: relative">
+        <v-card-actions class="py-6 mx-4">
+          <v-btn outlined color="indigo" :to="to" right absolute>
+            <slot name="back"></slot>
+          </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </div>
       <v-form ref="form" v-model="formReady" class="pa-4 pt-6">
         <v-text-field
           v-model="name"
@@ -173,7 +175,7 @@ export default Vue.extend({
       }
     },
     imageSrc() {
-      return this.value.project?.image_data || this.$config.mediaURL + '/projects/' + this.value.image;
+      return this.value?.image_data || this.$config.mediaURL + '/projects/' + this.value.image;
     },
     projectUserItems() {
       return this.project.authority_users.map((user: ProjectAuthority) => {
@@ -184,13 +186,13 @@ export default Vue.extend({
       })
     },
     to() {
-      return 'id' in this.$route.params ? {name: 'project-id-task', params: {id: this.$route.params.id}} : {name: 'project'};
+      return 'id' in this.$route.params ? {name: 'project-id-task', params: {id: this.$route.params.id}} : {name: 'index'};
     }
   },
   methods: {
     updateValue(value: {}) {
       const newProject = {...this.value, ...value};
-      this.$emit('input', {...this.value, ...{project: newProject}});
+      this.$emit('input', newProject);
     },
     async onChangeFile(e: File) {
       if(!e) return this.value.image_data = '';

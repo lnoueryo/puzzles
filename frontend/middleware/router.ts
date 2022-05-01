@@ -4,10 +4,10 @@ import { checkStatus, isReadyObj, isEmptyObj } from '~/modules/utils'
 const status = checkStatus();
 const readyObj = isReadyObj();
 const emptyObj = isEmptyObj();
-const allowedPath = ['/login', '/expiry', '/success', '/bad-connection']
+const allowedPath = new Set(['/login', '/expiry', '/success', '/bad-connection'])
 let projectID: string;
 const router: Middleware = async({store, route}) => {
-  if(allowedPath.includes(route.path)) return;
+  if(allowedPath.has(route.path)) return;
   store.commit('pageReady', false);
   getSession(store);
   selectProject(store, route);
@@ -66,8 +66,7 @@ const setCondition = (store: any) => {
   store.dispatch('task/setCondition');
 }
 
-const selectTask = (store: any, route: any) => {
-  store.commit('task/selectTask', {});
+const selectTask = async(store: any, route: any) => {
   if('key' in route.params === false) return;
   let timer = setInterval(() => {
     if(store.getters['task/allTasks'].length === 0) return;

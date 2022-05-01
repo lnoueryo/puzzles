@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <project-form v-model="selectedProject" @submit="onClickSend" :loading="loading">
+    <project-form v-model="newProject" @submit="onClickSend" :loading="loading">
       <template slot="back">
         <div>
           戻る
@@ -19,7 +19,7 @@
 
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import { isEmptyObj, isEmptyArr, resizeFile, checkStatus, isReadyObj } from '~/modules/utils'
+import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
 import * as lib from '~/modules/store'
 declare module 'vue/types/vue' {
   interface Vue {
@@ -31,7 +31,7 @@ export default Vue.extend({
   data:() => ({
     isAuthorized: false,
     loading: false,
-    selectedProject: {
+    newProject: {
       organization_id: '',
       name: '',
       description: '',
@@ -70,36 +70,34 @@ export default Vue.extend({
   },
   methods: {
     async onClickSend() {
-      // this.loading = true;
+      this.loading = true;
       let response;
-      console.log(this.organization.organization_id)
-      // try {
-      //   response = await this.$store.dispatch('project/createProject', this.projectForm());
-      // } catch (error: any) {
-      //   response = error;
-      // } finally {
-      //   if('status' in response === false) return this.$router.push('/bad-connection')
-      //   this.checkStatus(response.status, () => {
-      //     this.$router.push({name: 'project'})
-      //   },
-      //   () => {
-      //     this.loading = false;
-      //   }
-      //   )
-      // }
+      try {
+        response = await this.$store.dispatch('project/createProject', this.projectForm());
+      } catch (error: any) {
+        response = error;
+      } finally {
+        if('status' in response === false) return this.$router.push('/bad-connection')
+        this.checkStatus(response.status, () => {
+          this.$router.push({name: 'project'})
+        },
+        () => {
+          this.loading = false;
+        }
+        )
+      }
     },
     projectForm() {
-      const project = {} as lib.Project
-      const isFirstMilestone = !!this.selectedProject.milestones[0].name;
-      const isFirstField = !!this.selectedProject.fields[0].name;
-      project.milestones = isFirstMilestone ? this.selectedProject.milestones : [];
-      project.fields = isFirstField ? this.selectedProject.fields : [];
+      const project = {...this.newProject} as lib.Project
+      const isFirstMilestone = !!this.newProject.milestones[0].name;
+      const isFirstField = !!this.newProject.fields[0].name;
+      project.milestones = isFirstMilestone ? this.newProject.milestones : [];
+      project.fields = isFirstField ? this.newProject.fields : [];
       project.organization_id = this.organization.organization_id;
       project.authority_users = [
         {user_id: this.user.id, auth_id: 1, active: true} as any
       ];
-      const newProject = {...this.selectedProject.project, ...project}
-      return newProject;
+      return project;
     },
   }
 })

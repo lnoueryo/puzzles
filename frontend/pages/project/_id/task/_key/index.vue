@@ -51,7 +51,7 @@
             <div class="pa-3" style="min-height: 300px;background-color: #303030;border-radius: 5px;" v-html="task.detail"></div>
           </div>
         </div>
-        <!-- <div class="d-flex py-2" style="width: 100%">
+        <div class="d-flex py-2" style="width: 100%">
           <div style="width: 100%">
             <div class="mb-2">コメント</div>
               <tree-comments
@@ -66,7 +66,7 @@
                 <div class="pa-2" style="width: 100%;min-height: 100px;background-color: #303030;border-radius: 5px;">なし</div>
               </div>
           </div>
-        </div> -->
+        </div>
       </div>
     </form-card>
     <v-bottom-sheet transition v-model="sheet" persistent inset hide-overlay>
@@ -118,38 +118,6 @@
             <div>時間</div> -->
           </div>
         </div>
-          <!-- <v-list>
-            <v-list-item>
-              <div>推定時間</div>
-              <div>状態</div>
-              {{selectedTask.status_id}}
-              <v-select
-                ref="status"
-                v-model="selectedTask.status_id"
-                :items="statuses"
-                item-text="name"
-                item-value="id"
-                label="現在の状態"
-                style="width: 0px;"
-                flat
-                solo
-                hide-details
-              ></v-select>
-              <div>実働</div>
-              <v-text-field
-                solo
-                flat
-                hide-details
-                style="width: 0px;text-align: center;"
-                v-model="selectedTask.actual_time"
-              >
-              </v-text-field>
-              <div>時間</div>
-              <div>担当者</div>
-              <user-cell :styleValue="{}" :user="task.assignee"></user-cell>
-              <v-btn>更新</v-btn>
-            </v-list-item>
-          </v-list> -->
       </v-card>
     </v-bottom-sheet>
   </div>

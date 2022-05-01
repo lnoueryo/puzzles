@@ -23,7 +23,7 @@ func (s *Session)DSCreateSession(project string) error {
 	return nil
 }
 
-func DSGetSession(project string, ID string) (Session, error) {
+func DSGetSession(ID string, project string) (Session, error) {
 	var s Session
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, project);if err != nil {
@@ -38,7 +38,7 @@ func DSGetSession(project string, ID string) (Session, error) {
 	return s, nil
 }
 
-func DSDeleteSession(project string, ID string) error {
+func DSDeleteSession(ID string, project string) error {
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, project);if err != nil {
 		return err

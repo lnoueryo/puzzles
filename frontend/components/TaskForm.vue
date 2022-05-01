@@ -187,6 +187,7 @@ export default Vue.extend({
     ]),
     ...mapGetters([
       'project',
+      'projectAuthority',
     ]),
     isEmptyArr,
     isNumber,
@@ -275,11 +276,11 @@ export default Vue.extend({
       return this.changeToISOFormat('')
     },
     showConfigLink() {
-      if(this.projectAuthority != '管理者') {
+      if(this.projectAuthority.auth_id != 1) {
         return;
       }
-      const fields = this.projectAuthority.project.fields;
-      const milestones = this.projectAuthority.project.milestones;
+      const fields = this.project.fields;
+      const milestones = this.project.milestones;
       return this.isEmptyArr(fields) || this.isEmptyArr(milestones)
     },
   },

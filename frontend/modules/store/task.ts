@@ -61,7 +61,7 @@ export const cells = [
 const table = {
   style: {minWidth: 0},
   thead: {style: {minWidth: '', backgroundColor: '#295caa'}},
-  tbody: {style: {minWidth: '', overflowX: 'scroll', overflowY: 'scroll', maxHeight: '500px'}},
+  tbody: {style: {minWidth: '', maxHeight: '500px'}},
   cells: cells
 } as Table
 

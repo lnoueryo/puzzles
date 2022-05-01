@@ -1,5 +1,5 @@
 <template>
-  <form-card @send="onClickSend" style="max-width: 500px">
+  <form-card @send="onClickSend" style="max-width: 500px" v-if="pageReady">
     <v-form
       ref="form"
       v-model="formReady"
@@ -40,18 +40,19 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import FormCard from '~/components/FormCard.vue';
 import {checkStatus} from '~/modules/utils'
 declare module 'vue/types/vue' {
   interface Vue {
     checkStatus: (status: number, func: Function, error: Function) => string;
     handleSuccess: () => void;
+    pageReady: boolean
   }
 }
 export default Vue.extend({
   name: 'login',
   layout: 'login',
   data: () => ({
+    pageReady: false,
     error: '',
     organization: '',
     email: undefined,
@@ -74,8 +75,22 @@ export default Vue.extend({
       }
     }
   },
-  beforeCreate() {
+  async beforeCreate() {
     this.$store.dispatch('resetAll');
+      let response;
+      try {
+        response = await this.$store.dispatch('session');
+      } catch (error) {
+        response = error;
+      } finally {
+        if('status' in response === false) return this.$router.push('/bad-connection')
+        if(response.status == 304) {
+          this.pageReady= true;
+          return;
+        }
+        console.log(response.status)
+        this.checkStatus(response.status, (() => {return this.$router.push('/')}), (() => {}));
+      }
   },
   created() {
     const storageJson = JSON.parse(localStorage.getItem(window.location.host) as string);

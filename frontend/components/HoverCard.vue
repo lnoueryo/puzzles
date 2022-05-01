@@ -2,7 +2,7 @@
   <v-hover v-slot="{ hover }">
     <v-card :elevation="hover ? 12 : 2" :class="{ 'on-hover': hover }" width="315" height="300" class="ma-4">
       <nuxt-link :to="{name: 'project-id-task', params: {id: id}}">
-        <v-img :src="isPicture(image)" height="150px" style="background-color: #00000040">
+        <v-img :aspect-ratio="16/9" :src="isPicture(image)" style="background-color: #00000040">
           <div style="background-color: #00000040" class="fill-height repeating-gradient">
             <div class="d-flex justify-end">
               <v-btn icon :class="{ 'show-btns': hover }" color="transparent">

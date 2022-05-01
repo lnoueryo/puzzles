@@ -23,6 +23,7 @@ export class MainUser {
   }
   preprocessUser(user: lib.MainUserInfo) {
     this.mainUser = {...this.mainUser, ...user}
+    if(!this.mainUser.projects) return this.mainUser.projects = []
     this.mainUser.projects = this.mainUser.projects.sort((a: lib.Project, b: lib.Project) => {
       return new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf();
     });
@@ -77,7 +78,7 @@ export class MainUser {
   createProject(project: lib.Project) {
     this.mainUser.projects.unshift(project)
   }
-  updateProject(project: lib.ProjectAuthority) {
+  updateProject(project: lib.Project) {
     this.mainUser.projects = this.mainUser.projects.map((project) => {
       if(project.id == project.id) {
         project = {...project, ...project}

@@ -35,21 +35,6 @@ func (s *Session)CreateSession(project string) error {
 	return nil
 }
 
-func GetSession(ID string, project string) (Session, error) {
-	if project != "" {
-		s, err := DSGetSession(ID, project);if err != nil {
-			return s, err
-		}
-		return s, nil
-	}
-	var s Session
-	filepath := fmt.Sprintf("./session/%v.txt", ID)
-	err := s.ReadSession(filepath);if err != nil {
-		return s, err
-	}
-	return s, nil
-}
-
 func DeleteSession(ID string, project string) error {
 	if project != "" {
 		err := DSDeleteSession(ID, project);if err != nil {
@@ -81,7 +66,7 @@ func CheckSession(ID string, project string) (Session, error) {
 		return s, err
 	}
 	if project != "" {
-		s, err := DSGetSession(project, ID); if err != nil {
+		s, err := DSGetSession(ID, project); if err != nil {
 			return s, err
 		}
 		return s, nil

@@ -103,4 +103,10 @@ const checkStatus = () => {return (status: number, func: Function, error: Functi
   if(status === badRequest || status === unauthorized || status === forbidden || status === notFound) return error(status);
 }}
 
-export { isReadyObj, isReadyArr, isEmptyArr, isEmptyObj, resizeFile, checkStatus, isNumber, changeToHalf, changeToISOFormat, changeToTimeStampFormat, changeToDateISOFormat}
+const hello = () => {
+ return () => {
+  // console.log('AAA')
+ }
+}
+
+export { hello, isReadyObj, isReadyArr, isEmptyArr, isEmptyObj, resizeFile, checkStatus, isNumber, changeToHalf, changeToISOFormat, changeToTimeStampFormat, changeToDateISOFormat}

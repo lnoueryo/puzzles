@@ -95,6 +95,8 @@ func (u *User)GetMainUser(userID int, orgID string) error {
 	Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).
 	Preload("Organizations.Organization.Projects." + clause.Associations).
 	Preload("Organizations.Organization.Projects").
+	Preload("Organizations.Organization.Users.User").
+	Preload("Organizations.Organization.Users").
 	Preload("Organizations." + clause.Associations).
 	Preload("Organizations", "organization_id = ?", orgID).
 	Preload("Organizations").
