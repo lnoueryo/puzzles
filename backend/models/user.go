@@ -93,7 +93,8 @@ func (u *User) Update() error {
 func (u *User)GetMainUser(userID int, orgID string) error {
 	result := DB.Preload("Organizations.Organization.Projects.AuthorityUsers." + clause.Associations).
 	Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).
-	Preload("Organizations.Organization.Projects." + clause.Associations).
+	Preload("Organizations.Organization.Projects.Fields").
+	Preload("Organizations.Organization.Projects.Milestones").
 	Preload("Organizations.Organization.Projects").
 	Preload("Organizations.Organization.Users.User").
 	Preload("Organizations.Organization.Users").
@@ -113,15 +114,6 @@ func (u *User)CheckUser() error {
 	}
 	return nil
 }
-
-func GetProjectAuthorities(uid int) error {
-	var pas []ProjectAuthority
-	result := DB.Preload("Project.Milestones").Preload("Project.Fields").Preload("ProjectUsers.Type").Preload("ProjectUsers.User").Preload("ProjectUsers", "active = ?", true).Preload(clause.Associations).Find(&pas, "user_id = ? and active = true", uid); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return result.Error
-	}
-	return nil
-}
-
 
 func SearchUserLike(r *http.Request, column string) ([]User, int64, error) {
 	var users []User

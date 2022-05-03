@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row align="center" class="pt-8 px-4">
-      <v-col class="d-flex" cols="12" sm="4">
+      <v-col class="d-flex" cols="12" sm="3">
       <v-select
           v-model="selectField"
           :items="project.fields"
@@ -13,7 +13,19 @@
           :disabled="noTask || noField"
         ></v-select>
       </v-col>
-      <v-col class="d-flex" cols="12" sm="4">
+      <v-col class="d-flex" cols="12" sm="3">
+      <v-select
+          v-model="selectMilestone"
+          :items="project.milestones"
+          item-text="name"
+          item-value="name"
+          label="マイルストーン"
+          outlined
+          clearable
+          :disabled="noTask || noMilestone"
+        ></v-select>
+      </v-col>
+      <v-col class="d-flex" cols="12" sm="3">
         <v-select
           v-model="selectAssignee"
           :items="project.authority_users"
@@ -26,7 +38,7 @@
           :disabled="noTask"
         ></v-select>
       </v-col>
-      <v-col class="d-flex" cols="12" sm="4">
+      <v-col class="d-flex" cols="12" sm="3">
       <v-select
         v-model="selectStatus"
         :items="statuses"
@@ -101,6 +113,12 @@ export default Vue.extend({
       }
       return false;
     },
+    noMilestone() {
+      if(this.isReadyObj(this.project)) {
+        return this.isEmptyArr(this.project.milestones);
+      }
+      return false;
+    },
     selectAssignee: {
       get() {
         return this.$store.getters['task/selectAssignee'];
@@ -117,6 +135,14 @@ export default Vue.extend({
         this.$store.commit('task/selectField', field);
       }
     },
+    selectMilestone: {
+      get() {
+        return this.$store.getters['task/selectMilestone'];
+      },
+      set(milestone) {
+        this.$store.commit('task/selectMilestone', milestone);
+      }
+    },
     selectStatus: {
       get() {
         return this.$store.getters['task/selectStatus'];
@@ -126,14 +152,6 @@ export default Vue.extend({
       }
     },
   },
-  // created() {
-  //   const itemStr = sessionStorage.getItem(location.host + this.$route.params.id);
-  //   if(!itemStr) return;
-  //   const item = JSON.parse(itemStr);
-  //   this.$store.commit('task/selectAssignee', item?.assignee);
-  //   this.$store.commit('task/selectField', item?.field);
-  //   this.$store.commit('task/selectStatus', item?.status);
-  // },
   methods: {
     selectProgress() {
       this.$nextTick(() => {

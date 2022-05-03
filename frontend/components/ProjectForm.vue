@@ -1,10 +1,10 @@
 <template>
   <div>
     <v-card class="mx-auto my-4 px-8 py-4" style="max-width: 700px;">
-      <div class="px-4" style="position: relative">
-        <v-card-actions class="py-6 mx-4">
-          <v-btn outlined color="indigo" :to="to" right absolute>
-            <slot name="back"></slot>
+      <div style="position: relative">
+        <v-card-actions class="py-6">
+          <v-btn icon @click="$router.push(to)">
+            <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
@@ -52,7 +52,7 @@
         >
         </v-text-field>
         <v-btn class="mb-8" block @click="milestones.push({name: ''})" :disabled="!milestones[milestones.length - 1].name">追加</v-btn>
-        <v-select
+        <!-- <v-select
           v-model="authorityUsers"
           :items="projectUserItems"
           label="管理者"
@@ -63,15 +63,15 @@
           multiple
           v-if="!isEmptyObj(project)"
         >
-        </v-select>
+        </v-select> -->
         <cropper v-model="image" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.image"></cropper>
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
-          <v-btn text :to="to">
+          <v-spacer></v-spacer>
+          <v-btn text @click="$router.push(to)">
             <slot name="back"></slot>
           </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn :disabled="!formReady || loading" :loading="loading" class="white--text" color="amber darken-3" depressed @click="onSubmit">
+          <v-btn :disabled="!formReady || loading" :loading="loading" class="white--text" color="#295caa" depressed @click="onSubmit">
             <slot name="submit"></slot>
           </v-btn>
         </v-card-actions>
@@ -148,24 +148,24 @@ export default Vue.extend({
         this.updateValue({milestones});
       }
     },
-    authorityUsers: {
-      get(): lib.ProjectAuthority[] {
-        return this.value.authority_users.filter((authority_user: lib.ProjectAuthority) => authority_user.auth_id == 1);
-      },
-      set(_authority_users: number[]) {
-        const original_authority_users = JSON.parse(JSON.stringify(this.project.authority_users))
-        const authority_users = original_authority_users.map((authority_user: lib.ProjectAuthority) => {
-          if (_authority_users.includes(authority_user.user.id)) {
-            authority_user.auth_id = 1;
-          } else {
-            authority_user.auth_id = 2;
-          }
-          return authority_user;
-        })
+    // authorityUsers: {
+    //   get(): lib.ProjectAuthority[] {
+    //     return this.value.authority_users.filter((authority_user: lib.ProjectAuthority) => authority_user.auth_id == 1);
+    //   },
+    //   set(_authority_users: number[]) {
+    //     const original_authority_users = JSON.parse(JSON.stringify(this.project.authority_users))
+    //     const authority_users = original_authority_users.map((authority_user: lib.ProjectAuthority) => {
+    //       if (_authority_users.includes(authority_user.user.id)) {
+    //         authority_user.auth_id = 1;
+    //       } else {
+    //         authority_user.auth_id = 2;
+    //       }
+    //       return authority_user;
+    //     })
 
-        this.updateValue({authority_users});
-      }
-    },
+    //     this.updateValue({authority_users});
+    //   }
+    // },
     image: {
       get() {
         return this.value.image_data;
@@ -186,7 +186,7 @@ export default Vue.extend({
       })
     },
     to() {
-      return 'id' in this.$route.params ? {name: 'project-id-task', params: {id: this.$route.params.id}} : {name: 'index'};
+      return 'id' in this.$route.params ? {name: 'project-id', params: {id: this.$route.params.id}, query: {tab: 'project'}} : {name: 'index'};
     }
   },
   methods: {

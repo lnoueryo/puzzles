@@ -32,6 +32,11 @@ export const types = [
   {id: 4, name: 'その他'},
 ]
 
+export const authorities = [
+  {id: 1, name: '管理者'},
+  {id: 2, name: '一般'},
+]
+
 const CELL_WIDTH_A = 80
 const CELL_WIDTH_B = 105
 const CELL_WIDTH_C = 130

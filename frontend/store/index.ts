@@ -9,6 +9,7 @@ const initialState = () => {
     snackbar: false,
     snackbarText: '',
     apiHost: process.env.apiHost,
+    breadCrumbs: {text: '', disabled: false, href: ''}
   }
 }
 
@@ -29,6 +30,7 @@ export const getters: GetterTree<RootState, RootState> = {
   snackbar: state => state.snackbar,
   snackbarText: state => state.snackbarText,
   mediaUser: state => state.apiHost + '/media/users/',
+  breadCrumbs: state => state.breadCrumbs,
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -41,6 +43,7 @@ export const mutations: MutationTree<RootState> = {
   snackbar: (state, show) => state.snackbar = show,
   snackbarText: (state, text) => state.snackbarText = text,
   updateUser: (state, user) => state.user.updateUser(user),
+  breadCrumbs: (state, breadCrumbs) => state.breadCrumbs = breadCrumbs
 }
 
 export const actions: ActionTree<RootState, RootState> = {

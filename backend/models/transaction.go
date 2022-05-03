@@ -81,6 +81,39 @@ func GetMailJson(r *http.Request) (MailRequest, error) {
 	return mailRequest, nil
 }
 
+func (pur *ProjectUpdateRequest)BulkUpdateProject() error {
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		if pur.FieldDelete {
+			var f Field
+			if err := tx.Delete(&f, "project_id = ?", pur.Project.ID).Error; err != nil {
+				return errors.New("couldn't delete")
+			}
+		}
+		if pur.MilestoneDelete {
+			var m Milestone
+			if err := tx.Delete(&m, "project_id = ?", pur.Project.ID).Error; err != nil {
+				return errors.New("couldn't delete")
+			}
+		}
+		if pur.Project.ImageData != "" {
+			fileName, err := StoreImage("projects", pur.Project.ImageData); if err != nil {
+				return errors.New("couldn't save the image")
+			}
+			pur.Project.Image = fileName
+			result := tx.Debug().Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers", "AuthorityUsers").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				return result.Error
+			}
+			DeleteImage("9MSwg3CWQlIQYiVNkZcK.jpeg", "projects")
+			return nil
+		}
+		result := tx.Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers.Project").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return result.Error
+		}
+		return nil
+	})
+	return err
+}
+
 
 const (
 	mainMessage = "下記のURLより参加できます。\n"

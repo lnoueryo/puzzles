@@ -9,6 +9,7 @@ export class Tasks {
     basicSortKey: 'id' as keyof Task,
     selectAssignee: '',
     selectField: '',
+    selectMilestone: '',
     selectStatus: [] as string[],
     selectedTask: {},
     taskIndex: -1,
@@ -28,6 +29,7 @@ export class Tasks {
       basicSortKey: 'id' as keyof Task,
       selectAssignee: '',
       selectField: '',
+      selectMilestone: '',
       selectStatus: [] as string[],
       selectedTask: {},
       taskIndex: -1,
@@ -56,11 +58,13 @@ export class Tasks {
       if(!this.tasks.selectStatus.includes('完了') && task.status === '完了') return;
       let assignee = true;
       let field = true;
+      let milestone = true;
       let status = true;
       if(this.tasks.selectAssignee) assignee = task.assignee.name == this.tasks.selectAssignee;
       if(this.tasks.selectField) field = task.field == this.tasks.selectField;
+      if(this.tasks.selectMilestone) milestone = task.milestone == this.tasks.selectMilestone;
       if(this.tasks.selectStatus.length != 0) status = this.tasks.selectStatus.includes(task.status);
-      return assignee && field && status;
+      return assignee && field && milestone && status;
     })
   }
   get main () {
@@ -222,6 +226,10 @@ export class Tasks {
   selectField(name: string) {
     this.tasks.pageIndex = 0;
     this.tasks.selectField = name;
+  }
+  selectMilestone(name: string) {
+    this.tasks.pageIndex = 0;
+    this.tasks.selectMilestone = name;
   }
   selectStatus(statusArr: string[]) {
     this.tasks.pageIndex = 0;

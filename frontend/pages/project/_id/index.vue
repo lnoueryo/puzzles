@@ -1,23 +1,19 @@
 <template>
-  <div v-if="isReadyObj(projectAuthority)">
+  <div v-if="pageReady">
     <v-app-bar
       dense
       dark
       height="80"
     >
       <div class="text-center d-flex justyfy-space-between" style="max-width: 200px;width: 100%">
-        <v-btn class="mr-3" :to="'/project/' + projectAuthority.project_id + '/create'" color="#295caa">
-          <v-icon>mdi-clipboard-plus-outline</v-icon>
+        <v-btn class="mr-3" :to="'/project/' + project.id + '/create'" color="#295caa">
+          <v-icon left>mdi-clipboard-plus-outline</v-icon>
           タスク作成
-        </v-btn>
-        <v-btn :to="{name: 'project-id-edit', params: {id: $route.params.id}}" color="#295caa">
-          <v-icon>mdi-clipboard-plus-outline</v-icon>
-          プロジェクト編集
         </v-btn>
       </div>
       <v-spacer></v-spacer>
       <v-tabs
-        v-model="tab"
+        v-model="tabKey"
         centered
         dark
         icons-and-text
@@ -28,25 +24,15 @@
       >
         <v-tabs-slider></v-tabs-slider>
 
-        <v-tab href="#tab-1">
-          全てのタスク
-          <v-icon>mdi-clipboard-check-multiple-outline</v-icon>
-        </v-tab>
-
-        <v-tab href="#tab-2">
-          あなたのタスク
-          <v-icon>mdi-account-box</v-icon>
-        </v-tab>
-
-        <v-tab href="#tab-3">
-          プロジェクト概要
-          <v-icon>mdi-account-box</v-icon>
+        <v-tab :href="'#' + tab.component" v-for="(tab, i) in tabs" :key="i" @click="$router.replace({...$route, ...{query: {tab: tab.component}}})">
+          {{ tab.title }}
+          <v-icon>{{ tab.icon }}</v-icon>
         </v-tab>
 
       </v-tabs>
       <v-spacer></v-spacer>
       <div class="text-right" style="max-width: 200px;width: 100%">
-        <v-btn icon>
+        <!-- <v-btn icon>
           <v-icon>mdi-heart</v-icon>
         </v-btn>
 
@@ -77,13 +63,15 @@
               <v-list-item-title>Option {{ n }}</v-list-item-title>
             </v-list-item>
           </v-list>
-        </v-menu>
+        </v-menu> -->
       </div>
     </v-app-bar>
 
-    <v-tabs-items v-model="tab">
-      <v-tab-item v-for="i in 3" :key="i" :value="'tab-' + i">
-        <filter-table></filter-table>
+    <v-tabs-items v-model="tabKey">
+      <v-tab-item v-for="(tab, i) in tabs" :key="i + 1" :value="tab.component">
+        <keep-alive>
+          <div :is="tab.component"></div>
+        </keep-alive>
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -95,15 +83,36 @@ import { mapGetters } from 'vuex'
 import {isReadyObj, isEmptyObj} from '~/modules/utils'
 export default Vue.extend({
   data: () => ({
-    tab: null,
+    tabKey: 'task',
+    pageReady: false,
+    tabs: [
+      {title: '全てのタスク', icon: 'mdi-clipboard-check-multiple-outline', component: 'task'},
+      {title: 'プロジェクトの概要', icon: 'mdi-clipboard-check-multiple-outline', component: 'project'},
+    ],
+    addUserDialog: false,
   }),
   computed: {
     ...mapGetters([
-      'projectAuthority',
+      'user',
       'project',
+      'projectIndex',
+      'projectReady',
     ]),
     isReadyObj,
     isEmptyObj,
   },
+  created() {
+    if('tab' in this.$route.query === false) {
+      const query = {tab: 'task'};
+      this.$router.replace({query});
+    }
+    this.tabKey = this.$route.query.tab as string;
+    let timer = setInterval(() => {
+      if(!this.projectReady) return;
+      clearInterval(timer);
+      if(this.projectIndex === -1) return this.$router.push('/');
+      this.pageReady = true;
+    }, 100)
+  }
 })
 </script>

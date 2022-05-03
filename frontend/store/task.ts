@@ -9,6 +9,7 @@ const initialState = () => {
     statuses: lib.statuses,
     types: lib.types,
     priorities: lib.priorities,
+    authorities: lib.authorities,
     tasks: new Tasks(),
     selectedComment: {id: 0, index: 0, parent: 0},
   }
@@ -23,8 +24,10 @@ export const getters: GetterTree<TaskState, RootState> = {
   statuses: state => state.statuses,
   types: state => state.types,
   priorities: state => state.priorities,
+  authorities: state => state.authorities,
   selectAssignee: state => state.tasks.tasks.selectAssignee,
   selectField: state => state.tasks.tasks.selectField,
+  selectMilestone: state => state.tasks.tasks.selectMilestone,
   selectStatus: state => state.tasks.tasks.selectStatus,
   listNumArr: state => state.tasks.tasks.listNumArr,
   selectList: state => state.tasks.tasks.listNumArr[state.tasks.tasks.listIndex],
@@ -65,6 +68,10 @@ export const mutations: MutationTree<TaskState> = {
   selectField: (state, field) => {
     lib.storeCondition({field});
     return state.tasks.selectField(field);
+  },
+  selectMilestone: (state, milestone) => {
+    lib.storeCondition({milestone});
+    return state.tasks.selectMilestone(milestone);
   },
   selectAssignee: (state, assignee) => {
     lib.storeCondition({assignee});

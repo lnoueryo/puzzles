@@ -5,8 +5,11 @@ import (
 	// "os"
 	"encoding/json"
 	"errors"
+	"fmt"
+	// "io/ioutil"
 	"net/http"
 	"time"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -37,57 +40,33 @@ func GetProjectAuthority(pid int, uid int) (ProjectAuthority, error) {
 	return pa, nil
 }
 
-func (pa *ProjectAuthority)Update() error {
-	var projectAuthorities []ProjectAuthority
-	result := DB.Save(&projectAuthorities); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return result.Error
-	}
-	result = DB.Save(&pa.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+func (pa *ProjectAuthority)Create() error {
+	result := DB.Omit("User", "Type", "Project").Create(&pa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
 }
 
-func (pur *ProjectUpdateRequest)BulkUpdateProject() error {
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		if pur.FieldDelete {
-			var f Field
-			if err := tx.Delete(&f, "project_id = ?", pur.Project.ID).Error; err != nil {
-				return errors.New("couldn't delete")
-			}
-		}
-		if pur.MilestoneDelete {
-			var m Milestone
-			if err := tx.Delete(&m, "project_id = ?", pur.Project.ID).Error; err != nil {
-				return errors.New("couldn't delete")
-			}
-		}
-		if pur.Project.ImageData != "" {
-			fileName, err := StoreImage("projects", pur.Project.ImageData); if err != nil {
-				return errors.New("couldn't save the image")
-			}
-			pur.Project.Image = fileName
-			result := tx.Debug().Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers.Project").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				return result.Error
-			}
-			DeleteImage("9MSwg3CWQlIQYiVNkZcK.jpeg", "projects")
-			return nil
-		}
-		result := tx.Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers.Project").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return result.Error
-		}
-		return nil
-	})
-	return err
+func (pa *ProjectAuthority)Update() error {
+	result := DB.Omit("User", "Type", "Project").Save(&pa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
+	}
+	return nil
+}
+
+func DeleteProjectAuthority(id []int) (ProjectAuthority, error) {
+	var pa ProjectAuthority
+	result := DB.Debug().Delete(&pa, id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return pa, result.Error
+	}
+	return pa, nil
 }
 
 func GetProjectAuthorityJson(r *http.Request) (ProjectAuthority, error) {
 	var projectAuthority ProjectAuthority
 	err := json.NewDecoder(r.Body).Decode(&projectAuthority)
 	if err != nil {
-		message := "couldn't decode json"
-		err := errors.New(message)
-		return projectAuthority, err
+		fmt.Println(err)
 	}
 	return projectAuthority, nil
 }

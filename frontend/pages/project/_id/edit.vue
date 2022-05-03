@@ -85,25 +85,25 @@ export default Vue.extend({
           milestones.push({title: 'マイルストーン' + (i + 1), newData: '', oldData: milestone.name})
         }
       });
-      const filteredNewProject = this.selectedProject.authority_users.filter((authority_user) => authority_user.auth_id == 1)
-      let administers = filteredNewProject.map((authority_user, i) => {
-        return {title: 'プロジェクト管理者' + (i + 1), newData: authority_user.user.name, oldData: ''};
-      })
-      const authorityType = 1;
-      const newAdministerLength = administers.length - 1;
-      this.project.authority_users.forEach((authority_user: lib.ProjectAuthority, i: number) => {
-        if(authority_user.auth_id != authorityType) return
-        if(newAdministerLength >= i) {
-          administers[i] = {...administers[i], ...{oldData: authority_user.user.name}}
-        } else {
-          administers.push({title: 'プロジェクト管理者' + (i + 1), newData: '', oldData: authority_user.user.name})
-        }
-      });
+      // const filteredNewProject = this.selectedProject.authority_users.filter((authority_user) => authority_user.auth_id == 1)
+      // let administers = filteredNewProject.map((authority_user, i) => {
+      //   return {title: 'プロジェクト管理者' + (i + 1), newData: authority_user.user.name, oldData: ''};
+      // })
+      // const authorityType = 1;
+      // const newAdministerLength = administers.length - 1;
+      // this.project.authority_users.forEach((authority_user: lib.ProjectAuthority, i: number) => {
+      //   if(authority_user.auth_id != authorityType) return
+      //   if(newAdministerLength >= i) {
+      //     administers[i] = {...administers[i], ...{oldData: authority_user.user.name}}
+      //   } else {
+      //     administers.push({title: 'プロジェクト管理者' + (i + 1), newData: '', oldData: authority_user.user.name})
+      //   }
+      // });
       return [
         {title: 'プロジェクト名', newData: this.selectedProject.name, oldData: this.project.name},
         ...fields,
         ...milestones,
-        ...administers,
+        // ...administers,
         {title: 'イメージの変更', newData: this.selectedProject.image_data || this.selectedProject.image, oldData: this.selectedProject.image, image: true},
         {title: 'プロジェクトの概要', newData: this.selectedProject.description, oldData: this.project.description},
       ];
@@ -135,7 +135,7 @@ export default Vue.extend({
       } finally {
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
-          this.$router.push({name: 'project-id-task', params: {id: this.$route.params.id}})
+          this.$router.push({name: 'project-id', params: {id: this.$route.params.id}})
         },
         () => {
           this.loading = false;
@@ -153,8 +153,8 @@ export default Vue.extend({
       if(!fieldDelete) fieldDelete = !!this.project.fields[0]?.name && !isFirstField;
       let milestoneDelete = this.project.milestones.length > this.selectedProject.milestones.length;
       if(!milestoneDelete) milestoneDelete = !!this.project.milestones[0]?.name && !isFirstMilestone;
-      project.authority_users = this.selectedProject.authority_users;
-      console.log(this.selectedProject)
+      // project.authority_users = this.selectedProject.authority_users;
+      // console.log(this.selectedProject)
       const newProject = {...this.selectedProject, ...project}
       const request = {
         project: newProject,

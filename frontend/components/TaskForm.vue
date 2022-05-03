@@ -2,8 +2,8 @@
   <div>
     <v-card class="my-4 px-8 py-4">
       <v-card-actions>
-        <v-btn text :to="{name: 'project-id-task', params: {id: $route.params.id}}">
-          <slot name="back"></slot>
+        <v-btn icon @click="$router.push({name: 'project-id', params: {id: $route.params.id}})">
+          <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
@@ -138,11 +138,11 @@
         </v-card-text>
         <!-- <v-divider class="mt-12"></v-divider> -->
         <v-card-actions>
-          <v-btn text :to="{name: 'project-id-task', params: {id: $route.params.id}}">
+          <v-spacer></v-spacer>
+          <v-btn text @click="$router.push({name: 'project-id', params: {id: $route.params.id}})">
             <slot name="back"></slot>
           </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" :loading="loading" text @click="onSubmit" :disabled="!formReady || loading">
+          <v-btn color="#295caa" :loading="loading" @click="onSubmit" :disabled="!formReady || loading">
             <slot name="submit"></slot>
           </v-btn>
         </v-card-actions>

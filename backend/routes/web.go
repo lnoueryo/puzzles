@@ -12,6 +12,7 @@ var auth controller.Auth
 var task controller.Task
 var comment controller.Comment
 var project controller.Project
+var projectAuthority controller.ProjectAuthority
 var data controller.Data
 var infolog = config.App.InfoLog
 var allowOrigin = config.App.AllowOrigin
@@ -39,6 +40,9 @@ func Routes() http.Handler{
 	mux.Handle("/api/project/edit", Auth(http.HandlerFunc(project.Edit)))
 	mux.Handle("/api/project/create", Auth(http.HandlerFunc(project.Create)))
 	mux.Handle("/api/project/update", Auth(http.HandlerFunc(project.Update)))
+	mux.Handle("/api/project-authority/create", Auth(http.HandlerFunc(projectAuthority.Create)))
+	mux.Handle("/api/project-authority/update", Auth(http.HandlerFunc(projectAuthority.Update)))
+	mux.Handle("/api/project-authority/delete", Auth(http.HandlerFunc(projectAuthority.Delete)))
 	mux.Handle("/api/task", Auth(http.HandlerFunc(task.Index)))
 	mux.Handle("/api/task/create", Auth(http.HandlerFunc(task.Create)))
 	mux.Handle("/api/task/update", Auth(http.HandlerFunc(task.Update)))

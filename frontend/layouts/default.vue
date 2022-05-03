@@ -10,7 +10,7 @@
             <template v-slot:activator="{ on: menu }">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                  <div class="d-flex mx-2" v-bind="attrs" v-on="{ ...on, ...menu }">
+                  <div class="d-flex mx-2" style="cursor: pointer" v-bind="attrs" v-on="{ ...on, ...menu }">
                     <div style="display: grid;">
                       <small>プロジェクト名</small>
                       <div v-if="isReadyObj(project)">
@@ -109,6 +109,13 @@
         </div>
       </div>
     </v-app-bar>
+    <!-- <div style="background-color: #272727;width: 100%;padding-top: 64px">
+      <v-breadcrumbs :items="breadCrumbs">
+        <template v-slot:divider>
+          <v-icon>mdi-chevron-right</v-icon>
+        </template>
+      </v-breadcrumbs>
+    </div> -->
     <v-main>
         <Nuxt />
     </v-main>
@@ -161,7 +168,7 @@ export default {
           name: '組織に招待する',
           url: '/organization'
         },
-      ]
+      ],
     }
   },
   computed: {
@@ -187,6 +194,9 @@ export default {
     pageReady() {
       return this.$store.getters['pageReady'];
     },
+    breadCrumbs() {
+      return this.$store.getters['breadCrumbs'];
+    }
   },
   // async beforeRouteEnter (to, from, next) {
   //   console.log(this.isReadyObj(this.$store.getters.user))
@@ -205,6 +215,21 @@ export default {
   //   }
   // },
   async created() {
+    let path = ''
+    const paths = [{text: 'Home', disabled: false, href: '/'}]
+    this.$route.matched[0].path.split('/').forEach((devidedPath) => {
+      if(devidedPath == '') return;
+      console.log(path)
+      if(devidedPath[0] == ':') {
+        const params = this.$route.params[devidedPath.replace(':', '')]
+        path += '/' + params
+        paths[paths.length -1].href = path;
+        return;
+      }
+      path += '/' + devidedPath
+      paths.push({text: devidedPath, disabled: false, href: path})
+    })
+    console.log(paths)
     // window.onload = () => {
     //   this.$store.getters['projectCreateSock'].onmessage = (event) => {
     //     const data = JSON.parse(event.data);
@@ -225,7 +250,7 @@ export default {
   },
   methods: {
     onSelectProject(project) {
-      this.$router.push({name: 'project-id-task', params: {id: project.id}});
+      this.$router.push({name: 'project-id', params: {id: project.id}});
     },
     async logout() {
       const OK = 200;

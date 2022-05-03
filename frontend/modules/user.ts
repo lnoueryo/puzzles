@@ -7,6 +7,7 @@ export class MainUser {
     selectedProject: {},
     projectAuthority: {} as lib.ProjectAuthority,
     projectIndex: 0,
+    projectID: 0,
   }
   insertUser(user: lib.MainUserInfo) {
     this.preprocessUser(user);
@@ -19,6 +20,7 @@ export class MainUser {
       selectedProject: {},
       projectAuthority: {} as lib.ProjectAuthority,
       projectIndex: 0,
+      projectID: 0,
     }
   }
   preprocessUser(user: lib.MainUserInfo) {
@@ -50,11 +52,22 @@ export class MainUser {
     });
     return projectSlides;
   }
-  get selectedProject() {
-    return this.mainUser.selectedProject as lib.Project;
+  // get selectedProject() {
+  //   return this.mainUser.selectedProject as lib.Project;
+  // }
+  get selectedProject(): lib.Project {
+    return this.mainUser.projects.find((project) => {
+      return project.id == this.mainUser.projectID;
+    }) ?? {} as lib.Project;
   }
+  // get projectAuthority() {
+  //   return this.mainUser.projectAuthority as lib.ProjectAuthority;
+  // }
   get projectAuthority() {
-    return this.mainUser.projectAuthority as lib.ProjectAuthority;
+    console.log(this.selectedProject.authority_users)
+    return this.selectedProject.authority_users.find((authority_user) => {
+      return authority_user.user_id == this.user.id;
+    }) ?? {} as lib.ProjectAuthority
   }
   get projectIndex() {
     return this.mainUser.projectIndex;
@@ -63,26 +76,55 @@ export class MainUser {
     this.mainUser.projectIndex = 0;
     let id = 0;
     if('id' in params) id = Number(params.id);
-    this.mainUser.selectedProject = this.mainUser.projects.find((project, index) => {
-      this.mainUser.projectIndex = index;
-      if(project.id == id) {
-        this.mainUser.projectAuthority = project.authority_users.find((authority_user) => {
-          return authority_user.user_id == this.user.id;
-        }) as lib.ProjectAuthority
-        return true;
-      }
-      return false;
-    }) ?? {}
-    if(Object.keys(this.mainUser.selectedProject).length == 0) this.mainUser.projectIndex = -1;
+    this.mainUser.projectID = id;
+    // this.mainUser.selectedProject = this.mainUser.projects.find((project, index) => {
+    //   this.mainUser.projectIndex = index;
+    //   if(project.id == id) {
+    //     this.mainUser.projectAuthority = project.authority_users.find((authority_user) => {
+    //       return authority_user.user_id == this.user.id;
+    //     }) as lib.ProjectAuthority
+    //     return true;
+    //   }
+    //   return false;
+    // }) ?? {}
+    // if(Object.keys(this.mainUser.selectedProject).length == 0) this.mainUser.projectIndex = -1;
   }
   createProject(project: lib.Project) {
     this.mainUser.projects.unshift(project)
   }
-  updateProject(project: lib.Project) {
+  updateProject(updatedProject: lib.Project) {
     this.mainUser.projects = this.mainUser.projects.map((project) => {
-      if(project.id == project.id) {
-        project = {...project, ...project}
+      if(project.id == updatedProject.id) {
+        console.log(updatedProject)
+        project = {...project, ...updatedProject}
       }
+      return project;
+    })
+  }
+  createProjectAuthority(createdProjectAuthority: lib.ProjectAuthority) {
+    this.mainUser.projects.forEach((project: lib.Project) => {
+      if(project.id != createdProjectAuthority.project_id) return;
+      project.authority_users.push(createdProjectAuthority)
+    })
+  }
+  updateProjectAuthority(updateProjectAuthority: lib.ProjectAuthority) {
+    this.mainUser.projects = this.mainUser.projects.map((project: lib.Project) => {
+      if(project.id != updateProjectAuthority.project_id) return project;
+      project.authority_users = project.authority_users.map((user) => {
+        if(updateProjectAuthority.user_id != user.user_id) return user;
+        user = {...user, ...updateProjectAuthority}
+        return user;
+      })
+      console.log(project.authority_users[1])
+      return project;
+    })
+  }
+  deleteProjectAuthority(deleteProjectAuthority: lib.ProjectAuthority) {
+    this.mainUser.projects = this.mainUser.projects.map((project: lib.Project) => {
+      if(project.id != deleteProjectAuthority.project_id) return project;
+      project.authority_users = project.authority_users.filter((user) => {
+        return deleteProjectAuthority.user_id != user.user_id;
+      })
       return project;
     })
   }

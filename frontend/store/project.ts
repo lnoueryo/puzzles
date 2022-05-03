@@ -21,6 +21,9 @@ export const mutations: MutationTree<ProjectState> = {
   reset: (state) => Object.assign(state, initialState()),
   createProject: (state, project: lib.Project) => state.user.createProject(project),
   updateProject: (state, project: lib.Project) => state.user.updateProject(project),
+  createProjectAuthority: (state, projectAuthority: lib.ProjectAuthority) => state.user.createProjectAuthority(projectAuthority),
+  updateProjectAuthority: (state, projectAuthority: lib.ProjectAuthority) => state.user.updateProjectAuthority(projectAuthority),
+  deleteProjectAuthority: (state, projectAuthority: lib.ProjectAuthority) => state.user.deleteProjectAuthority(projectAuthority),
 }
 
 export const actions: ActionTree<ProjectState, RootState> = {
@@ -75,6 +78,42 @@ export const actions: ActionTree<ProjectState, RootState> = {
         console.log(form)
         if(form.field_delete || form.milestone_delete) dispatch('task/getTasks', window.$nuxt.$route.params.id, {root: true});
         commit('updateProject', response.data);
+        resolve(response);
+      } catch (error: any) {
+        console.log(error);
+        reject(error.response);
+      }
+    })
+  },
+  async createProjectAuthority({commit}, form) {
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.post('/api/project-authority/create', form);
+        commit('createProjectAuthority', response.data);
+        resolve(response);
+      } catch (error: any) {
+        console.log(error);
+        reject(error.response);
+      }
+    })
+  },
+  async updateProjectAuthority({commit}, form) {
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.put('/api/project-authority/update', form);
+        commit('updateProjectAuthority', response.data);
+        resolve(response);
+      } catch (error: any) {
+        console.log(error);
+        reject(error.response);
+      }
+    })
+  },
+  async deleteProjectAuthority({commit}, projectAuthority) {
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.delete('/api/project-authority/delete', {params: {id: projectAuthority.id}});
+        commit('deleteProjectAuthority', projectAuthority);
         resolve(response);
       } catch (error: any) {
         console.log(error);

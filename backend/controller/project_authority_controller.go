@@ -10,9 +10,9 @@ import (
 
 
 
-type Project struct {}
+type ProjectAuthority struct {}
 
-func (*Project)Index(w http.ResponseWriter, r *http.Request) {
+func (*ProjectAuthority)Index(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -64,7 +64,7 @@ func (*Project)Index(w http.ResponseWriter, r *http.Request) {
 	w.Write(pJson)
 }
 
-func (*Project)Create(w http.ResponseWriter, r *http.Request) {
+func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
 	// projectにprojectauthorityを入れてフロントから送る
 	if r.Method != "POST" {
 		errMap := map[string]string{"message": "not found"}
@@ -74,24 +74,16 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-    p, err := models.NewProject(r)
-    if err != nil {
+    pa, err := models.GetProjectAuthorityJson(r);if err != nil {
 		errorlog.Print(err)
+		errMap := map[string]string{"message": "not found"}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(errJson)
         return
     }
 
-	if p.ImageData != "" {
-		fileName, err := StoreImage("projects", p.ImageData); if err != nil {
-			errorlog.Print(err);
-			errMap := map[string]string{"message": "couldn't save the image"}
-			errJson, _ := json.Marshal(errMap)
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(errJson)
-			return
-		}
-		p.Image = fileName
-	}
-	err = p.Create(); if err != nil {
+	err = pa.Create(); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "couldn't create project"}
 		errJson, _ := json.Marshal(errMap)
@@ -101,7 +93,7 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 	s, _ := GetSession(r)
 	activity := models.Activity{
 		UserID: s.UserID,
-		ProjectID: p.ID,
+		ProjectID: pa.ProjectID,
 		ContentID: 6,
 	}
 
@@ -113,71 +105,12 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 	}
 
-	pa, err := models.GetProjectAuthority(p.ID, s.UserID); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "couldn't create project"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-	}
 	pJson, _ := json.Marshal(pa)
 	w.WriteHeader(http.StatusCreated)
 	w.Write(pJson)
 }
 
-func (*Project)Edit(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-		return
-	}
-	query := r.URL.Query()
-    idSlice, ok := query["id"]; if !ok {
-		errMap := map[string]string{"message": "not found"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-    }
-	id, err := strconv.Atoi(idSlice[0])
-	if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "bad connection"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(sessionJson)
-		return
-	}
-	var p models.Project
-	s, _ := GetSession(r)
-
-	err = p.GetEditProject(id, s.UserID); if err != nil {
-		errorlog.Print(err)
-		message := "bad connection"
-		errorlog.Print(message)
-		errMap := map[string]string{"message": message}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(sessionJson)
-		return
-	}
-	if p.OrganizationID != s.Organization {
-		message := "not authorized"
-		errorlog.Print(message)
-		errMap := map[string]string{"message": message}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusForbidden)
-		w.Write(sessionJson)
-		return
-	}
-	pJson, _ := json.Marshal(p)
-	w.WriteHeader(http.StatusOK)
-	w.Write(pJson)
-}
-
-func (*Project)Update(w http.ResponseWriter, r *http.Request) {
+func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "PUT" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -186,7 +119,7 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    pur, err := models.GetProjectUpdateRequestJson(r);if err != nil {
+    pa, err := models.GetProjectAuthorityJson(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -194,7 +127,7 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
         return
     }
-	err = pur.BulkUpdateProject(); if err != nil {
+	err = pa.Update(); if err != nil {
 		errMap := map[string]string{"message": err.Error()}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -204,7 +137,7 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 	s, _ := GetSession(r)
 	activity := models.Activity{
 		UserID: s.UserID,
-		ProjectID: pur.Project.ID,
+		ProjectID: pa.ProjectID,
 		ContentID: 6,
 	}
 
@@ -217,8 +150,53 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	projectJson, _ := json.Marshal(pur.Project)
+	projectJson, _ := json.Marshal(pa)
 	w.WriteHeader(http.StatusAccepted)
 	w.Write(projectJson)
 }
 
+func (_ *ProjectAuthority)Delete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "DELETE" {
+		errMap := map[string]string{"message": "not found"}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(errJson)
+		return
+	}
+
+	query := r.URL.Query()
+    idSlice, ok := query["id"]; if !ok {
+		errorlog.Println(query)
+		errMap := map[string]string{"message": "not found"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(sessionJson)
+		return
+    }
+	var IDs []int
+	for _, ID := range idSlice {
+		id, err := strconv.Atoi(ID)
+		if err != nil {
+			errorlog.Print(err)
+			errMap := map[string]string{"message": "bad connection"}
+			sessionJson, _ := json.Marshal(errMap)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write(sessionJson)
+			return
+		}
+		IDs = append(IDs, id)
+	}
+
+	pa, err := models.DeleteProjectAuthority(IDs); if err != nil {
+		errorlog.Print(err)
+		errMap := map[string]string{"message": "not found"}
+		errJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(errJson)
+		return
+	}
+
+	commentJson, _ := json.Marshal(pa)
+	w.WriteHeader(http.StatusNoContent)
+	w.Write(commentJson)
+}
