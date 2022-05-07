@@ -8,6 +8,7 @@ export class MainUser {
     projectAuthority: {} as lib.ProjectAuthority,
     projectIndex: 0,
     projectID: 0,
+    userID: 0,
   }
   insertUser(user: lib.MainUserInfo) {
     this.preprocessUser(user);
@@ -21,6 +22,7 @@ export class MainUser {
       projectAuthority: {} as lib.ProjectAuthority,
       projectIndex: 0,
       projectID: 0,
+      userID: 0,
     }
   }
   preprocessUser(user: lib.MainUserInfo) {
@@ -60,9 +62,11 @@ export class MainUser {
       return project.id == this.mainUser.projectID;
     }) ?? {} as lib.Project;
   }
-  // get projectAuthority() {
-  //   return this.mainUser.projectAuthority as lib.ProjectAuthority;
-  // }
+  get selectedUser(): lib.OrganizationAuthority {
+    return this.mainUser.organization?.organization?.users.find((user) => {
+      return user.user_id == this.mainUser.userID;
+    }) ?? {} as lib.OrganizationAuthority;
+  }
   get projectAuthority() {
     console.log(this.selectedProject.authority_users)
     return this.selectedProject.authority_users.find((authority_user) => {
@@ -73,21 +77,16 @@ export class MainUser {
     return this.mainUser.projectIndex;
   }
   selectProject(params: lib.Params) {
-    this.mainUser.projectIndex = 0;
+    // this.mainUser.projectIndex = 0;
     let id = 0;
     if('id' in params) id = Number(params.id);
     this.mainUser.projectID = id;
-    // this.mainUser.selectedProject = this.mainUser.projects.find((project, index) => {
-    //   this.mainUser.projectIndex = index;
-    //   if(project.id == id) {
-    //     this.mainUser.projectAuthority = project.authority_users.find((authority_user) => {
-    //       return authority_user.user_id == this.user.id;
-    //     }) as lib.ProjectAuthority
-    //     return true;
-    //   }
-    //   return false;
-    // }) ?? {}
-    // if(Object.keys(this.mainUser.selectedProject).length == 0) this.mainUser.projectIndex = -1;
+    this.mainUser.projectIndex = this.mainUser.projects.findIndex((project) => id == project.id)
+  }
+  selectUser(params: lib.Params) {
+    let id = 0;
+    if('user_id' in params) id = Number(params.user_id);
+    this.mainUser.userID = id;
   }
   createProject(project: lib.Project) {
     this.mainUser.projects.unshift(project)

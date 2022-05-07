@@ -19,6 +19,7 @@ func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	query := r.URL.Query()
     idSlice, ok := query["id"]; if !ok {
+		errorlog.Print(ok)
 		errMap := map[string]string{"message": "not found"}
 		sessionJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)

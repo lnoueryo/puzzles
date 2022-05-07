@@ -10,6 +10,7 @@ export class Tasks {
     selectAssignee: '',
     selectField: '',
     selectMilestone: '',
+    selectVersion: '',
     selectStatus: [] as string[],
     selectedTask: {},
     taskIndex: -1,
@@ -30,6 +31,7 @@ export class Tasks {
       selectAssignee: '',
       selectField: '',
       selectMilestone: '',
+      selectVersion: '',
       selectStatus: [] as string[],
       selectedTask: {},
       taskIndex: -1,
@@ -59,12 +61,14 @@ export class Tasks {
       let assignee = true;
       let field = true;
       let milestone = true;
+      let version = true;
       let status = true;
       if(this.tasks.selectAssignee) assignee = task.assignee.name == this.tasks.selectAssignee;
       if(this.tasks.selectField) field = task.field == this.tasks.selectField;
       if(this.tasks.selectMilestone) milestone = task.milestone == this.tasks.selectMilestone;
+      if(this.tasks.selectVersion) version = task.version == this.tasks.selectVersion;
       if(this.tasks.selectStatus.length != 0) status = this.tasks.selectStatus.includes(task.status);
-      return assignee && field && milestone && status;
+      return assignee && field && milestone && version && status;
     })
   }
   get main () {
@@ -101,6 +105,7 @@ export class Tasks {
     const newTask = {} as Task
     newTask.priority = (task?.priority as lib.Priority)?.name;
     newTask.milestone = (task?.milestone as lib.Milestone)?.name;
+    newTask.version = (task?.version as lib.Version)?.name;
     newTask.field = (task.field as lib.Field)?.name;
     newTask.status = (task.status as lib.Status)?.name;
     newTask.type = (task.type as lib.Type)?.name;
@@ -231,6 +236,10 @@ export class Tasks {
     this.tasks.pageIndex = 0;
     this.tasks.selectMilestone = name;
   }
+  selectVersion(name: string) {
+    this.tasks.pageIndex = 0;
+    this.tasks.selectVersion = name;
+  }
   selectStatus(statusArr: string[]) {
     this.tasks.pageIndex = 0;
     this.tasks.selectStatus = statusArr;
@@ -255,6 +264,7 @@ interface Task {
   priority: string
   milestone: string
   field: string
+  version: string
   status: string
   type: string
   start_time: string

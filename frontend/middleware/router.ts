@@ -12,6 +12,7 @@ const router: Middleware = async({store, route, redirect}) => {
   getSession(store, redirect);
   breadCrumbs(store, route)
   selectProject(store, route);
+  selectUser(store, route);
   if (Object.keys(route.params).length === 0) return;
   getTask(store, route, redirect);
   selectTask(store, route);
@@ -61,6 +62,15 @@ const selectProject = (store: any, route: any) => {
   }, 100)
 }
 
+const selectUser = (store: any, route: any) => {
+  let timer = setInterval(() => {
+    if(emptyObj(store.getters.user)) return;
+    clearInterval(timer);
+    store.commit('selectUser', route.params);
+    store.commit('pageReady', true);
+  }, 100)
+}
+
 const getTask = (store: any, route: any, redirect: any) => {
   if(route.params.id == projectID) return setCondition(store);
   let timer = setInterval(async() => {
@@ -68,7 +78,7 @@ const getTask = (store: any, route: any, redirect: any) => {
     clearInterval(timer);
     let response;
     try {
-      response = await store.dispatch('task/getTasks', route.params.id);
+      response = await store.dispatch('task/getTasks', store.getters.project.id);
       projectID = store.getters.project.id;
       setCondition(store);
     } catch (error: any) {

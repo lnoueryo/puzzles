@@ -23,7 +23,7 @@
       </div>
       <div class="pa-2 d-flex justify-space-between">
         <img style="max-width: 200px;width: 100%" :src="currentImage" alt="">
-        <img style="max-width: 200px;width: 100%" :src="value" alt="">
+        <img style="max-width: 200px;width: 100%" :src="value" alt="" v-if="value">
       </div>
     </div>
   </div>

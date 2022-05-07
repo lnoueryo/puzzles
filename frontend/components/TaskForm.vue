@@ -130,7 +130,19 @@
                 item-value="id"
                 label="マイルストーン"
                 prepend-icon="mdi-flag-triangle"
-                :disabled="isEmptyArr(project.fields)"
+                :disabled="isEmptyArr(project.milestones)"
+              ></v-select>
+            </v-col>
+            <v-col sm="6" md="6">
+              <v-select
+                ref="version"
+                v-model="version"
+                :items="project.versions"
+                item-text="name"
+                item-value="id"
+                label="バージョン"
+                prepend-icon="mdi-rocket-launch"
+                :disabled="isEmptyArr(project.versions)"
               ></v-select>
             </v-col>
           </v-row>
@@ -256,6 +268,14 @@ export default Vue.extend({
         this.updateValue({milestone_id});
       }
     },
+    version: {
+      get() {
+        return this.value.version_id;
+      },
+      set(version_id) {
+        this.updateValue({version_id});
+      }
+    },
     deadline: {
       get() {
         return this.value.deadline;
@@ -281,7 +301,8 @@ export default Vue.extend({
       }
       const fields = this.project.fields;
       const milestones = this.project.milestones;
-      return this.isEmptyArr(fields) || this.isEmptyArr(milestones)
+      const versions = this.project.versions;
+      return this.isEmptyArr(fields) || this.isEmptyArr(milestones) || this.isEmptyArr(versions)
     },
   },
   methods: {

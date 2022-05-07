@@ -40,11 +40,20 @@
         </div>
         <div class="tbody" :style="table.tbody.style" v-if="isReadyArr(tasks)">
           <div class="tr d-flex align-center" v-for="(task, i) in tasks" :key="i">
-            <nuxt-link :to="{name: 'project-id-task-key-edit', params: {id: $route.params.id, key: task.id}}" v-for="(cell, i) in table.cells" :key="i">
-              <user-cell :styleValue="cell.header.style" :user="task.assigner" v-if="cell.name == 'assigner'"></user-cell>
-              <user-cell :styleValue="cell.header.style" :user="task.assignee" v-else-if="cell.name == 'assignee'"></user-cell>
-              <div class="cell" :style="cell.header.style" v-else>{{ task[cell.name] }}</div>
-            </nuxt-link>
+            <div v-for="(cell, i) in table.cells" :key="i">
+              <!-- selectedUser -->
+              <user-cell :styleValue="cell.header.style" :user="task.assigner" v-if="cell.name == 'assigner'" @click.native="openUserDialog(task.assigner.id)"></user-cell>
+              <user-cell :styleValue="cell.header.style" :user="task.assignee" v-else-if="cell.name == 'assignee'" @click.native="openUserDialog(task.assignee.id)"></user-cell>
+              <!-- <nuxt-link :to="{name: 'profile-user_id', params: {user_id: task.assigner.id}}" v-if="cell.name == 'assigner'">
+                <user-cell :styleValue="cell.header.style" :user="task.assigner"></user-cell>
+              </nuxt-link>
+              <nuxt-link :to="{name: 'profile-user_id', params: {user_id: task.assignee.id}}"  v-else-if="cell.name == 'assignee'">
+                <user-cell :styleValue="cell.header.style" :user="task.assignee"></user-cell>
+              </nuxt-link> -->
+              <nuxt-link :to="{name: 'project-id-task-key-edit', params: {id: $route.params.id, key: task.id}}" v-else>
+                <div class="cell" :style="cell.header.style">{{ task[cell.name] }}</div>
+              </nuxt-link>
+            </div>
           </div>
         </div>
       </div>
@@ -78,16 +87,59 @@
         <v-btn :to="'/project/' + project.id + '/create'" color="#295caa">新しいタスクを作成する</v-btn>
       </v-row>
     </div>
+    <v-row justify="space-around">
+      <v-col cols="auto">
+        <v-dialog v-model="userDialog" transition="dialog-bottom-transition" max-width="600">
+          <template v-slot:default="dialog">
+            <v-row class="py-8" align="center" justify="center" v-if="isReadyObj(selectedUser)">
+              <v-list class="px-4" subheader two-line width="600">
+                <v-row class="py-8 mx-4" align="center" justify="center" style="position: relative">
+                  <div style="position: relative;">
+                    <v-avatar size="36px" class="mr-4" style="position: absolute;left: -50px">
+                      <img alt="Avatar" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
+                      <v-icon size="44px" dark v-else>
+                      mdi-account-circle
+                      </v-icon>
+                    </v-avatar>
+                    <h2>{{ selectedUser.user.name }}</h2>
+                  </div>
+                  <v-btn icon absolute right color="#295caa" :to="{name: 'project-id-edit', params: {id: $route.params.id}}">
+                    <v-icon>mdi-application-edit-outline</v-icon>
+                  </v-btn>
+                </v-row>
+                <v-list-item two-line v-for="(userEntity, i) in userEntities" :key="i">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ userEntity.title }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ selectedUser.user[userEntity.key] }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item two-line>
+                  <v-list-item-content>
+                    <v-list-item-title>組織参加日</v-list-item-title>
+                    <v-list-item-subtitle>{{ changeToTimeStampFormat(selectedUser.created_at) }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-spacer></v-spacer>
+                <v-btn text @click="dialog.value = false;selectedUser = {}" right>Close</v-btn>
+              </v-list>
+            </v-row>
+          </template>
+        </v-dialog>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import {isReadyArr, isReadyObj, isEmptyArr, isEmptyObj} from '~/modules/utils'
+import {isReadyArr, isReadyObj, isEmptyArr, isEmptyObj, changeToTimeStampFormat} from '~/modules/utils'
+import * as lib from '~/modules/store'
 export default Vue.extend({
   data: () => ({
     tab: null,
+    userDialog: false,
+    selectedUser: {}
   }),
   computed: {
     ...mapGetters('task', [
@@ -108,6 +160,7 @@ export default Vue.extend({
     isReadyObj,
     isEmptyArr,
     isEmptyObj,
+    changeToTimeStampFormat,
     noTask() {
       if(this.isReadyObj(this.project)) {
         return this.isEmptyArr(this.allTasks);
@@ -128,6 +181,16 @@ export default Vue.extend({
         this.$store.dispatch('task/listIndex', v);
       },
     },
+    userEntities() {
+      const userEntities = [
+        {key: 'description', title: '自己紹介'},
+        {key: 'age', title: '年齢'},
+        {key: 'sex', title: '性別'},
+        {key: 'email', title: 'メールアドレス'},
+        {key: 'address', title: '住所'},
+      ]
+      return userEntities
+    }
   },
   methods: {
     sortTask(index: number) {
@@ -137,6 +200,10 @@ export default Vue.extend({
     pageChange(index: number) {
       this.$store.commit('task/pageChange', index);
     },
+    openUserDialog(userID: number) {
+      this.selectedUser = this.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id == userID);
+      this.userDialog = true;
+    }
   }
 })
 </script>

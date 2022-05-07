@@ -11,6 +11,8 @@ var home controller.Home
 var auth controller.Auth
 var task controller.Task
 var comment controller.Comment
+var organization controller.Organization
+var organizationAuthority controller.OrganizationAuthority
 var project controller.Project
 var projectAuthority controller.ProjectAuthority
 var data controller.Data
@@ -36,6 +38,8 @@ func Routes() http.Handler{
 	// Auth
 	mux.Handle("/api/home", Auth(http.HandlerFunc(home.Index)))
 	mux.Handle("/api/user/update", Auth(http.HandlerFunc(home.Update)))
+	mux.Handle("/api/organization/update", Auth(http.HandlerFunc(organization.Update)))
+	mux.Handle("/api/organization-authority/update", Auth(http.HandlerFunc(organizationAuthority.Update)))
 	mux.Handle("/api/project", Auth(http.HandlerFunc(project.Index)))
 	mux.Handle("/api/project/edit", Auth(http.HandlerFunc(project.Edit)))
 	mux.Handle("/api/project/create", Auth(http.HandlerFunc(project.Create)))

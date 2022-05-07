@@ -23,7 +23,7 @@ type ProjectAuthority struct {
 	Type			Authority			`gorm:"foreignkey:AuthorityID;"json:"type"`
 	User			User				`gorm:"foreignkey:UserID;"json:"user"`
 	Project			Project				`gorm:"foreignkey:ProjectID;"json:"project"`
-	CreatedAt		time.Time			`gorm:"<-:create;autoCreateTime;"json:"-"`
+	CreatedAt		time.Time			`gorm:"<-:create;autoCreateTime;"json:"created_at"`
 	UpdatedAt		time.Time			`json:"-"`
 }
 

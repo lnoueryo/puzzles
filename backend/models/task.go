@@ -13,34 +13,36 @@ import (
 
 
 type Task struct {
-	ID        	  int       `gorm:"AUTO_INCREMENT"json:"id"`
-	AssigneeID	  int       `gorm:"<-;not null"json:"assignee_id"`
-	AssignerID	  int       `gorm:"<-;not null"json:"assigner_id"`
-	StatusID      int       `gorm:"<-;not null"json:"status_id"`
-	FieldID       *int		`gorm:"<-;not null;"json:"field_id"`
-	MilestoneID   *int		`gorm:"<-;not null;"json:"milestone_id"`
-	PriorityID    int       `gorm:"<-;not null"json:"priority_id"`
-	TypeID        int       `gorm:"<-;not null"json:"type_id"`
-	ProjectID     int       `gorm:"<-;not null"json:"project_id"`
-	ParentID	  int    	`gorm:"<-;not null"json:"parent_id"`
-	Key        	  string    `json:"key"`
-	Title         string    `gorm:"<-;not null"json:"title" sql:"CHARACTER SET utf8 COLLATE utf8_unicode_ci"`
-	Detail        string    `gorm:"<-;"json:"detail"`
-	EstimatedTime float32   `json:"estimated_time"`
-	ActualTime    float32   `json:"actual_time"`
-	StartTime     time.Time `gorm:"default:null;"json:"start_time"`
-	Deadline      time.Time `gorm:"default:null;"json:"deadline"`
+	ID				int			`gorm:"AUTO_INCREMENT"json:"id"`
+	AssigneeID		int			`gorm:"<-;not null"json:"assignee_id"`
+	AssignerID		int			`gorm:"<-;not null"json:"assigner_id"`
+	StatusID		int			`gorm:"<-;not null"json:"status_id"`
+	FieldID			*int		`gorm:"<-;not null;"json:"field_id"`
+	MilestoneID		*int		`gorm:"<-;not null;"json:"milestone_id"`
+	VersionID		*int		`gorm:"<-;not null;"json:"version_id"`
+	PriorityID		int			`gorm:"<-;not null"json:"priority_id"`
+	TypeID			int			`gorm:"<-;not null"json:"type_id"`
+	ProjectID		int			`gorm:"<-;not null"json:"project_id"`
+	ParentID		int			`gorm:"<-;not null"json:"parent_id"`
+	Key				string		`json:"key"`
+	Title			string		`gorm:"<-;not null"json:"title" sql:"CHARACTER SET utf8 COLLATE utf8_unicode_ci"`
+	Detail			string		`gorm:"<-;"json:"detail"`
+	EstimatedTime	float32		`json:"estimated_time"`
+	ActualTime		float32		`json:"actual_time"`
+	StartTime		time.Time	`gorm:"default:null;"json:"start_time"`
+	Deadline		time.Time	`gorm:"default:null;"json:"deadline"`
 	// Status        Status    `gorm:"embedded;embeddedPrefix:status_"`
-	Status        Status    `gorm:"references:ID;"json:"status"`
-	Field         Field    	`gorm:"references:ID"json:"field"`
-	Milestone     Milestone `gorm:"references:ID"json:"milestone"`
-	Type          Type    	`gorm:"references:ID"json:"type"`
-	Priority      Priority  `gorm:"references:ID"json:"priority"`
-	Assignee  	  User      `gorm:"references:ID;foreignKey:AssigneeID"json:"assignee"`
-	Assigner  	  User      `gorm:"references:ID;foreignKey:AssignerID"json:"assigner"`
-	Comments	  []Comment `json:"comments"`
-	CreatedAt 	  time.Time `gorm:"<-:create;autoCreateTime;"json:"created_at"`
-	UpdatedAt 	  time.Time `gorm:"autoUpdateTime;"json:"updated_at"`
+	Status			Status		`gorm:"references:ID;"json:"status"`
+	Field			Field    	`gorm:"references:ID"json:"field"`
+	Milestone		Milestone	`gorm:"references:ID"json:"milestone"`
+	Version			Version		`gorm:"references:ID"json:"version"`
+	Type			Type    	`gorm:"references:ID"json:"type"`
+	Priority		Priority	`gorm:"references:ID"json:"priority"`
+	Assignee		User		`gorm:"references:ID;foreignKey:AssigneeID"json:"assignee"`
+	Assigner		User		`gorm:"references:ID;foreignKey:AssignerID"json:"assigner"`
+	Comments		[]Comment	`json:"comments"`
+	CreatedAt		time.Time	`gorm:"<-:create;autoCreateTime;"json:"created_at"`
+	UpdatedAt		time.Time	`gorm:"autoUpdateTime;"json:"updated_at"`
 }
 
 
@@ -72,7 +74,7 @@ func (t *Task)GetTask() error {
 }
 
 func (t *Task)Create() error {
-	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Type", "Priority").Create(&t); if result.Error != nil {
+	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Version", "Type", "Priority").Create(&t); if result.Error != nil {
 		return result.Error
 	}
 	return nil
@@ -80,7 +82,7 @@ func (t *Task)Create() error {
 
 func (t *Task)Update() error {
 	fmt.Println(t.EstimatedTime)
-	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Type", "Priority").Save(&t).Clauses(clause.Returning{}); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Version", "Type", "Priority").Save(&t).Clauses(clause.Returning{}); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil

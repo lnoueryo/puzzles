@@ -87,3 +87,38 @@ func GetSession(r *http.Request) (session.Session, error) {
 	}
 	return s, nil
 }
+
+func CreateMainUser(r *http.Request) (MainUser, error) {
+	var mainUser MainUser
+	var u models.User
+	s, err := GetSession(r)
+	err = u.GetMainUser(s.UserID, s.Organization); if err != nil {
+		errorlog.Print(err)
+		return mainUser, err
+	}
+	mainUser.Projects = ProjectFilter(u.Organizations[0].Organization.Projects, func(userID int) bool {
+        return userID == u.ID
+    })
+	u.Organizations[0].Organization.Projects = nil
+	mainUser.Organization = u.Organizations[0]
+	u.Organizations = nil
+	mainUser.User = u
+	return mainUser, nil
+}
+
+func ProjectFilter(projects []models.Project, f func(int) bool) []models.Project {
+	var userProjects []models.Project
+	for _, project := range projects {
+		isUser := false
+		for _, user := range project.AuthorityUsers {
+			if f(user.UserID) {
+				isUser = true
+				break
+			}
+		}
+		if isUser {
+			userProjects = append(userProjects, project)
+		}
+	}
+	return userProjects
+}

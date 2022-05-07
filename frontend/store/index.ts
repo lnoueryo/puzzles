@@ -22,6 +22,7 @@ export const getters: GetterTree<RootState, RootState> = {
   organization: state => state.user.organization,
   projects: state => state.user.projects,
   project: state => state.user.selectedProject,
+  selectedUser: state => state.user.selectedUser,
   projectAuthority: state => state.user.projectAuthority,
   projectIndex: state => state.user.projectIndex,
   projectSlides: state => state.user.projectSlides,
@@ -37,6 +38,7 @@ export const mutations: MutationTree<RootState> = {
   reset: (state) => Object.assign(state, initialState()),
   userData: (state, userData: lib.MainUserInfo) => state.user.insertUser(userData),
   selectProject: (state, params) => state.user.selectProject(params),
+  selectUser: (state, params) => state.user.selectUser(params),
   pageReady: (state, pageReady) => state.pageReady = pageReady,
   projectReady: (state, projectReady) => state.projectReady = projectReady,
   initUser: state => state.user.init(),
@@ -93,10 +95,9 @@ export const actions: ActionTree<RootState, RootState> = {
   async registerUser({commit}, form) {
     return new Promise(async(resolve, reject) => {
       try {
-        console.log(form)
         const response = await this.$axios.put('/api/user/update', form);
         resolve(response);
-        commit('updateUser', response.data);
+        commit('userData', response.data);
       } catch (error: any) {
         reject(error.response);
       }
@@ -109,6 +110,30 @@ export const actions: ActionTree<RootState, RootState> = {
         // console.log((new Blob([JSON.stringify (response)])).size);
         resolve(response);
         // commit('userData', response.data);
+      } catch (error: any) {
+        reject(error.response);
+      }
+    })
+  },
+  updateOrganization({commit}, form) {
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.put('/api/organization/update', form);
+        // console.log((new Blob([JSON.stringify (response)])).size);
+        resolve(response);
+        commit('userData', response.data);
+      } catch (error: any) {
+        reject(error.response);
+      }
+    })
+  },
+  updateOrganizationAuthority({commit}, form) {
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.put('/api/organization-authority/update', form);
+        // console.log((new Blob([JSON.stringify (response)])).size);
+        resolve(response);
+        commit('userData', response.data);
       } catch (error: any) {
         reject(error.response);
       }

@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <project-form v-model="newProject" @submit="onClickSend" :loading="loading">
+    <organization-form v-model="organizationAuthority.organization" @submit="dialog = true" :loading="loading">
       <template slot="back">
         <div>
           戻る
@@ -11,7 +11,10 @@
           更新
         </div>
       </template>
-    </project-form>
+    </organization-form>
+    <update-dialog v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
+      更新の確認
+    </update-dialog>
   </div>
 </template>
 
@@ -24,24 +27,19 @@ import * as lib from '~/modules/store'
 declare module 'vue/types/vue' {
   interface Vue {
     preprocessProjectAuthority: () => void;
-    projectForm: () => lib.ProjectAuthority
   }
+}
+interface ProjectAuthority extends lib.ProjectAuthority {
+  disabled: boolean
+  project: lib.Project
 }
 export default Vue.extend({
   data:() => ({
     isAuthorized: false,
+    organizationAuthority: {} as lib.OrganizationAuthority,
+    formReady: false,
     loading: false,
-    newProject: {
-      organization_id: '',
-      name: '',
-      description: '',
-      image: '',
-      image_data: '',
-      milestones: [{id: 0, name: ''}],
-      fields: [{id: 0, name: ''}],
-      versions: [{id: 0, name: ''}],
-      users: [] as lib.User[]
-    },
+    dialog: false,
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
@@ -51,14 +49,23 @@ export default Vue.extend({
   }),
   computed: {
     ...mapGetters([
-      'user',
+      'project',
       'organization',
-      'projectAuthority',
+      'user',
     ]),
     isEmptyObj,
     isEmptyArr,
     isReadyObj,
     checkStatus,
+    dialogForm() {
+      return [
+        {title: '組織名', newData: this.organizationAuthority.organization.name, oldData: this.organization.organization.name},
+        {title: 'プロジェクトの概要', newData: this.organizationAuthority.organization.description, oldData: this.organization.organization.description},
+        {title: '設立日', newData: this.organizationAuthority.organization.founded, oldData: this.organization.organization.founded},
+        {title: '電話番号', newData: this.organizationAuthority.organization.number, oldData: this.organization.organization.number},
+        {title: 'イメージの変更', newData: this.organizationAuthority.organization.image_data || this.organizationAuthority.organization.image, oldData: this.organization.organization.image, image: true},
+      ];
+    }
   },
   async created() {
     let timer = setInterval(() => {
@@ -66,41 +73,28 @@ export default Vue.extend({
       clearInterval(timer)
       const authority = this.organization.auth_id;
       if(authority != 1) return this.$router.back();
+      this.organizationAuthority = JSON.parse(JSON.stringify(this.organization))
       this.isAuthorized = true;
     }, 100);
   },
   methods: {
-    async onClickSend() {
-      this.loading = true;
+    async onClickSubmit() {
+      this.dialog = false;
       let response;
       try {
-        response = await this.$store.dispatch('project/createProject', this.projectForm());
+        response = await this.$store.dispatch('updateOrganization', this.organizationAuthority.organization);
       } catch (error: any) {
         response = error;
       } finally {
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
-          this.$router.push({name: 'project'})
+          this.$router.push({name: 'index', params: {id: this.$route.params.id}})
         },
         () => {
           this.loading = false;
         }
         )
       }
-    },
-    projectForm() {
-      const project = {...this.newProject} as lib.Project
-      const isFirstMilestone = !!this.newProject.milestones[0].name;
-      const isFirstField = !!this.newProject.fields[0].name;
-      const isFirstVersion = !!this.newProject.versions[0].name;
-      project.milestones = isFirstMilestone ? this.newProject.milestones : [];
-      project.fields = isFirstField ? this.newProject.fields : [];
-      project.versions = isFirstVersion ? this.newProject.versions : [];
-      project.organization_id = this.organization.organization_id;
-      project.authority_users = [
-        {user_id: this.user.id, auth_id: 1, active: true} as any
-      ];
-      return project;
     },
   }
 })

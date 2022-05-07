@@ -85,6 +85,17 @@ export default Vue.extend({
           milestones.push({title: 'マイルストーン' + (i + 1), newData: '', oldData: milestone.name})
         }
       });
+      let versions = this.selectedProject.versions.map((version, i) => {
+        return {title: 'バージョン' + (i + 1), newData: version.name, oldData: ''};
+      })
+      const newVersionsLength = versions.length - 1;
+      this.project.versions.forEach((version: lib.Version, i: number) => {
+        if(newVersionsLength >= i) {
+          versions[i] = {...versions[i], ...{oldData: version.name}}
+        } else {
+          versions.push({title: 'バージョン' + (i + 1), newData: '', oldData: version.name})
+        }
+      });
       // const filteredNewProject = this.selectedProject.authority_users.filter((authority_user) => authority_user.auth_id == 1)
       // let administers = filteredNewProject.map((authority_user, i) => {
       //   return {title: 'プロジェクト管理者' + (i + 1), newData: authority_user.user.name, oldData: ''};
@@ -103,6 +114,7 @@ export default Vue.extend({
         {title: 'プロジェクト名', newData: this.selectedProject.name, oldData: this.project.name},
         ...fields,
         ...milestones,
+        ...versions,
         // ...administers,
         {title: 'イメージの変更', newData: this.selectedProject.image_data || this.selectedProject.image, oldData: this.selectedProject.image, image: true},
         {title: 'プロジェクトの概要', newData: this.selectedProject.description, oldData: this.project.description},
@@ -121,8 +133,10 @@ export default Vue.extend({
   methods: {
     preprocessProjectAuthority() {
       this.selectedProject = JSON.parse(JSON.stringify(this.project));
+      console.log(this.selectedProject, 123)
       if(this.isEmptyArr(this.project.milestones)) this.selectedProject.milestones.push({id: 0, name: ''})
       if(this.isEmptyArr(this.project.fields)) this.selectedProject.fields.push({id: 0, name: ''})
+      if(this.isEmptyArr(this.project.versions)) this.selectedProject.versions.push({id: 0, name: ''})
       this.isAuthorized = true;
     },
     async onClickSubmit() {
@@ -147,12 +161,16 @@ export default Vue.extend({
       const project = {} as lib.Project
       const isFirstField = !!this.selectedProject.fields[0].name;
       const isFirstMilestone = !!this.selectedProject.milestones[0].name;
+      const isFirstVersion = !!this.selectedProject.versions[0].name;
       project.fields = isFirstField ? this.selectedProject.fields : [];
       project.milestones = isFirstMilestone ? this.selectedProject.milestones : [];
+      project.versions = isFirstVersion ? this.selectedProject.versions : [];
       let fieldDelete = this.project.fields.length > this.selectedProject.fields.length;
       if(!fieldDelete) fieldDelete = !!this.project.fields[0]?.name && !isFirstField;
       let milestoneDelete = this.project.milestones.length > this.selectedProject.milestones.length;
       if(!milestoneDelete) milestoneDelete = !!this.project.milestones[0]?.name && !isFirstMilestone;
+      let versionDelete = this.project.versions.length > this.selectedProject.versions.length;
+      if(!versionDelete) versionDelete = !!this.project.versions[0]?.name && !isFirstVersion;
       // project.authority_users = this.selectedProject.authority_users;
       // console.log(this.selectedProject)
       const newProject = {...this.selectedProject, ...project}
@@ -160,6 +178,7 @@ export default Vue.extend({
         project: newProject,
         field_delete: fieldDelete,
         milestone_delete: milestoneDelete,
+        version_delete: versionDelete,
       }
       return request;
     },
@@ -170,6 +189,10 @@ export default Vue.extend({
     onDeleteMilestone(index: number) {
       if(this.selectedProject.milestones.length == 1) return;
       this.selectedProject.milestones.splice(index, 1)
+    },
+    onDeleteVersion(index: number) {
+      if(this.selectedProject.versions.length == 1) return;
+      this.selectedProject.versions.splice(index, 1)
     },
   }
 })

@@ -1,7 +1,10 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"net/http"
 	"time"
 
 	"gorm.io/gorm"
@@ -19,7 +22,7 @@ type OrganizationAuthority struct {
 	User 			User			`gorm:"foreignkey:UserID;"json:"user"`
 	Organization 	Organization	`gorm:"foreignkey:OrganizationID;"json:"organization"`
 	Type			Authority		`gorm:"foreignkey:AuthorityID;"json:"type"`
-	CreatedAt		time.Time		`gorm:"<-;autoCreateTime;"json:"-"`
+	CreatedAt		time.Time		`gorm:"<-;autoCreateTime;"json:"created_at"`
 	UpdatedAt		time.Time		`gorm:"<-;autoUpdateTime;"json:"-"`
 }
 
@@ -63,9 +66,26 @@ func (oa *OrganizationAuthority)Update() error {
 	return nil
 }
 
+func GetOrganizationAuthorityJson(r *http.Request) (OrganizationAuthority, error) {
+	var organizationAuthority OrganizationAuthority
+	err := json.NewDecoder(r.Body).Decode(&organizationAuthority)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return organizationAuthority, nil
+}
+
+
 func (oa *OrganizationAuthority)ChangeActive() error {
 	oa.Active = true
 	result := DB.Save(&oa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
+	}
+	return nil
+}
+
+func (oa *OrganizationAuthority)ChangeAuthority() error {
+	result := DB.Omit("User", "Organization", "Type").Save(&oa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil

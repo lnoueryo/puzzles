@@ -4,8 +4,8 @@ export interface User {
   age: number,
   sex: string,
   email: string,
-  address: string,
   image: string,
+  address: string,
   description: string,
   organization: string
   organizations: OrganizationAuthority[]
@@ -17,13 +17,16 @@ export interface Organization {
   id: number,
   name: string,
   address: string,
+  number: string,
   image: string,
+  image_data: string,
   description: string,
   plan: string,
   founded: string,
   credit_card: string,
   expiry_date: string,
   projects: ProjectAuthority[]
+  users: OrganizationAuthority[]
 }
 
 export interface Project {
@@ -36,6 +39,7 @@ export interface Project {
   users: User[]
   fields: Field[]
   milestones: Milestone[]
+  versions: Version[]
   authority_users: ProjectAuthority[]
   image_data: string
   created_at: string
@@ -70,6 +74,8 @@ export interface Task {
   milestone_id: number
   field: Field | string
   field_id: number
+  version: Version | string
+  version_id: number
   status: Status | string
   status_id: number
   type: Type | string
@@ -89,6 +95,11 @@ export interface Field {
 }
 
 export interface Milestone {
+  id: number
+  name: string
+}
+
+export interface Version {
   id: number
   name: string
 }
@@ -141,6 +152,7 @@ export interface Authority {
 export interface Params {
   id: string
   key: string
+  user_id: string
 }
 
 export interface Response {

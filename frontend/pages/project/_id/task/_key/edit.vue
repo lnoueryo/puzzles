@@ -85,6 +85,7 @@ export default Vue.extend({
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
       const field = this.project.fields.find((field: lib.Field) => field.id === this.selectedTask.field_id) || {};
       const milestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
+      const version = this.project.versions.find((version: lib.Version) => version.id === this.selectedTask.version_id) || {};
       const actual_time = 0
       const created_at = new Date(this.selectedTask.created_at);
       const requiredDataforDisplay = {
@@ -92,6 +93,7 @@ export default Vue.extend({
         type,
         field,
         milestone,
+        version,
         priority,
         actual_time,
         comments: [],
@@ -107,6 +109,7 @@ export default Vue.extend({
     const newPriority = this.priorities.find((priority: lib.Priority) => priority.id === this.selectedTask.priority_id);
     const newMilestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.selectedTask.milestone_id);
     const newField = this.project.fields.find((field: lib.Field) => field.id === this.selectedTask.field_id);
+    const newVersion = this.project.versions.find((version: lib.Field) => version.id === this.selectedTask.version_id);
       return [
         {title: '課題のタイトル', newData: this.selectedTask.title, oldData: this.task.title },
         {title: '担当者', newData: newAssignee.user.name, oldData: this.task.assignee.name },
@@ -115,6 +118,7 @@ export default Vue.extend({
         {title: '優先順位', newData: newPriority.name, oldData: this.task.priority },
         {title: 'マイルストーン', newData: newMilestone?.name, oldData: this.task.milestone },
         {title: '分野', newData: newField?.name, oldData: this.task.field },
+        {title: 'バージョン', newData: newVersion?.name, oldData: this.task.version },
         {title: '期日', newData: this.selectedTask.deadline, oldData: this.changeToDateISOFormat(this.task.deadline) },
         {title: '推定時間', newData: this.selectedTask.estimated_time, oldData: this.task.estimated_time },
         {title: 'タスクの詳細', newData: this.selectedTask.detail, oldData: this.task.detail },
@@ -131,6 +135,7 @@ export default Vue.extend({
   methods: {
     preprocessTask: function(): void {
       this.selectedTask = JSON.parse(JSON.stringify(this.task));
+      console.log(this.selectedTask)
       this.selectedTask.deadline = this.changeToDateISOFormat(this.selectedTask.deadline);
       this.pageReady = true;
     },

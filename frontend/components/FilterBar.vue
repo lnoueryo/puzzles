@@ -2,6 +2,19 @@
   <div>
     <v-row align="center" class="pt-8 px-4">
       <v-col class="d-flex" cols="12" sm="3">
+        <v-select
+          v-model="selectAssignee"
+          :items="project.authority_users"
+          item-text="user.name"
+          item-value="user.name"
+          label="担当者"
+          outlined
+          clearable
+          item-disabled=""
+          :disabled="noTask"
+        ></v-select>
+      </v-col>
+      <v-col class="d-flex" cols="12" sm="3">
       <v-select
           v-model="selectField"
           :items="project.fields"
@@ -26,16 +39,15 @@
         ></v-select>
       </v-col>
       <v-col class="d-flex" cols="12" sm="3">
-        <v-select
-          v-model="selectAssignee"
-          :items="project.authority_users"
-          item-text="user.name"
-          item-value="user.name"
-          label="担当者"
+      <v-select
+          v-model="selectVersion"
+          :items="project.versions"
+          item-text="name"
+          item-value="name"
+          label="バージョン"
           outlined
           clearable
-          item-disabled=""
-          :disabled="noTask"
+          :disabled="noTask || noVersion"
         ></v-select>
       </v-col>
       <v-col class="d-flex" cols="12" sm="3">
@@ -119,6 +131,12 @@ export default Vue.extend({
       }
       return false;
     },
+    noVersion() {
+      if(this.isReadyObj(this.project)) {
+        return this.isEmptyArr(this.project.versions);
+      }
+      return false;
+    },
     selectAssignee: {
       get() {
         return this.$store.getters['task/selectAssignee'];
@@ -141,6 +159,14 @@ export default Vue.extend({
       },
       set(milestone) {
         this.$store.commit('task/selectMilestone', milestone);
+      }
+    },
+    selectVersion: {
+      get() {
+        return this.$store.getters['task/selectVersion'];
+      },
+      set(version) {
+        this.$store.commit('task/selectVersion', version);
       }
     },
     selectStatus: {

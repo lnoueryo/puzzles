@@ -5,6 +5,12 @@
       v-model="formReady"
       class="pa-4 pt-6"
     >
+      <div class="pb-2">
+        <v-btn icon @click="$router.push({name: 'profile'})">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+      </div>
       <v-text-field
         v-model="profile.name"
         :rules="[rules.required]"
@@ -37,7 +43,7 @@
         type="text"
       ></v-text-field>
       <v-text-field
-        v-model="profile.discription"
+        v-model="profile.description"
         :rules="[rules.required]"
         filled
         color="amber darken-3"

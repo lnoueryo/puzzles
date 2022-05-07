@@ -28,6 +28,7 @@ export const getters: GetterTree<TaskState, RootState> = {
   selectAssignee: state => state.tasks.tasks.selectAssignee,
   selectField: state => state.tasks.tasks.selectField,
   selectMilestone: state => state.tasks.tasks.selectMilestone,
+  selectVersion: state => state.tasks.tasks.selectVersion,
   selectStatus: state => state.tasks.tasks.selectStatus,
   listNumArr: state => state.tasks.tasks.listNumArr,
   selectList: state => state.tasks.tasks.listNumArr[state.tasks.tasks.listIndex],
@@ -72,6 +73,10 @@ export const mutations: MutationTree<TaskState> = {
   selectMilestone: (state, milestone) => {
     lib.storeCondition({milestone});
     return state.tasks.selectMilestone(milestone);
+  },
+  selectVersion: (state, version) => {
+    lib.storeCondition({version});
+    return state.tasks.selectVersion(version);
   },
   selectAssignee: (state, assignee) => {
     lib.storeCondition({assignee});
@@ -150,6 +155,8 @@ export const actions: ActionTree<TaskState, RootState> = {
     const item = JSON.parse(itemStr);
     if(item?.assignee) commit('selectAssignee', item?.assignee);
     if(item?.field) commit('selectField', item?.field);
+    if(item?.milestone) commit('selectMilestone', item?.milestone);
+    if(item?.version) commit('selectVersion', item?.version);
     if(item?.status) commit('selectStatus', item.status);
     if(item?.cellKey?.index && item?.cellKey?.active) commit('cellKey', item.cellKey);
   },

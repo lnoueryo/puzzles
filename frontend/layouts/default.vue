@@ -166,7 +166,7 @@ export default {
         },
         {
           name: '組織に招待する',
-          url: '/organization'
+          url: '/organization/create'
         },
       ],
     }

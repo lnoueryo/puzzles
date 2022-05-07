@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+
 	"gorm.io/gorm"
 )
 
@@ -95,15 +96,22 @@ func (pur *ProjectUpdateRequest)BulkUpdateProject() error {
 				return errors.New("couldn't delete")
 			}
 		}
+		if pur.VersionDelete {
+			var v Version
+			if err := tx.Delete(&v, "project_id = ?", pur.Project.ID).Error; err != nil {
+				return errors.New("couldn't delete")
+			}
+		}
 		if pur.Project.ImageData != "" {
+			deleteImageName := pur.Project.Image
 			fileName, err := StoreImage("projects", pur.Project.ImageData); if err != nil {
 				return errors.New("couldn't save the image")
 			}
 			pur.Project.Image = fileName
-			result := tx.Debug().Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers", "AuthorityUsers").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			result := DB.Debug().Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers", "AuthorityUsers").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 				return result.Error
 			}
-			DeleteImage("9MSwg3CWQlIQYiVNkZcK.jpeg", "projects")
+			DeleteImage(deleteImageName, "projects")
 			return nil
 		}
 		result := tx.Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers.Project").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {

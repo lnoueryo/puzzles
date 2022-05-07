@@ -54,6 +54,7 @@ export const cells = [
   {name: "status", sortKey: 2, header: {title: '状況', active: 0, style: {width: CELL_WIDTH_A}}},
   {name: "priority", sortKey: 2, header: {title: '優先', active: 0, style: {width: CELL_WIDTH_A}}},
   {name: "milestone", sortKey: 0, header: {title: 'マイルストーン', active: 0, style: {width: CELL_WIDTH_D}}},
+  {name: "version", sortKey: 0, header: {title: 'バージョン', active: 0, style: {width: CELL_WIDTH_D}}},
   {name: "type", sortKey: 0, header: {title: '種類', active: 0, style: {width: CELL_WIDTH_A}}},
   {name: 'estimated_time', sortKey: 2, header: {title: '予定', active: 0, style: {width: CELL_WIDTH_A}}},
   {name: "deadline", sortKey: 1, header: {title: '期限日', active: 0, style: {width: CELL_WIDTH_B}}},

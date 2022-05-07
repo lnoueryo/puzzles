@@ -27,6 +27,7 @@ type Project struct {
 	Tasks			[]Task				`json:"tasks"`
 	Milestones		[]Milestone			`json:"milestones"`
 	Fields			[]Field				`json:"fields"`
+	Versions		[]Version			`json:"versions"`
 	AuthorityUsers  []ProjectAuthority	`json:"authority_users"`
 	CreatedAt		time.Time			`gorm:"autoCreateTime;"json:"created_at"`
 	UpdatedAt		time.Time			`gorm:"autoUpdateTime;"json:"updated_at"`
@@ -42,6 +43,7 @@ type ProjectUpdateRequest struct {
 	Project			Project	`json:"project"`
 	FieldDelete		bool	`json:"field_delete"`
 	MilestoneDelete	bool	`json:"milestone_delete"`
+	VersionDelete	bool	`json:"versione_delete"`
 }
 
 func NewProject(r *http.Request) (Project, error) {

@@ -27,7 +27,7 @@
         <div>
           <v-tooltip bottom v-for="(_, i) in authority_users" :key="i">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn class="mr-1" icon v-bind="attrs" v-on="on" v-if="i < 4">
+              <v-btn class="mr-1" icon v-bind="attrs" v-on="on" v-if="i < 4" @click="$router.push({name: 'profile-user_id', params: {user_id: _.user_id}})">
                 <v-avatar size="36px">
                   <img alt="Avatar" :src="$config.mediaURL + '/users/' + _.user.image" v-if="_.user.image">
                   <v-icon size="44px" dark v-else>
