@@ -5,7 +5,7 @@ const isEmptyArr = () => {return (arr: []) => !!arr ? arr.length === 0 : true}
 const isNumber = () => {
   return (numVal: any) => {
     const pattern = /^([1-9]\d*|0)(\.\d+)?$/;
-    return pattern.test(numVal);
+    return pattern.test(numVal) || '半角数字のみです';
   }
 }
 const changeToHalf = () => {

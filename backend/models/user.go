@@ -26,11 +26,12 @@ type User struct {
 	Sex						string					`json:"sex"`
 	Email					string					`json:"email"`
 	Address					string					`json:"address"`
-	Password				string					`json:"password"`
+	Password				string					`json:"-"`
 	Image					string					`json:"image"`
 	ImageData				string					`gorm:"<-:false;-:migration;"json:"image_data"`
 	Description				string					`json:"description"`
 	Organization			string					`gorm:"-:all;"json:"organization"`
+	ChangePassword			string					`gorm:"-:all;"json:"password"`
 	Projects				[]ProjectAuthority		`json:"projects"`
 	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;"json:"organizations"`
 	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
@@ -75,8 +76,8 @@ func (u *User) Create() error {
 }
 
 func (u *User) Update() error {
-	if u.Password != "" {
-		u.Password = crypto.Encrypt(u.Password)
+	if u.ChangePassword != "" {
+		u.Password = crypto.Encrypt(u.ChangePassword)
 		result := DB.Omit("Organizations").Save(u)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return result.Error
@@ -106,6 +107,7 @@ func (u *User)GetMainUser(userID int, orgID string) error {
 	First(&u, "id = ?", userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
+	u.Password = ""
 	return nil
 }
 

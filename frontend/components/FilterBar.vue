@@ -4,7 +4,7 @@
       <v-col class="d-flex" cols="12" sm="3">
         <v-select
           v-model="selectAssignee"
-          :items="project.authority_users"
+          :items="assigneeItems"
           item-text="user.name"
           item-value="user.name"
           label="担当者"
@@ -99,6 +99,7 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import {isReadyObj, isEmptyArr} from '~/modules/utils'
+import * as lib from '~/modules/store'
 
 declare module 'vue/types/vue' {
   interface Vue {
@@ -177,6 +178,11 @@ export default Vue.extend({
         this.$store.commit('task/selectStatus', status);
       }
     },
+    assigneeItems() {
+      return this.project.authority_users.filter((user: lib.OrganizationAuthority) => {
+        return user.user.name;
+      })
+    }
   },
   methods: {
     selectProgress() {

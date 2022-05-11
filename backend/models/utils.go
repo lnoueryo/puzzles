@@ -15,6 +15,7 @@ var allowOrigin string
 var project string
 var StoreImage = config.StoreImage
 var DeleteImage = config.DeleteImage
+var errorlog = config.App.ErrorLog
 
 func init() {
 	DB = config.DB

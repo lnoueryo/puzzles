@@ -155,7 +155,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 	m.Message = "組織ID: " + oa.OrganizationID + "\nメールアドレス: " + oa.User.Email
 	if oa.User.Name == "" {
 		password, _ := crypto.MakeRandomStr(20)
-		oa.User.Password = crypto.Encrypt(password)
+		oa.User.ChangePassword = password
 		err = oa.User.Update(); if err !=nil {
 			errorlog.Print(err)
 			url := allowOrigin + "/bad-connection"

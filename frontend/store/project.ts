@@ -59,11 +59,12 @@ export const actions: ActionTree<ProjectState, RootState> = {
       }
     })
   },
-  async createProject({commit, rootState}, form) {
+  async createProject({commit}, form) {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.post('/api/project/create', form);
-        commit('createProject', response.data);
+        commit('userData', response.data, {root: true});
+        // commit('createProject', response.data);
         resolve(response);
       } catch (error: any) {
         console.log(error);

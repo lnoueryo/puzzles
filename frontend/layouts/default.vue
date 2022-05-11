@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <v-app-bar class="justify-content: space-between" :clipped-left="clipped" fixed app elevation="0" v-if="pageReady">
+    <v-app-bar class="justify-content: space-between" :clipped-left="clipped" fixed app elevation="0" v-if="pageReady && user.name">
       <div class="d-flex justify-space-between" style="width: 100%">
         <div class="d-flex">
           <nuxt-link to="/">
@@ -28,8 +28,11 @@
             </template>
             <v-list>
               <v-list-item-group active-class="border" color="indigo" :value="list">
-                <v-list-item v-if="isEmptyArr(projects)" to="/project/create">
-                  <v-list-item-title >プロジェクトの作成</v-list-item-title>
+                <v-list-item v-if="isEmptyArr(projects) && organizationAuthority.type.name == '管理者'" to="/project/create">
+                  <v-list-item-title>プロジェクトの作成</v-list-item-title>
+                </v-list-item>
+                <v-list-item v-else-if="isEmptyArr(projects) && organizationAuthority.type.name != '管理者'" disabled>
+                  <v-list-item-title>No Project</v-list-item-title>
                 </v-list-item>
                 <v-list-item v-for="(project, index) in projects" :key="index" @click="onSelectProject(project)">
                   <v-list-item-title>{{ project.name }}</v-list-item-title>
@@ -69,7 +72,16 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn class="mx-2" icon v-bind="attrs" v-on="{ ...on, ...menu }">
                     <v-avatar size="40px">
-                      <img alt="Avatar" :src="$config.mediaURL + '/users/' + user.image">
+                      <v-img alt="Avatar" style="object-fit: cover;" :src="$config.mediaURL + '/users/' + user.image" v-if="user.image">
+                        <template v-slot:placeholder>
+                          <v-row class="fill-height ma-0" align="center" justify="center">
+                            <v-progress-circular indeterminate color="grey lighten-5" />
+                          </v-row>
+                        </template>
+                      </v-img>
+                      <v-icon size="44px" dark v-else>
+                        mdi-account-circle
+                      </v-icon>
                     </v-avatar>
                   </v-btn>
                 </template>
@@ -91,9 +103,9 @@
           </div>
           <div class="mx-3" style="display: grid;">
             <small>組織名</small>
-            <strong style="text-indent: 1em;">{{ authority.organization.name }}</strong>
+            <strong style="text-indent: 1em;">{{ organizationAuthority.organization.name }}</strong>
           </div>
-          <v-menu left bottom v-if="authority.auth_id == 1">
+          <v-menu left bottom v-if="organizationAuthority.auth_id == 1">
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-vertical</v-icon>
@@ -179,7 +191,7 @@ export default {
     user() {
       return this.$store.getters['user'];
     },
-    authority() {
+    organizationAuthority() {
       return this.$store.getters['organization'];
     },
     project() {

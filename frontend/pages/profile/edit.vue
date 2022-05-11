@@ -1,75 +1,82 @@
 <template>
-  <form-card @send="onClickSend" style="max-width: 500px">
-    <v-form
-      ref="form"
-      v-model="formReady"
-      class="pa-4 pt-6"
-    >
+  <div>
+    <v-card class="mx-auto my-4 px-8 py-4" style="max-width: 700px;" v-if="isReadyObj(user)">
       <div class="pb-2">
-        <v-btn icon @click="$router.push({name: 'profile'})">
+        <v-btn icon @click="$router.push({name: 'profile'})" v-if="user.name">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
       </div>
-      <v-text-field
-        v-model="profile.name"
-        :rules="[rules.required]"
-        filled
-        color="amber darken-3"
-        label="名前"
-        type="text"
-      ></v-text-field>
-      <v-text-field
-        v-model="profile.age"
-        :rules="[rules.required]"
-        filled
-        color="amber darken-3"
-        label="年齢"
-        type="text"
-      ></v-text-field>
-      <v-select
-        v-model="profile.sex"
-        :items="sexes"
-        label="性別"
-        persistent-hint
-        single-line
-      ></v-select>
-      <v-text-field
-        v-model="profile.address"
-        :rules="[rules.required]"
-        filled
-        color="amber darken-3"
-        label="住所"
-        type="text"
-      ></v-text-field>
-      <v-text-field
-        v-model="profile.description"
-        :rules="[rules.required]"
-        filled
-        color="amber darken-3"
-        label="自己紹介"
-        type="text"
-      ></v-text-field>
-      <v-text-field
-        v-model="profile.password"
-        :rules="[rules.length(20)]"
-        filled
-        color="amber darken-3"
-        counter="6"
-        label="パスワード"
-        style="min-height: 96px"
-        type="password"
-        v-if="!user.name"
-      ></v-text-field>
-      <cropper v-model="profile.image_data" :width="450" :currentImage="$config.mediaURL + '/users/' + profile.image"></cropper>
-    </v-form>
-  </form-card>
+      <v-form ref="form" v-model="formReady" class="pa-4 pt-6">
+        <v-text-field
+          v-model="profile.name"
+          :rules="[rules.required]"
+          filled
+          color="#295caa"
+          label="名前"
+          type="text"
+        ></v-text-field>
+        <v-text-field
+          v-model="profile.age"
+          :rules="[rules.required, isNumber(profile.age), rules.maxAge(3)]"
+          filled
+          color="#295caa"
+          label="年齢"
+          type="text"
+        ></v-text-field>
+        <v-select
+          v-model="profile.sex"
+          :items="sexes"
+          label="性別"
+          persistent-hint
+          single-line
+          outlined
+          :rules="[rules.required]"
+        ></v-select>
+        <v-text-field
+          v-model="profile.address"
+          filled
+          color="#295caa"
+          label="住所"
+          type="text"
+        ></v-text-field>
+        <v-text-field
+          v-model="profile.description"
+          filled
+          color="#295caa"
+          label="自己紹介"
+          type="text"
+        ></v-text-field>
+        <v-text-field
+          v-model="profile.password"
+          :rules="[rules.required, rules.length(8)]"
+          filled
+          color="#295caa"
+          label="パスワード"
+          style="min-height: 96px"
+          type="password"
+          v-if="!user.name"
+        ></v-text-field>
+        <cropper v-model="profile.image_data" ratio="1:1" :pixel="900" :width="450" :currentImage="$config.mediaURL + '/users/' + profile.image"></cropper>
+        <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="$router.push(to)" v-if="user.name">
+            戻る
+          </v-btn>
+          <v-btn :disabled="!formReady || loading" :loading="loading" class="white--text" color="#295caa" depressed @click="onClickSend">
+            {{ user.name ? '更新' : '登録'}}
+          </v-btn>
+        </v-card-actions>
+      </v-form>
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import {checkStatus, resizeFile, isEmptyObj} from '~/modules/utils'
+import {checkStatus, isNumber, isEmptyObj, isReadyObj} from '~/modules/utils'
 declare module 'vue/types/vue' {
   interface Vue {
     checkStatus: (status: number, func: Function, error: Function) => string;
@@ -77,10 +84,9 @@ declare module 'vue/types/vue' {
   }
 }
 export default Vue.extend({
-  name: 'login',
-  layout: 'login',
   data: () => ({
     error: '',
+    loading: false,
     profile: {
       name: '',
       age: '' as number | string,
@@ -92,11 +98,10 @@ export default Vue.extend({
       password: '',
     },
     formReady: false,
-    isLoading: false,
     rules: {
-      email: (v: string) => !!(v || '').match(/@/) || 'Please enter a valid email',
-      length: (len: number) => (v: string) => (v || '').length >= len || `Invalid character length, required ${len}`,
-      required: (v: string) => !!v || 'This field is required',
+      length: (len: number) => (v: string) => (v || '').length >= len || `パスワードは${len}文字以上です`,
+      maxAge: (len: number) => (v: string) => (String(v) || '').length < len || `間違っている可能性があります`,
+      required: (v: string) => !!v || '記入必須です',
     },
   }),
   computed: {
@@ -106,6 +111,8 @@ export default Vue.extend({
     ]),
     checkStatus,
     isEmptyObj,
+    isReadyObj,
+    isNumber,
     sexes() {
       return [
         '男',
@@ -125,6 +132,7 @@ export default Vue.extend({
   },
   methods: {
     async onClickSend() {
+      this.loading = true;
       let response;
       try {
         response = await this.$store.dispatch('registerUser', this.form());
@@ -132,7 +140,7 @@ export default Vue.extend({
         response = error;
       } finally {
         if('status' in response === false) return this.$router.push('/bad-connection')
-        this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}));
+        this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), () => this.loading = false);
       }
     },
     form() {

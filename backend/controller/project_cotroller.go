@@ -113,16 +113,17 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 	}
 
-	pa, err := models.GetProjectAuthority(p.ID, s.UserID); if err != nil {
+	mainUser, err := CreateMainUser(r); if err != nil {
 		errorlog.Print(err)
-		errMap := map[string]string{"message": "couldn't create project"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
 	}
-	pJson, _ := json.Marshal(pa)
-	w.WriteHeader(http.StatusCreated)
-	w.Write(pJson)
+	uJson, _ := json.Marshal(mainUser)
+	w.WriteHeader(http.StatusOK)
+	w.Write(uJson)
 }
 
 func (*Project)Edit(w http.ResponseWriter, r *http.Request) {

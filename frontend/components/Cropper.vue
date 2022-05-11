@@ -1,5 +1,5 @@
 <template>
-  <div @mouseup="endDrag">
+  <div>
     <v-file-input
       accept="image/*"
       label="File input"
@@ -9,21 +9,37 @@
       clearable
     ></v-file-input>
     <div>
-      <div style="position: relative;margin: auto" @mousemove="dragSize" :style="{width: imgWidth + 'px', height: imgHeight + 'px'}">
-        <div class="cropper pa-1" ref="cropper" :style="cropperPosition" @mousedown.self="startDragSize" v-if="image_data">
-          <div style="width: 100%;height: 100%;" :style="{cursor: isSizeCursor ? 'all-scroll' : 'grab'}" @mousedown="startDragPosition" @mousemove="dragPosition"></div>
+      <div style="position: relative;margin: auto" @mouseleave="endDrag" @mousemove="dragMove" :style="{width: toStyleSize(imgWidth) + 'px', height: toStyleSize(imgHeight) + 'px'}">
+        <div class="cropper pa-1" ref="cropper" :style="cropperPosition" @mousedown.self="startDragSize" @mouseup="endDrag" v-if="image_data">
+          <div style="width: 100%;height: 100%;" :style="{cursor: isSizeCursor ? 'all-scroll' : 'grab'}" @mousedown="startDragPosition" @mouseup="endDrag"></div>
         </div>
-        <canvas ref="canvas"></canvas>
+        <canvas ref="canvas" @mouseup="endDrag" @mousemove="dragMove" :style="{width: '100%', maxWidth: this.width + 'px'}"></canvas>
       </div>
       <div class="pa-2">
-        <v-btn block color="indigo" dark v-if="image_data" @click="onClickCropImage">
+        <v-btn block color="#295caa" dark v-if="image_data" @click="onClickCropImage">
           <v-icon small dark>mdi-content-cut</v-icon>
           切り取り
         </v-btn>
       </div>
       <div class="pa-2 d-flex justify-space-between">
-        <img style="max-width: 200px;width: 100%" :src="currentImage" alt="">
-        <img style="max-width: 200px;width: 100%" :src="value" alt="" v-if="value">
+        <div style="max-width: 450px;margin: auto" v-if="currentImage&&!value">
+          <v-img style="width: 100%" :src="currentImage">
+            <template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <v-progress-circular indeterminate color="grey lighten-5" />
+              </v-row>
+            </template>
+          </v-img>
+        </div>
+        <div style="max-width: 450px;margin: auto" v-if="value">
+          <v-img style="width: 100%" :src="value">
+            <template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <v-progress-circular indeterminate color="grey lighten-5" />
+              </v-row>
+            </template>
+          </v-img>
+        </div>
       </div>
     </div>
   </div>
@@ -42,10 +58,16 @@ export default Vue.extend({
     width: {
       type: Number
     },
+    pixel: {
+      type: Number
+    },
     currentImage: {
       type: String
     },
     value: {
+      type: String
+    },
+    ratio: {
       type: String
     }
   },
@@ -64,6 +86,8 @@ export default Vue.extend({
     sizeX: 0,
     sizeY: 0,
     cropper: {
+      originalPosition: 0,
+      mainPosition: 'x' as 'x' | 'y',
       maxWidth: 0,
       height: 0,
       top: 0,
@@ -76,18 +100,22 @@ export default Vue.extend({
     },
   },
   methods: {
+    dragMove(e: MouseEvent) {
+      this.dragSize(e);
+      this.dragPosition(e);
+    },
     startDragSize(event: MouseEvent) {
       this.isSizeCursor = true;
       const {x, y, clientRect} = this.getPosition(event);
       this.sizeX = x;
       this.sizeY = y;
-      this.$root.$el.addEventListener('mouseup',this.endDrag, {once:true})
     },
     dragSize(event: MouseEvent) {
-      const minWidth = 50;
-      const maxWidth = this.imgWidth < this.imgHeight ? this.imgWidth : this.imgHeight;;
       if(!this.isSizeCursor) return;
+      const minWidth = 50;
       const {x, y, clientRect} = this.getPosition(event);
+      const cursorPosition = clientRect[this.cropper.mainPosition] - this.cropper.originalPosition;
+      const maxWidth = this.calculateHeight(this.imgWidth) < this.imgHeight ? this.toStyleSize(this.imgWidth - cursorPosition) : this.toStyleSize(this.calculateWidth(this.imgHeight - cursorPosition));
       this.cropper.maxWidth -= this.sizeX - x;
       if(minWidth >= this.cropper.maxWidth) {
         this.cropper.maxWidth = minWidth;
@@ -96,7 +124,7 @@ export default Vue.extend({
         this.cropper.maxWidth = maxWidth;
       }
       this.sizeX = x;
-      this.cropper.height = this.cropper.maxWidth;
+      this.cropper.height = this.calculateHeight(this.cropper.maxWidth);
     },
     startDragPosition(event: MouseEvent) {
       this.isPositionCursor = true;
@@ -104,13 +132,16 @@ export default Vue.extend({
       const {x, y} = this.getPosition(event);
       this.positionX = x;
       this.positionY = y;
-      this.$root.$el.addEventListener('mouseup',this.endDrag, {once:true})
+      // this.$root.$el.addEventListener('mouseup',this.endDrag, {once:true})
     },
     dragPosition(event: MouseEvent) {
       if(!this.isPositionCursor) return;
+      if(event.stopPropagation) event.stopPropagation();
+      if(event.preventDefault) event.preventDefault();
+      event.cancelBubble=true;
       const {x, y, clientRect} = this.getPosition(event);
-      const maxX = this.imgWidth - clientRect.width;
-      const maxY = this.imgHeight - clientRect.height;
+      const maxX = this.toStyleSize(this.imgWidth) - clientRect.width;
+      const maxY = this.toStyleSize(this.imgHeight) - clientRect.height;
       this.cropper.top -= this.positionY - y;
       this.cropper.left -= this.positionX - x;
       if(this.cropper.top <= 0) {
@@ -131,10 +162,19 @@ export default Vue.extend({
       }
     },
     endDrag() {
+      window?.getSelection()?.removeAllRanges();
       this.isPositionCursor = false;
       this.isSizeCursor = false;
     },
     async onChangeFile(e: File) {
+      this.cropper = {
+        originalPosition: 0,
+        mainPosition: 'x',
+        maxWidth: 0,
+        height: 0,
+        top: 0,
+        left: 0,
+      }
       if(!e) {
         const canvas = this.$refs.canvas as HTMLCanvasElement;
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -148,22 +188,29 @@ export default Vue.extend({
         return;
       };
       const image = await this.resizeFile(e) as HTMLImageElement;
-      this.imgWidth = this.width <= image.width ? this.width : image.width;
+      this.imgWidth = this.pixel;
+      // this.imgWidth = this.width <= image.width ? this.width : image.width;
       this.imgHeight = image.height * (this.imgWidth / image.width);
       const canvas = this.$refs.canvas as HTMLCanvasElement;
       canvas.width = this.imgWidth;
       canvas.height = this.imgHeight;
-      this.cropper.maxWidth = this.imgWidth < this.imgHeight ? this.imgWidth : this.imgHeight;
-      this.cropper.height = this.cropper.maxWidth;
+      this.cropper.maxWidth = this.calculateHeight(this.imgWidth) < this.imgHeight ? this.toStyleSize(this.imgWidth) : this.toStyleSize(this.calculateWidth(this.imgHeight));
+      this.cropper.height = this.calculateHeight(this.cropper.maxWidth);
       this.image_data = this.toCanvas(image, canvas, this.imgWidth, this.imgHeight)
+      this.$nextTick(() => {
+        const cropper = this.$refs.cropper as HTMLDivElement
+        const clientRect = cropper.getBoundingClientRect();
+        this.cropper.originalPosition = this.calculateHeight(this.imgWidth) <= this.imgHeight ? clientRect.x : clientRect.y;
+        this.cropper.mainPosition = this.calculateHeight(this.imgWidth) <= this.imgHeight ? 'x' : 'y';
+      })
     },
     async onClickCropImage() {
       const image  = await this.resize(this.image_data) as HTMLImageElement;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-      canvas.width = this.cropper.height;
-      canvas.height = this.cropper.height;
-      ctx.drawImage(image, -this.cropper.left, -this.cropper.top);
+      canvas.width = this.toImageSize(this.cropper.maxWidth);
+      canvas.height = this.toImageSize(this.cropper.height);
+      ctx.drawImage(image, -this.toImageSize(this.cropper.left), -this.toImageSize(this.cropper.top));
       const imgType = image.src.substring(5, image.src.indexOf(';'));
       this.$emit('input', canvas.toDataURL(imgType));
     },
@@ -217,6 +264,28 @@ export default Vue.extend({
       cropper.top += 'px'
       cropper.left += 'px'
       return cropper
+    },
+    calculateWidth(height: number): number {
+      if(!this.ratio) return height;
+      const colonIndex = this.ratio.indexOf(':')
+      const firstNum = Number(this.ratio.substr(0, colonIndex));
+      const secondNum = Number(this.ratio.substr(colonIndex + 1));
+      const width = height * firstNum / secondNum;
+      return width;
+    },
+    calculateHeight(width: number): number {
+      if(!this.ratio) return width;
+      const colonIndex = this.ratio.indexOf(':')
+      const firstNum = Number(this.ratio.substr(0, colonIndex));
+      const secondNum = Number(this.ratio.substr(colonIndex + 1));
+      const height = width * secondNum / firstNum
+      return height;
+    },
+    toStyleSize(num: number): number {
+      return num * this.width / this.pixel;
+    },
+    toImageSize(num: number): number {
+      return num * this.pixel / this.width;
     },
   }
 })

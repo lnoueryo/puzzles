@@ -96,14 +96,20 @@
                 <v-row class="py-8 mx-4" align="center" justify="center" style="position: relative">
                   <div style="position: relative;">
                     <v-avatar size="36px" class="mr-4" style="position: absolute;left: -50px">
-                      <img alt="Avatar" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
+                      <v-img alt="Avatar" style="object-fit: cover;" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
+                        <template v-slot:placeholder>
+                          <v-row class="fill-height ma-0" align="center" justify="center">
+                            <v-progress-circular indeterminate color="grey lighten-5" />
+                          </v-row>
+                        </template>
+                      </v-img>
                       <v-icon size="44px" dark v-else>
                       mdi-account-circle
                       </v-icon>
                     </v-avatar>
                     <h2>{{ selectedUser.user.name }}</h2>
                   </div>
-                  <v-btn icon absolute right color="#295caa" :to="{name: 'project-id-edit', params: {id: $route.params.id}}">
+                  <v-btn icon absolute right color="#295caa" :to="{name: 'profile-edit'}" v-if="user.id == selectedUser.user_id">
                     <v-icon>mdi-application-edit-outline</v-icon>
                   </v-btn>
                 </v-row>
@@ -154,6 +160,7 @@ export default Vue.extend({
       'totalPageNum',
     ]),
     ...mapGetters([
+      'user',
       'project',
     ]),
     isReadyArr,

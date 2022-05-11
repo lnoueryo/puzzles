@@ -37,6 +37,7 @@ var allowOrigin string
 var credentialsPath string
 var project string
 var StoreImage = config.StoreImage
+var DeleteImage = config.DeleteImage
 var StoreImageToGCS = config.StoreImageToGCS
 var StoreBinaryImage = config.StoreBinaryImage
 

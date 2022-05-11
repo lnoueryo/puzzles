@@ -19,7 +19,13 @@
                 <div style="width: 50%" v-if="content.change">
                   <div>{{ content.title }}</div>
                   <div>
-                    <img style="max-width: 300px" :src="$config.mediaURL + '/projects/' + content.oldData" alt="">
+                    <v-img style="max-width: 300px" :src="$config.mediaURL + '/projects/' + content.oldData" :lazy-src="require('~/assets/image/project.png')">
+                      <template v-slot:placeholder>
+                        <v-row class="fill-height ma-0" align="center" justify="center">
+                          <v-progress-circular indeterminate color="grey lighten-5" />
+                        </v-row>
+                      </template>
+                    </v-img>
                   </div>
                 </div>
                 <div style="width: 50%" v-if="content.change">

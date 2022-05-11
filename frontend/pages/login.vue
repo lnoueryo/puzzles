@@ -1,40 +1,45 @@
 <template>
-  <form-card @send="onClickSend" style="max-width: 500px" v-if="pageReady">
-    <v-form
-      ref="form"
-      v-model="formReady"
-      class="pa-4 pt-6"
-    >
-      <v-text-field
-        v-model="organization"
-        :rules="[rules.required]"
-        filled
-        color="amber darken-3"
-        label="組織 ID"
-        type="text"
-        @keyup.enter="onClickSend"
-      ></v-text-field>
-      <v-text-field
-        v-model="email"
-        :rules="[rules.required, rules.email]"
-        filled
-        color="amber darken-3"
-        label="メールアドレス"
-        type="email"
-        @keyup.enter="onClickSend"
-      ></v-text-field>
-      <v-text-field
-        v-model="password"
-        :rules="[rules.length(20)]"
-        filled
-        color="amber darken-3"
-        counter="6"
-        label="パスワード"
-        style="min-height: 96px"
-        type="password"
-        @keyup.enter="onClickSend"
-      ></v-text-field>
-    </v-form>
+  <form-card @send="onClickSend" style="max-width: 500px" v-if="pageReady" :loading="loading">
+    <template v-slot:main>
+      <v-form
+        ref="form"
+        v-model="formReady"
+        class="pa-4 pt-6"
+      >
+        <v-text-field
+          v-model="organization"
+          :rules="[rules.required]"
+          filled
+          color="amber darken-3"
+          label="組織 ID"
+          type="text"
+          @keyup.enter="onClickSend"
+        ></v-text-field>
+        <v-text-field
+          v-model="email"
+          :rules="[rules.required, rules.email]"
+          filled
+          color="amber darken-3"
+          label="メールアドレス"
+          type="email"
+          @keyup.enter="onClickSend"
+        ></v-text-field>
+        <v-text-field
+          v-model="password"
+          :rules="[rules.length(20)]"
+          filled
+          color="amber darken-3"
+          counter="6"
+          label="パスワード"
+          style="min-height: 96px"
+          type="password"
+          @keyup.enter="onClickSend"
+        ></v-text-field>
+      </v-form>
+    </template>
+    <template v-slot:button>
+      ログイン
+    </template>
   </form-card>
 </template>
 
@@ -58,7 +63,7 @@ export default Vue.extend({
     email: undefined,
     password: undefined,
     formReady: false,
-    isLoading: false,
+    loading: false,
     rules: {
       email: (v: string) => !!(v || '').match(/@/) || 'Please enter a valid email',
       length: (len: number) => (v: string) => (v || '').length >= len || `Invalid character length, required ${len}`,
@@ -101,6 +106,7 @@ export default Vue.extend({
   },
   methods: {
     async onClickSend() {
+      this.loading = true;
       let response;
       try {
         response = await this.$store.dispatch('login', this.form);
@@ -108,7 +114,10 @@ export default Vue.extend({
         response = error;
       } finally {
         if('status' in response === false) return this.$router.push('/bad-connection')
-        this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), ((): string => {return '組織ID、メールアドレス、またはパスワードが違います。'}));
+        this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), ((): string => {
+          this.loading = false;
+          return '組織ID、メールアドレス、またはパスワードが違います。'
+        }));
       }
     },
     handleSuccess() {

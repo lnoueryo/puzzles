@@ -2,18 +2,19 @@
   <v-card
     class="mx-auto"
   >
-    <slot></slot>
+    <slot name="main"></slot>
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn
-        :loading="isLoading"
+        :disabled="loading"
+        :loading="loading"
         class="white--text"
-        color="amber darken-3"
+        color="#295caa"
         depressed
         @click="$emit('send')"
       >
-        Submit
+        <slot name="button"></slot>
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -21,11 +22,13 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  export default Vue.extend({
-    name: 'login',
-    layout: 'login',
-    data: () => ({
-      isLoading: false,
-    }),
-  })
+export default Vue.extend({
+  name: 'login',
+  layout: 'login',
+  props: {
+    loading: {
+      type: Boolean
+    }
+  },
+})
 </script>

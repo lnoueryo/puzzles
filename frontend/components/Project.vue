@@ -8,7 +8,13 @@
         </v-btn>
       </v-row>
       <v-row class="px-4" align="center" justify="center">
-        <v-img :aspect-ratio="16/9" :src="$config.mediaURL + '/projects/' + project.image"></v-img>
+        <v-img :aspect-ratio="16/9" :src="projectImage" @error="projectImageError = true">
+          <template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular indeterminate color="grey lighten-5" />
+            </v-row>
+          </template>
+        </v-img>
       </v-row>
       <v-row class="pt-8" align="center" justify="center">
         <h2>概要</h2>
@@ -30,7 +36,16 @@
 
           <v-list-item v-for="authUser in project.authority_users" :key="authUser.id">
               <v-list-item-avatar>
-                <v-img :src="$config.mediaURL + '/users/' + authUser.user.image"></v-img>
+                <v-img :src="$config.mediaURL + '/users/' + authUser.user.image" v-if="authUser.user.image">
+                  <template v-slot:placeholder>
+                    <v-row class="fill-height ma-0" align="center" justify="center">
+                      <v-progress-circular indeterminate color="grey lighten-5" />
+                    </v-row>
+                  </template>
+                </v-img>
+                <v-icon size="44px" dark v-else>
+                mdi-account-circle
+                </v-icon>
               </v-list-item-avatar>
 
             <v-list-item-content class="mr-4" style="width: 400px">
@@ -61,13 +76,18 @@
         </v-list>
       </v-row>
       <v-row justify="center">
-        <v-dialog v-model="addUserDialog" scrollable max-width="300px">
+        <v-dialog v-model="addUserDialog" scrollable max-width="400px">
           <v-card>
             <v-card-title>ユーザー追加</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 300px;">
               <v-radio-group v-model="selectedUser" column >
-                <v-radio :value="auth" :label="auth.user.name" v-for="(auth, i) in unregisteredUsers" :key="i" />
+                <v-radio :value="auth" v-for="(auth, i) in unregisteredUsers" :key="i" color="#295caa">
+                  <template v-slot:label>
+                    <div v-if="auth.user.name">{{auth.user.name}}</div>
+                    <div v-else>{{auth.user.email}}　<strong class="red--text">招待中</strong></div>
+                  </template>
+                </v-radio>
               </v-radio-group>
             </v-card-text>
             <v-divider></v-divider>
@@ -149,6 +169,8 @@ export default Vue.extend({
     deleteDialog: false,
     changeAuthority: {} as lib.Authority,
     selectedUser: {},
+    projectImageError: false
+    
   }),
   computed: {
     ...mapGetters([
@@ -172,6 +194,9 @@ export default Vue.extend({
     },
     authorities() {
       return this.$store.getters['task/authorities']
+    },
+    projectImage() {
+      return this.projectImageError ? require('~/assets/image/project.png') : this.$config.mediaURL + '/projects/' + this.project.image
     }
   },
   created() {

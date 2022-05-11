@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div onselectstart="return false;">
     <v-card class="mx-auto my-4 px-8 py-4" style="max-width: 700px;">
       <div style="position: relative">
         <v-card-actions class="py-6">
@@ -39,7 +39,7 @@
           label="電話番号"
           type="text"
         ></v-text-field>
-        <cropper v-model="image" :width="450" :currentImage="$config.mediaURL + '/organizations/' + value.image"></cropper>
+        <cropper v-model="image" ratio="16:9" :width="450" :pixel="900" :currentImage="$config.mediaURL + '/organizations/' + value.image"></cropper>
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -123,24 +123,6 @@ export default Vue.extend({
         this.updateValue({number});
       }
     },
-    // authorityUsers: {
-    //   get(): lib.ProjectAuthority[] {
-    //     return this.value.authority_users.filter((authority_user: lib.ProjectAuthority) => authority_user.auth_id == 1);
-    //   },
-    //   set(_authority_users: number[]) {
-    //     const original_authority_users = JSON.parse(JSON.stringify(this.project.authority_users))
-    //     const authority_users = original_authority_users.map((authority_user: lib.ProjectAuthority) => {
-    //       if (_authority_users.includes(authority_user.user.id)) {
-    //         authority_user.auth_id = 1;
-    //       } else {
-    //         authority_user.auth_id = 2;
-    //       }
-    //       return authority_user;
-    //     })
-
-    //     this.updateValue({authority_users});
-    //   }
-    // },
     image: {
       get() {
         return this.value.image_data;

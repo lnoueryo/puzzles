@@ -28,7 +28,13 @@
     </v-app-bar>
     <v-row justify="center" align="center" class="my-6">
       <v-avatar size="36px" v-if="organization.image">
-        <img alt="Avatar" :src="$config.mediaURL + '/organizations/' + organization.image">
+        <v-img alt="Avatar" style="object-fit: cover;" :src="organizationImage" @error="organizationImageError = true">
+          <template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular indeterminate color="grey lighten-5" />
+            </v-row>
+          </template>
+        </v-img>
       </v-avatar>
       <v-icon size="36px" v-else>
         mdi-account-group
@@ -55,7 +61,8 @@
           </v-carousel>
         </v-row>
         <v-row class="my-2" justify="center" v-else>
-          <v-btn to="/project/create" color="#295caa">プロジェクトの作成</v-btn>
+          <v-btn to="/project/create" color="#295caa" v-if="organizationAuthority.type.name == '管理者'">プロジェクトの作成</v-btn>
+          <small v-else>※現在参加しているプロジェクトがありません</small>
         </v-row>
       </v-tab-item>
       <v-tab-item :value="'tab-2'">
@@ -68,7 +75,13 @@
             </v-btn>
           </v-row>
           <v-row class="px-4" align="center" justify="center">
-            <v-img :aspect-ratio="16/9" :src="$config.mediaURL + '/organizations/' + organization.image"></v-img>
+            <v-img :aspect-ratio="16/9" :src="organizationImage" @error="organizationImageError = true">
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular indeterminate color="grey lighten-5" />
+                </v-row>
+              </template>
+            </v-img>
           </v-row>
           <v-row class="pt-8" align="center" justify="center">
             <h2>概要</h2>
@@ -90,11 +103,21 @@
 
               <v-list-item v-for="authUser in organization.users" :key="authUser.id">
                   <v-list-item-avatar>
-                    <v-img :src="$config.mediaURL + '/users/' + authUser.user.image"></v-img>
+                    <v-img :src="$config.mediaURL + '/users/' + authUser.user.image" v-if="authUser.user.image">
+                      <template v-slot:placeholder>
+                        <v-row class="fill-height ma-0" align="center" justify="center">
+                          <v-progress-circular indeterminate color="grey lighten-5" />
+                        </v-row>
+                      </template>
+                    </v-img>
+                    <v-icon size="44px" dark v-else>
+                      mdi-account-circle
+                    </v-icon>
                   </v-list-item-avatar>
 
                 <v-list-item-content class="mr-4" style="width: 400px">
-                  <v-list-item-title v-text="authUser.user.name"></v-list-item-title>
+                  <v-list-item-title v-text="authUser.user.name" v-if="authUser.user.name"></v-list-item-title>
+                  <v-list-item-title v-text="'招待中'" style="color: red" v-else></v-list-item-title>
                   <v-list-item-subtitle v-text="authUser.user.email"></v-list-item-subtitle>
                 </v-list-item-content>
 
@@ -187,6 +210,11 @@
 import Vue from 'vue'
 import { isReadyObj, checkStatus } from '~/modules/utils'
 import * as lib from '~/modules/store'
+declare module 'vue/types/vue' {
+  interface Vue {
+    organization: lib.Organization;
+  }
+}
 export default Vue.extend({
   // layout: 'dashboard',
   data: () => ({
@@ -216,6 +244,7 @@ export default Vue.extend({
     deleteDialog: false,
     changeAuthority: {} as lib.Authority,
     selectedUser: {},
+    organizationImageError: false,
   }),
   computed: {
     isReadyObj,
@@ -240,6 +269,9 @@ export default Vue.extend({
     },
     authorities() {
       return this.$store.getters['task/authorities']
+    },
+    organizationImage() {
+      return this.organizationImageError ? require('~/assets/image/organization.png') : this.$config.mediaURL + '/organizations/' + this.organization.image;
     }
   },
   methods: {
@@ -291,7 +323,7 @@ export default Vue.extend({
 <style scoped>
 .v-card {
   transition: all .2s ease-in-out;
-  background-color: #FF8F00;
+  background-color: #295daa6e;
 }
 
 .v-card:not(.on-hover) {

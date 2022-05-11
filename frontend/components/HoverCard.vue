@@ -3,6 +3,11 @@
     <v-card :elevation="hover ? 12 : 2" :class="{ 'on-hover': hover }" width="315" height="300" class="ma-4">
       <nuxt-link :to="{name: 'project-id', params: {id: id}}">
         <v-img :aspect-ratio="16/9" :src="isPicture(image)" style="background-color: #00000040">
+          <template v-slot:placeholder>
+            <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular indeterminate color="grey lighten-5" />
+            </v-row>
+          </template>
           <div style="background-color: #00000040" class="fill-height repeating-gradient">
             <div class="d-flex justify-end">
               <v-btn icon :class="{ 'show-btns': hover }" color="transparent">
@@ -28,8 +33,14 @@
           <v-tooltip bottom v-for="(_, i) in authority_users" :key="i">
             <template v-slot:activator="{ on, attrs }">
               <v-btn class="mr-1" icon v-bind="attrs" v-on="on" v-if="i < 4" @click="$router.push({name: 'profile-user_id', params: {user_id: _.user_id}})">
-                <v-avatar size="36px">
-                  <img alt="Avatar" :src="$config.mediaURL + '/users/' + _.user.image" v-if="_.user.image">
+                <v-avatar style="object-fit: cover;" size="36px">
+                  <v-img alt="Avatar" :src="$config.mediaURL + '/users/' + _.user.image" v-if="_.user.image">
+                    <template v-slot:placeholder>
+                      <v-row class="fill-height ma-0" align="center" justify="center">
+                        <v-progress-circular indeterminate color="grey lighten-5" />
+                      </v-row>
+                    </template>
+                  </v-img>
                   <v-icon size="44px" dark v-else>
                     mdi-account-circle
                   </v-icon>
@@ -38,9 +49,9 @@
             </template>
             <span>{{ _.user.name }}</span>
           </v-tooltip>
-          <v-btn class="mr-1" icon v-if="5 < authority_users.length" style="background-color: #ffffff1f">
+          <v-btn class="mr-1" icon v-if="5 < authUserLength" style="background-color: #ffffff1f">
             <v-avatar size="36px">
-              <span>+{{ authority_users.length - 4 }}</span>
+              <span>+{{ authUserLength - 4 }}</span>
             </v-avatar>
           </v-btn>
         </div>
@@ -67,6 +78,14 @@
 import Vue from 'vue'
 export default Vue.extend({
   props: ['id', 'image', 'user', 'name', 'authority_users'],
+  data: () => ({
+    projectImageError: false,
+  }),
+  computed: {
+    authUserLength() {
+      return this.authority_users?.length || 0;
+    },
+  },
   methods: {
     isPicture(src: string) {
       if(src) {

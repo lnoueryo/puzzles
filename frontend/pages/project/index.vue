@@ -31,7 +31,7 @@
     <v-row justify="center" align="center" class="my-6">
       <v-avatar size="36px" v-if="organization.image">
         <img
-          alt="Avatar"
+          alt="Avatar" style="object-fit: cover;"
           :src="$config.mediaURL + '/organizations/' + organization.image"
         >
       </v-avatar>

@@ -13,8 +13,9 @@ import (
 
 
 type MailRequest struct {
-	Email string `json:"email"`
-	AuthorityID int `json:"authority_id"`
+	Email			string 	`json:"email"`
+	OrganizationID	string	`json:"organization_id"`
+	AuthorityID		int		`json:"authority_id"`
 }
 func InviteUser(r *http.Request) error {
 	err := DB.Transaction(func(tx *gorm.DB) error {
@@ -34,7 +35,7 @@ func InviteUser(r *http.Request) error {
 		verification, _ := crypto.MakeRandomStr(30)
 		var oa = OrganizationAuthority{
 			UserID: u.ID,
-			OrganizationID: s.Organization,
+			OrganizationID: requestMail.OrganizationID,
 			AuthorityID: requestMail.AuthorityID,
 			Active: false,
 			Verification: verification,
@@ -48,15 +49,15 @@ func InviteUser(r *http.Request) error {
 			result = tx.Create(&oa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 				return result.Error
 			}
-			return nil
-		}
-		if newOA.Active {
-			err = errors.New("既に組織に登録されているようです。")
-			return err
-		}
-		newOA.Verification = oa.Verification
-		result = tx.Save(&newOA); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return result.Error
+		} else {
+			if newOA.Active {
+				err = errors.New("既に組織に登録されているようです。")
+				return err
+			}
+			newOA.Verification = oa.Verification
+			result = tx.Save(&newOA); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				return result.Error
+			}
 		}
 		m := email
 		m.Sub = s.Name + "さんから招待が送られました"
@@ -64,6 +65,7 @@ func InviteUser(r *http.Request) error {
 		url := mainMessage + origin + "/register/verification?code=" + verification
 		m.Message = url
 		err = mail.SendEmail(m); if err !=nil {
+			errorlog.Print(err)
 			err = errors.New("存在しないメールアドレスです。")
 			return err
 		}

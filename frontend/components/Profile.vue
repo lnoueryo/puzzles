@@ -5,7 +5,13 @@
         <v-row class="py-8 mx-4" align="center" justify="center" style="position: relative">
           <div style="position: relative;">
             <v-avatar size="36px" class="mr-4" style="position: absolute;left: -50px">
-              <img alt="Avatar" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
+              <v-img alt="Avatar" style="object-fit: cover;" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
+                <template v-slot:placeholder>
+                  <v-row class="fill-height ma-0" align="center" justify="center">
+                    <v-progress-circular indeterminate color="grey lighten-5" />
+                  </v-row>
+                </template>
+              </v-img>
               <v-icon size="44px" dark v-else>
               mdi-account-circle
               </v-icon>

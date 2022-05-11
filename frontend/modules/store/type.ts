@@ -123,6 +123,7 @@ export interface OrganizationAuthority {
   type: string
   user_id: number
   organization: Organization
+  user: User
 }
 
 export interface Comment {

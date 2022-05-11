@@ -27,7 +27,7 @@
               <v-select
                 ref="assignee"
                 v-model="assignee"
-                :items="project.authority_users"
+                :items="assigneeItems"
                 item-text="user.name"
                 item-value="user_id"
                 label="担当者"
@@ -304,6 +304,11 @@ export default Vue.extend({
       const versions = this.project.versions;
       return this.isEmptyArr(fields) || this.isEmptyArr(milestones) || this.isEmptyArr(versions)
     },
+    assigneeItems() {
+      return this.project.authority_users.filter((user: lib.OrganizationAuthority) => {
+        return user.user.name;
+      })
+    }
   },
   methods: {
     updateValue(value: {}) {

@@ -122,7 +122,7 @@ export default Vue.extend({
       } finally {
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
-          this.$router.push({name: 'project-id-task', params: {id: this.$route.params.id}});
+          this.$router.push({name: 'project-id', params: {id: this.$route.params.id}});
         }, () => {
           this.loading = false;
           alert('エラーです。');

@@ -78,7 +78,7 @@
           v-if="!isEmptyObj(project)"
         >
         </v-select> -->
-        <cropper v-model="image" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.image"></cropper>
+        <cropper v-model="image" :pixel="900" ratio="16:9" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.image"></cropper>
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -235,8 +235,8 @@ export default Vue.extend({
       (this.milestones as lib.Milestone[]).splice(index, 1)
     },
     onDeleteVersion(index: number) {
-      if((this.milestones as lib.Milestone[]).length == 1) return;
-      (this.milestones as lib.Milestone[]).splice(index, 1)
+      if((this.versions as lib.Milestone[]).length == 1) return;
+      (this.versions as lib.Milestone[]).splice(index, 1)
     },
   }
 })
