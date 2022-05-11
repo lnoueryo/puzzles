@@ -1,13 +1,11 @@
 <template>
-  <v-card
-    class="mx-auto"
-  >
+  <v-card class="mx-auto">
     <slot name="main"></slot>
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn
-        :disabled="loading"
+        :disabled="loading || !formReady"
         :loading="loading"
         class="white--text"
         color="#295caa"
@@ -26,9 +24,12 @@ export default Vue.extend({
   name: 'login',
   layout: 'login',
   props: {
+    formReady: {
+      type: Boolean
+    },
     loading: {
       type: Boolean
-    }
+    },
   },
 })
 </script>

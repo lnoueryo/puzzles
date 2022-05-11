@@ -14,14 +14,14 @@
           v-model="name"
           :rules="[rules.required, rules.length(20)]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="プロジェクト名"
           type="text"
         ></v-text-field>
         <v-text-field
           v-model="description"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="プロジェクトの概要"
           type="text"
         ></v-text-field>
@@ -31,7 +31,7 @@
           :key="'field_' + i"
           :rules="[rules.length(20)]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           :label="'分野 ' + (i + 1)"
           type="text"
           append-icon="mdi-close"
@@ -44,7 +44,7 @@
           :key="'milestone_' + i"
           :rules="[rules.length(20)]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           :label="'マイルストーン ' + (i + 1)"
           type="text"
           append-icon="mdi-close"
@@ -58,7 +58,7 @@
           :key="'version_' + i"
           :rules="[rules.length(20)]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           :label="'バージョン ' + (i + 1)"
           type="text"
           append-icon="mdi-close"

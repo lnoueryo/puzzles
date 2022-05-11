@@ -40,11 +40,6 @@ export default Vue.extend({
     formReady: false,
     loading: false,
     dialog: false,
-    rules: {
-      length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
-      required: (v: string) => !!v || '必ずご記入ください',
-      requiredSelect: (v: lib.User[]) => v.length != 0 || '1名は選択してください',
-    },
     error: '',
   }),
   computed: {

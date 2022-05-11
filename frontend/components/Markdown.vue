@@ -14,17 +14,17 @@
             v-model="currentText"
           ></v-textarea>
         </div>
-        <template v-if="$vuetify.breakpoint.mdAndUp">
+        <!-- <template v-if="$vuetify.breakpoint.mdAndUp">
           <v-btn-toggle class="my-1" color="primary" dense>
             <v-btn v-for="(btn, i) in buttons" :key="i" :value="btn.value" text @click="btn.func">
               <v-icon>mdi-{{ btn.icon }}</v-icon>
             </v-btn>
           </v-btn-toggle>
-        </template>
+        </template> -->
       </v-col>
       <v-col sm="5" md="6" class="pl-1">
         <div class="px-4" style="border-radius: 3px 3px 0 0;overflow: scroll;height: 312px;background-color: rgba(255, 255, 255, 0.08)">
-          <div v-html="html"></div>
+          <div class="py-2" v-html="html"></div>
         </div>
       </v-col>
     </v-row>

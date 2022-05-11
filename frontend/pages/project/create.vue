@@ -8,7 +8,7 @@
       </template>
       <template slot="submit">
         <div>
-          更新
+          作成
         </div>
       </template>
     </project-form>

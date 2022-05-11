@@ -12,6 +12,7 @@
           clearable
           item-disabled=""
           :disabled="noTask"
+          color="#295caa"
         ></v-select>
       </v-col>
       <v-col class="d-flex" cols="12" sm="3">
@@ -23,6 +24,7 @@
           label="分野"
           outlined
           clearable
+          color="#295caa"
           :disabled="noTask || noField"
         ></v-select>
       </v-col>
@@ -35,6 +37,7 @@
           label="マイルストーン"
           outlined
           clearable
+          color="#295caa"
           :disabled="noTask || noMilestone"
         ></v-select>
       </v-col>
@@ -47,6 +50,7 @@
           label="バージョン"
           outlined
           clearable
+          color="#295caa"
           :disabled="noTask || noVersion"
         ></v-select>
       </v-col>
@@ -59,30 +63,30 @@
         label="状況"
         multiple
         outlined
-        color="indigo--text"
         clearable
+        color="#295caa"
         :disabled="noTask"
       >
       <template v-slot:prepend-item>
         <v-list-item @mousedown.prevent>
           <v-list-item-content>
             <v-list-item-title>
-              <v-btn @click="selectProgress">作業</v-btn>
+              <v-btn text color="cyan darken-2" @click="selectProgress">作業</v-btn>
             </v-list-item-title>
           </v-list-item-content>
           <v-list-item-content>
             <v-list-item-title>
-              <v-btn @click="selectPending">確認</v-btn>
+              <v-btn text color="brown lighten-2" @click="selectPending">確認</v-btn>
             </v-list-item-title>
           </v-list-item-content>
           <v-list-item-content>
             <v-list-item-title>
-              <v-btn @click="reset">解除</v-btn>
+              <v-btn text color="amber lighten-4" @click="selectCompletion">完了</v-btn>
             </v-list-item-title>
           </v-list-item-content>
           <v-list-item-content>
             <v-list-item-title>
-              <v-btn @click="selectCompletion">完了</v-btn>
+              <v-btn text color="red darken-2" @click="reset">解除</v-btn>
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>

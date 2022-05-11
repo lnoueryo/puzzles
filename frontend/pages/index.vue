@@ -26,7 +26,10 @@
       </v-tabs>
       <v-spacer></v-spacer>
     </v-app-bar>
-    <v-row justify="center" align="center" class="my-6">
+    <div>
+      
+    </div>
+    <v-row justify="center" align="center" class="py-8" style="background-color: #1E1E1E">
       <v-avatar size="36px" v-if="organization.image">
         <v-img alt="Avatar" style="object-fit: cover;" :src="organizationImage" @error="organizationImageError = true">
           <template v-slot:placeholder>
@@ -53,7 +56,7 @@
               <v-sheet height="100%" color="transparent">
                 <v-row class="fill-height" align="center" justify="center">
                 <template v-for="(_, i) in projects">
-                  <hover-card :key="i" v-bind="_"></hover-card>
+                  <hover-card :key="i" v-bind="_" :user="user"></hover-card>
                 </template>
                 </v-row>
               </v-sheet>
@@ -100,8 +103,7 @@
             </div>
             <v-list subheader two-line>
               <v-subheader inset>ユーザー</v-subheader>
-
-              <v-list-item v-for="authUser in organization.users" :key="authUser.id">
+              <v-list-item v-for="authUser in organization.users" :key="authUser.id" @click="toProfile(authUser)" link>
                   <v-list-item-avatar>
                     <v-img :src="$config.mediaURL + '/users/' + authUser.user.image" v-if="authUser.user.image">
                       <template v-slot:placeholder>
@@ -150,19 +152,18 @@
                 <v-divider></v-divider>
                 <v-card-text style="height: 100px;">
                   <v-radio-group v-model="changeAuthority" column>
-                    <v-radio :value="authority" :label="authority.name" v-for="(authority, i) in authorities" :key="i"/>
+                    <v-radio color="#295caa" :value="authority" :label="authority.name" v-for="(authority, i) in authorities" :key="i"/>
                   </v-radio-group>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
-                <v-card-actions>
-                  <v-btn color="blue darken-1" text @click="authorityDialog = false;selectedUser = ''">
-                    Close
+                  <v-spacer></v-spacer>
+                  <v-btn text @click="authorityDialog = false;selectedUser = ''">
+                    戻る
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="onChangeAuthority">
-                    Save
+                  <v-btn class="white--text" color="#295caa" @click="onChangeAuthority">
+                    変更
                   </v-btn>
-                </v-card-actions>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -172,19 +173,18 @@
               <v-card>
                 <v-card-title>組織からユーザーを削除</v-card-title>
                 <v-divider></v-divider>
-                <v-card-text style="height: 100px;">
+                <v-card-text class="pt-2">
                   このユーザーを組織から削除します。よろしいですか？
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
-                <v-card-actions>
-                  <v-btn color="blue darken-1" text @click="deleteDialog = false;selectedUser = ''">
-                    Close
+                  <v-spacer></v-spacer>
+                  <v-btn text @click="deleteDialog = false;selectedUser = ''">
+                    戻る
                   </v-btn>
-                  <v-btn color="blue darken-1" text @click="onDeleteAuthority">
-                    Save
+                  <v-btn class="white--text" color="red darken-2" @click="onDeleteAuthority">
+                    削除
                   </v-btn>
-                </v-card-actions>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -213,6 +213,7 @@ import * as lib from '~/modules/store'
 declare module 'vue/types/vue' {
   interface Vue {
     organization: lib.Organization;
+    user: lib.User
   }
 }
 export default Vue.extend({
@@ -317,20 +318,14 @@ export default Vue.extend({
         })
       }
     },
+    toProfile(authUser: lib.OrganizationAuthority) {
+      if(!authUser.user.name) return;
+      if(this.user.id == authUser.user_id) {
+        this.$router.push({name: 'profile'});
+        return;
+      }
+      this.$router.push({name: 'profile-user_id', params: {user_id: String(authUser.user_id)}})
+    }
   }
 })
 </script>
-<style scoped>
-.v-card {
-  transition: all .2s ease-in-out;
-  background-color: #295daa6e;
-}
-
-.v-card:not(.on-hover) {
-  background-color: #272727;
- }
-
-.show-btns {
-  color: rgba(255, 255, 255, 1) !important;
-}
-</style>

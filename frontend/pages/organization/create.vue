@@ -1,5 +1,5 @@
 <template>
-  <form-card @send="onClickSend" style="max-width: 500px" :loading="loading">
+  <form-card @send="onClickSend" style="max-width: 500px" :loading="loading" :formReady="formReady">
     <template v-slot:main>
       <v-form
         ref="form"
@@ -10,7 +10,7 @@
           v-model="email"
           :rules="[rules.required, rules.email]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="メールアドレス"
           type="email"
           @keyup.enter="onclickSend"
@@ -24,6 +24,7 @@
             persistent-hint
             return-object
             single-line
+            color="#295caa"
           ></v-select>
       </v-form>
       <div class="pa-4 red--text">{{ error }}</div>
@@ -51,9 +52,8 @@ export default Vue.extend({
       { id: 3, name: 'ゲスト' },
     ],
     rules: {
-      email: (v: string) => !!(v || '').match(/@/) || 'Please enter a valid email',
-      length: (len: number) => (v: string) => (v || '').length >= len || `Invalid character length, required ${len}`,
-      required: (v: string) => !!v || 'This field is required',
+      email: (v: string) => !!(v || '').match(/@/) || 'メールアドレスの形式ではありません',
+      required: (v: string) => !!v || '必須項目です',
     },
   }),
   computed: {

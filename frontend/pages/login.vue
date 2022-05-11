@@ -1,16 +1,12 @@
 <template>
-  <form-card @send="onClickSend" style="max-width: 500px" v-if="pageReady" :loading="loading">
+  <form-card @send="onClickSend" style="max-width: 500px" v-if="pageReady" :loading="loading" :formReady="formReady">
     <template v-slot:main>
-      <v-form
-        ref="form"
-        v-model="formReady"
-        class="pa-4 pt-6"
-      >
+      <v-form ref="form" v-model="formReady" class="pa-4 pt-6">
         <v-text-field
           v-model="organization"
           :rules="[rules.required]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="組織 ID"
           type="text"
           @keyup.enter="onClickSend"
@@ -19,22 +15,23 @@
           v-model="email"
           :rules="[rules.required, rules.email]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="メールアドレス"
           type="email"
           @keyup.enter="onClickSend"
         ></v-text-field>
         <v-text-field
           v-model="password"
-          :rules="[rules.length(20)]"
           filled
-          color="amber darken-3"
-          counter="6"
+          color="#295caa"
           label="パスワード"
           style="min-height: 96px"
           type="password"
           @keyup.enter="onClickSend"
         ></v-text-field>
+        <div style="color: red">
+          {{ error }}
+        </div>
       </v-form>
     </template>
     <template v-slot:button>
@@ -62,12 +59,11 @@ export default Vue.extend({
     organization: '',
     email: undefined,
     password: undefined,
-    formReady: false,
+    formReady: true,
     loading: false,
     rules: {
-      email: (v: string) => !!(v || '').match(/@/) || 'Please enter a valid email',
-      length: (len: number) => (v: string) => (v || '').length >= len || `Invalid character length, required ${len}`,
-      required: (v: string) => !!v || 'This field is required',
+      email: (v: string) => !!(v || '').match(/@/) || 'メールアドレスの形式ではありません',
+      required: (v: string) => !!v || '必須項目です',
     },
   }),
   computed: {

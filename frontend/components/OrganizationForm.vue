@@ -14,28 +14,28 @@
           v-model="name"
           :rules="[rules.required, rules.length(20)]"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="プロジェクト名"
           type="text"
         ></v-text-field>
         <v-text-field
           v-model="description"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="プロジェクトの概要"
           type="text"
         ></v-text-field>
         <v-text-field
           v-model="founded"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="設立日"
           type="text"
         ></v-text-field>
         <v-text-field
           v-model="number"
           filled
-          color="amber darken-3"
+          color="#295caa"
           label="電話番号"
           type="text"
         ></v-text-field>

@@ -27,7 +27,7 @@
               </v-tooltip>
             </template>
             <v-list>
-              <v-list-item-group active-class="border" color="indigo" :value="list">
+              <v-list-item-group active-class="border" color="#295caa" :value="list">
                 <v-list-item v-if="isEmptyArr(projects) && organizationAuthority.type.name == '管理者'" to="/project/create">
                   <v-list-item-title>プロジェクトの作成</v-list-item-title>
                 </v-list-item>

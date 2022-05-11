@@ -80,7 +80,7 @@
           <v-card>
             <v-card-title>ユーザー追加</v-card-title>
             <v-divider></v-divider>
-            <v-card-text style="height: 300px;">
+            <v-card-text>
               <v-radio-group v-model="selectedUser" column >
                 <v-radio :value="auth" v-for="(auth, i) in unregisteredUsers" :key="i" color="#295caa">
                   <template v-slot:label>
@@ -92,11 +92,12 @@
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
-              <v-btn color="blue darken-1" text @click="addUserDialog = false;selectedUser = ''">
-                Close
+              <v-spacer></v-spacer>
+              <v-btn text @click="addUserDialog = false;selectedUser = ''">
+                戻る
               </v-btn>
-              <v-btn color="blue darken-1" text @click="onAddUser">
-                Save
+              <v-btn class="white--text" color="#295caa" @click="onAddUser" :disabled="isEmptyObj(selectedUser)">
+                変更
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -107,21 +108,20 @@
           <v-card>
             <v-card-title>権限変更</v-card-title>
             <v-divider></v-divider>
-            <v-card-text style="height: 100px;">
+            <v-card-text>
               <v-radio-group v-model="changeAuthority" column>
                 <v-radio :value="authority" :label="authority.name" v-for="(authority, i) in authorities" :key="i"/>
               </v-radio-group>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
-            <v-card-actions>
-              <v-btn color="blue darken-1" text @click="authorityDialog = false;selectedUser = ''">
-                Close
+              <v-spacer></v-spacer>
+              <v-btn text @click="authorityDialog = false;selectedUser = ''">
+                戻る
               </v-btn>
-              <v-btn color="blue darken-1" text @click="onChangeAuthority">
-                Save
+              <v-btn class="white--text" color="#295caa" @click="onChangeAuthority">
+                変更
               </v-btn>
-            </v-card-actions>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -131,19 +131,18 @@
           <v-card>
             <v-card-title>プロジェクトからユーザーを削除</v-card-title>
             <v-divider></v-divider>
-            <v-card-text style="height: 100px;">
+            <v-card-text class="pt-2">
               このユーザーをプロジェクトから削除します。よろしいですか？
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
-            <v-card-actions>
-              <v-btn color="blue darken-1" text @click="deleteDialog = false;selectedUser = ''">
-                Close
+              <v-spacer></v-spacer>
+              <v-btn text @click="deleteDialog = false;selectedUser = ''">
+                戻る
               </v-btn>
-              <v-btn color="blue darken-1" text @click="onDeleteAuthority">
-                Save
+              <v-btn class="white--text" color="red darken-2" @click="onDeleteAuthority">
+                削除
               </v-btn>
-            </v-card-actions>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -154,7 +153,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import { isReadyObj, checkStatus } from '~/modules/utils'
+import { isReadyObj, isEmptyObj, checkStatus } from '~/modules/utils'
 import * as lib from '~/modules/store'
 declare module 'vue/types/vue' {
   interface Vue {
@@ -181,6 +180,7 @@ export default Vue.extend({
     ]),
     checkStatus,
     isReadyObj,
+    isEmptyObj,
     userOptions() {
       return [
         {title: '権限変更', event: this.openAuthorityDialog},
