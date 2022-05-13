@@ -6,7 +6,8 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
@@ -27,6 +28,7 @@
     "@nuxt/typescript-build": "^2.1.0",
     "@nuxtjs/color-mode": "^3.0.1",
     "@nuxtjs/vuetify": "^1.12.3",
-    "@types/node": "^17.0.21"
+    "@types/node": "^17.0.21",
+    "cypress": "^9.6.1"
   }
 }

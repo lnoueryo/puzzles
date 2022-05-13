@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <v-app-bar class="justify-content: space-between" :clipped-left="clipped" fixed app elevation="0" v-if="pageReady && user.name">
+    <v-app-bar id="header" :clipped-left="clipped" fixed app elevation="0" v-if="pageReady && user.name">
       <div class="d-flex justify-space-between" style="width: 100%">
         <div class="d-flex">
           <nuxt-link to="/">
@@ -70,7 +70,7 @@
             <template v-slot:activator="{ on: menu }">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn class="mx-2" icon v-bind="attrs" v-on="{ ...on, ...menu }">
+                  <v-btn id="profile-list-button" class="mx-2" icon v-bind="attrs" v-on="{ ...on, ...menu }">
                     <v-avatar size="40px">
                       <v-img alt="Avatar" style="object-fit: cover;" :src="$config.mediaURL + '/users/' + user.image" v-if="user.image">
                         <template v-slot:placeholder>
@@ -88,7 +88,7 @@
                 <span>プロフィール設定</span>
               </v-tooltip>
             </template>
-            <v-list>
+            <v-list id="profile-list">
               <v-list-item v-for="(config, index) in configs" :key="index" :to="config.url">
                 <v-list-item-title>{{ config.name }}</v-list-item-title>
               </v-list-item>

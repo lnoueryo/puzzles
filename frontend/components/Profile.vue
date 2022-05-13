@@ -16,9 +16,9 @@
               mdi-account-circle
               </v-icon>
             </v-avatar>
-            <h2>{{ selectedUser.user.name }}</h2>
+            <h2 id="user-name">{{ selectedUser.user.name }}</h2>
           </div>
-          <v-btn icon absolute right color="#295caa" :to="{name: 'profile-edit'}" v-if="!disabled">
+          <v-btn id="edit-profile" icon absolute right color="#295caa" :to="{name: 'profile-edit'}" v-if="!disabled">
             <v-icon>mdi-application-edit-outline</v-icon>
           </v-btn>
         </v-row>

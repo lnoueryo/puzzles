@@ -3,6 +3,7 @@
     <template v-slot:main>
       <v-form ref="form" v-model="formReady" class="pa-4 pt-6">
         <v-text-field
+          id="organizaiton"
           v-model="organization"
           :rules="[rules.required]"
           filled
@@ -12,6 +13,7 @@
           @keyup.enter="onClickSend"
         ></v-text-field>
         <v-text-field
+          id="email"
           v-model="email"
           :rules="[rules.required, rules.email]"
           filled
@@ -21,6 +23,7 @@
           @keyup.enter="onClickSend"
         ></v-text-field>
         <v-text-field
+          id="password"
           v-model="password"
           filled
           color="#295caa"

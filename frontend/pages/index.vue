@@ -42,7 +42,7 @@
       <v-icon size="36px" v-else>
         mdi-account-group
       </v-icon>
-      <strong class="mx-2" style="font-size: 30px">{{ organization.name }}</strong>
+      <strong  id="organization-name" class="mx-2" style="font-size: 30px">{{ organization.name }}</strong>
     </v-row>
     <v-tabs-items v-model="tabKey">
       <v-tab-item :value="'tab-1'">
@@ -102,7 +102,6 @@
               </v-btn>
             </div>
             <v-list subheader two-line>
-              <v-subheader inset>ユーザー</v-subheader>
               <v-list-item v-for="authUser in organization.users" :key="authUser.id" @click="toProfile(authUser)" link>
                   <v-list-item-avatar>
                     <v-img :src="$config.mediaURL + '/users/' + authUser.user.image" v-if="authUser.user.image">
@@ -135,7 +134,7 @@
                       </v-btn>
                     </template>
 
-                    <v-list>
+                    <v-list class="user-options">
                       <v-list-item v-for="(option, i) in userOptions" :key="i" @click="option.event(authUser)" :disabled="authUser.user_id == user.id">
                         <v-list-item-title>{{ option.title }}</v-list-item-title>
                       </v-list-item>
