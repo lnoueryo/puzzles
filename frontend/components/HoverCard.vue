@@ -3,7 +3,7 @@
     <v-hover v-slot="{ hover }">
       <v-card :elevation="hover ? 12 : 2" :class="{ 'on-hover': hover }" width="315" height="300" class="ma-4">
         <nuxt-link :to="{name: 'project-id', params: {id: id}}">
-          <v-img :aspect-ratio="16/9" :src="isPicture(image)" style="background-color: #00000040">
+          <v-img :aspect-ratio="16/9" :src="projectImage" @error="projectImageError = true" style="background-color: #00000040">
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="grey lighten-5" />
@@ -144,6 +144,9 @@ export default Vue.extend({
     authUserLength() {
       return this.authority_users?.length || 0;
     },
+    projectImage() {
+      return this.projectImageError ? require('~/assets/image/project.png') : this.$config.mediaURL + '/projects/' + this.image
+    }
   },
   methods: {
     isPicture(src: string) {
