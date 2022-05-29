@@ -28,22 +28,18 @@ For detailed explanation on how things work, check out the [documentation](https
 ## Account
 organizations: 01dVqntqnqulIapPgOcdXxQ2L
 email: admin@co.jp
-password: popo0908
 
 ## Account
 organizations: prygen4fDISDVgSYDjxZ5uICD
 email: popo62520908@gmail.com
-password: popo0908
 
 ## Account
 organizations: kziQGqsouqQOM2As5dPNDcejv
 email: admin@co.com
-password: popo0908
 
 ## Account
 organizations: quaereoli5ath2iPiequaidoo
 email: jounetsism@gmail.com
-password: popo0908
 ## Special Directories
 
 You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
