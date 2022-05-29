@@ -38,7 +38,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {checkStatus} from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 export default Vue.extend({
   data: () => ({
     error: '',
@@ -71,9 +71,9 @@ export default Vue.extend({
       this.loading = true;
       let response: any;
       try {
-        response = await this.$store.dispatch('sendEmail', this.form) as lib.Response;
+        response = await this.$store.dispatch('sendEmail', this.form) as model.Response;
       } catch (error: any) {
-        response = error as lib.Response;
+        response = error as model.Response;
       } finally {
         if('status' in response === false) return this.$router.push('/bad-connection');
         this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), (() => {

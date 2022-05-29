@@ -23,15 +23,15 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
     preprocessProjectAuthority: () => void;
   }
 }
-interface ProjectAuthority extends lib.ProjectAuthority {
+interface ProjectAuthority extends model.ProjectAuthority {
   disabled: boolean
-  project: lib.Project
+  project: model.Project
 }
 export default Vue.extend({
   data:() => ({
@@ -39,12 +39,12 @@ export default Vue.extend({
     formReady: false,
     loading: false,
     dialog: false,
-    selectedProject: {} as lib.Project,
-    projectUsers: [] as lib.ProjectAuthority[],
+    selectedProject: {} as model.Project,
+    projectUsers: [] as model.ProjectAuthority[],
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
-      requiredSelect: (v: lib.User[]) => v.length != 0 || '1名は選択してください',
+      requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
     error: '',
   }),
@@ -67,7 +67,7 @@ export default Vue.extend({
         return {title: '分野' + (i + 1), newData: field.name, oldData: ''};
       })
       const newFieldLength = fields.length - 1;
-      this.project.fields.forEach((field: lib.Field, i: number) => {
+      this.project.fields.forEach((field: model.Field, i: number) => {
         if(newFieldLength >= i) {
           fields[i] = {...fields[i], ...{oldData: field.name}}
         } else {
@@ -78,7 +78,7 @@ export default Vue.extend({
         return {title: 'マイルストーン' + (i + 1), newData: milestone.name, oldData: ''};
       })
       const newMilestoneLength = milestones.length - 1;
-      this.project.milestones.forEach((milestone: lib.Milestone, i: number) => {
+      this.project.milestones.forEach((milestone: model.Milestone, i: number) => {
         if(newMilestoneLength >= i) {
           milestones[i] = {...milestones[i], ...{oldData: milestone.name}}
         } else {
@@ -89,7 +89,7 @@ export default Vue.extend({
         return {title: 'バージョン' + (i + 1), newData: version.name, oldData: ''};
       })
       const newVersionsLength = versions.length - 1;
-      this.project.versions.forEach((version: lib.Version, i: number) => {
+      this.project.versions.forEach((version: model.Version, i: number) => {
         if(newVersionsLength >= i) {
           versions[i] = {...versions[i], ...{oldData: version.name}}
         } else {
@@ -102,7 +102,7 @@ export default Vue.extend({
       // })
       // const authorityType = 1;
       // const newAdministerLength = administers.length - 1;
-      // this.project.authority_users.forEach((authority_user: lib.ProjectAuthority, i: number) => {
+      // this.project.authority_users.forEach((authority_user: model.ProjectAuthority, i: number) => {
       //   if(authority_user.auth_id != authorityType) return
       //   if(newAdministerLength >= i) {
       //     administers[i] = {...administers[i], ...{oldData: authority_user.user.name}}
@@ -158,7 +158,7 @@ export default Vue.extend({
       }
     },
     projectForm() {
-      const project = {} as lib.Project
+      const project = {} as model.Project
       const isFirstField = !!this.selectedProject.fields[0].name;
       const isFirstMilestone = !!this.selectedProject.milestones[0].name;
       const isFirstVersion = !!this.selectedProject.versions[0].name;

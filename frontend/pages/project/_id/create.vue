@@ -19,12 +19,12 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isReadyObj, isEmptyArr, isEmptyObj, checkStatus, changeToDateISOFormat, changeToTimeStampFormat } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
     changeToHalf: (string: string) => any;
     isNumber: (v: any) => boolean;
-    validateForm: (v: lib.Task) => string;
+    validateForm: (v: model.Task) => string;
   }
 }
 interface Rule {
@@ -35,7 +35,7 @@ interface Rule {
 }
 export default Vue.extend({
   data: () => ({
-    selectedTask: {} as lib.Task,
+    selectedTask: {} as model.Task,
     loading: false,
   }),
   computed: {
@@ -69,12 +69,12 @@ export default Vue.extend({
         deadline: this.selectedTask.deadline ? new Date(this.selectedTask.deadline) : null,
       }
       const assigner = this.user;
-      const assignee = this.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
+      const assignee = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
       const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
       const type = this.types.find((type: {id: number}) => type.id === this.selectedTask.type_id);
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
-      const field = this.project.fields.find((field: lib.Field) => field.id === this.selectedTask.field_id) || {};
-      const milestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
+      const field = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id) || {};
+      const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
       const actual_time = 0
       const requiredDataforDisplay = {
         assigner,
@@ -129,7 +129,7 @@ export default Vue.extend({
         })
       }
     },
-    validateForm(form: lib.Task) {
+    validateForm(form: model.Task) {
       if(!form.title) {
         return '課題のタイトルが空白です'
       }

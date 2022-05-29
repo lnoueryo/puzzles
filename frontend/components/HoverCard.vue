@@ -133,7 +133,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/store'
 export default Vue.extend({
   props: ['id', 'image', 'user', 'name', 'authority_users'],
   data: () => ({
@@ -152,7 +152,7 @@ export default Vue.extend({
       }
       return require('~/assets/image/project.png');
     },
-    toProfile(authUser: lib.OrganizationAuthority) {
+    toProfile(authUser: model.OrganizationAuthority) {
       if(!authUser.user.name) return;
       if(this.user.id == authUser.user_id) {
         this.$router.push({name: 'profile'});

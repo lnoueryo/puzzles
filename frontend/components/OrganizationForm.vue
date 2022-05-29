@@ -60,10 +60,10 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, resizeFile } from '~/modules/utils'
-import * as lib from '~/modules/store'
-interface ProjectAuthority extends lib.ProjectAuthority {
+import * as model from '~/modules/model'
+interface ProjectAuthority extends model.ProjectAuthority {
   disabled: boolean
-  project: lib.Project
+  project: model.Project
 }
 export default Vue.extend({
   props: {
@@ -80,7 +80,7 @@ export default Vue.extend({
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
-      requiredSelect: (v: lib.User[]) => v.length != 0 || '1名は選択してください',
+      requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
     error: '',
   }),

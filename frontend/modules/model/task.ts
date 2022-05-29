@@ -1,4 +1,5 @@
-import * as lib from './type'
+import * as Type from './type'
+import * as Table from '../table'
 export class Tasks {
   tasks = {
     all: [] as Task[],
@@ -15,7 +16,7 @@ export class Tasks {
     selectedTask: {},
     taskIndex: -1,
   }
-  insertTasks(tasks: lib.Task[]) {
+  insertTasks(tasks: Type.Task[]) {
     this.tasks.all = this.preprocessTasks(tasks);
     this.tasks.sortedTasks = this.tasks.all;
     this.resetSort();
@@ -85,12 +86,12 @@ export class Tasks {
     this.tasks.pageIndex = 0;
     this.tasks.listIndex = index;
   }
-  sortBy(cell: lib.Cell) {
+  sortBy(cell: Table.Cell) {
     if('sortKey' in cell === false) return;
     const compare = this.selectFunc(cell.sortKey, cell.header.active, cell.name as keyof Task)
     this.tasks.sortedTasks.sort(compare);
   }
-  preprocessTasks = (tasks: lib.Task[]): Task[] => {
+  preprocessTasks = (tasks: Type.Task[]): Task[] => {
     // const newTasks = tasks.map((task) => {
     //   return this.preprocessTask(task)
     // })
@@ -101,21 +102,21 @@ export class Tasks {
     }
     return newTasks;
   }
-  preprocessTask = (task: lib.Task) => {
+  preprocessTask = (task: Type.Task) => {
     const newTask = {} as Task
-    newTask.priority = (task?.priority as lib.Priority)?.name;
-    newTask.milestone = (task?.milestone as lib.Milestone)?.name;
-    newTask.version = (task?.version as lib.Version)?.name;
-    newTask.field = (task.field as lib.Field)?.name;
-    newTask.status = (task.status as lib.Status)?.name;
-    newTask.type = (task.type as lib.Type)?.name;
+    newTask.priority = (task?.priority as Type.Priority)?.name;
+    newTask.milestone = (task?.milestone as Type.Milestone)?.name;
+    newTask.version = (task?.version as Type.Version)?.name;
+    newTask.field = (task.field as Type.Field)?.name;
+    newTask.status = (task.status as Type.Status)?.name;
+    newTask.type = (task.type as Type.Type)?.name;
     newTask.created_at = this.changeTimeFormat(task.created_at);
     newTask.updated_at = this.changeTimeFormat(task.updated_at);
     newTask.start_time = this.changeTimeFormat(task.start_time);
     newTask.deadline = this.changeTimeFormat(task.deadline);
     return {...task, ...newTask};
   }
-  selectTask(params: lib.Params) {
+  selectTask(params: Type.Params) {
     this.tasks.selectedTask = {}
     const t0 = performance.now();
     let key = 0;
@@ -135,12 +136,12 @@ export class Tasks {
     console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
     if(Object.keys(this.tasks.selectedTask).length == 0) this.tasks.taskIndex = -1;
   }
-  addTask(task: lib.Task) {
+  addTask(task: Type.Task) {
     this.tasks.all.push(this.preprocessTask(task));
     this.tasks.sortedTasks = this.tasks.all;
     this.resetSort();
   }
-  updateTask(updatedTask: lib.Task) {
+  updateTask(updatedTask: Type.Task) {
     this.tasks.all = this.tasks.all.map((task) => {
       if(task.id == updatedTask.id) {
         const newTask = this.preprocessTask(updatedTask);
@@ -151,7 +152,7 @@ export class Tasks {
     })
     this.tasks.sortedTasks = [...[], ...this.tasks.all];
     this.resetSort();
-    this.selectTask({key: String(updatedTask.id)} as lib.Params)
+    this.selectTask({key: String(updatedTask.id)} as Type.Params)
   }
   changeTimeFormat = (time: string) => {
     const dateObj = new Date(time);
@@ -205,19 +206,19 @@ export class Tasks {
       }
     }
     if(type === 3) {
-      // key as keyof lib.User
+      // key as keyof Type.User
       if(activeNum === 1) {
         return (a: Task, b: Task) => {
-          const userA = a[key] as lib.User
-          const userB = b[key] as lib.User
+          const userA = a[key] as Type.User
+          const userB = b[key] as Type.User
           if (userA['name'] < userB['name']) return -1;
           if (userA['name'] > userB['name']) return 1;
           return 0;
         }
       }
       return function(a: Task, b: Task) {
-        const userA = a[key] as lib.User
-        const userB = b[key] as lib.User
+        const userA = a[key] as Type.User
+        const userB = b[key] as Type.User
         if (userA['name'] > userB['name']) return -1;
         if (userA['name'] < userB['name']) return 1;
         return 0;
@@ -256,8 +257,8 @@ export class Tasks {
 interface Task {
   id: number
   title: string
-  assignee: lib.User
-  comments: lib.Comment[]
+  assignee: Type.User
+  comments: Type.Comment[]
   detail: string
   key: string
   parent: number
@@ -273,5 +274,5 @@ interface Task {
   actual_time: number
   created_at: string
   updated_at: string
-  comment: lib.Comment[]
+  comment: Type.Comment[]
 }

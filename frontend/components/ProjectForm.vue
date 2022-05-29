@@ -99,10 +99,10 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, resizeFile } from '~/modules/utils'
-import * as lib from '~/modules/store'
-interface ProjectAuthority extends lib.ProjectAuthority {
+import * as model from '~/modules/model'
+interface ProjectAuthority extends model.ProjectAuthority {
   disabled: boolean
-  project: lib.Project
+  project: model.Project
 }
 export default Vue.extend({
   props: {
@@ -119,7 +119,7 @@ export default Vue.extend({
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
-      requiredSelect: (v: lib.User[]) => v.length != 0 || '1名は選択してください',
+      requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
     error: '',
   }),
@@ -147,7 +147,7 @@ export default Vue.extend({
       }
     },
     fields: {
-      get(): lib.Field[] {
+      get(): model.Field[] {
         return this.value.fields;
       },
       set(fields) {
@@ -155,7 +155,7 @@ export default Vue.extend({
       }
     },
     milestones: {
-      get(): lib.Milestone[] {
+      get(): model.Milestone[] {
         return this.value.milestones;
       },
       set(milestones) {
@@ -163,7 +163,7 @@ export default Vue.extend({
       }
     },
     versions: {
-      get(): lib.Version[] {
+      get(): model.Version[] {
         return this.value.versions;
       },
       set(versions) {
@@ -171,12 +171,12 @@ export default Vue.extend({
       }
     },
     // authorityUsers: {
-    //   get(): lib.ProjectAuthority[] {
-    //     return this.value.authority_users.filter((authority_user: lib.ProjectAuthority) => authority_user.auth_id == 1);
+    //   get(): model.ProjectAuthority[] {
+    //     return this.value.authority_users.filter((authority_user: model.ProjectAuthority) => authority_user.auth_id == 1);
     //   },
     //   set(_authority_users: number[]) {
     //     const original_authority_users = JSON.parse(JSON.stringify(this.project.authority_users))
-    //     const authority_users = original_authority_users.map((authority_user: lib.ProjectAuthority) => {
+    //     const authority_users = original_authority_users.map((authority_user: model.ProjectAuthority) => {
     //       if (_authority_users.includes(authority_user.user.id)) {
     //         authority_user.auth_id = 1;
     //       } else {
@@ -227,16 +227,16 @@ export default Vue.extend({
       this.$emit('submit');
     },
     onDeleteField(index: number) {
-      if((this.fields as lib.Field[]).length == 1) return;
-      (this.fields  as lib.Field[]).splice(index, 1)
+      if((this.fields as model.Field[]).length == 1) return;
+      (this.fields  as model.Field[]).splice(index, 1)
     },
     onDeleteMilestone(index: number) {
-      if((this.milestones as lib.Milestone[]).length == 1) return;
-      (this.milestones as lib.Milestone[]).splice(index, 1)
+      if((this.milestones as model.Milestone[]).length == 1) return;
+      (this.milestones as model.Milestone[]).splice(index, 1)
     },
     onDeleteVersion(index: number) {
-      if((this.versions as lib.Milestone[]).length == 1) return;
-      (this.versions as lib.Milestone[]).splice(index, 1)
+      if((this.versions as model.Milestone[]).length == 1) return;
+      (this.versions as model.Milestone[]).splice(index, 1)
     },
   }
 })

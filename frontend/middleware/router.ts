@@ -1,5 +1,5 @@
 import { Middleware, Context } from '@nuxt/types'
-import { storeCondition } from '~/modules/store';
+// import { storeCondition } from '~/modules/model';
 import { checkStatus, isReadyObj, isEmptyObj } from '~/modules/utils'
 const status = checkStatus();
 const readyObj = isReadyObj();

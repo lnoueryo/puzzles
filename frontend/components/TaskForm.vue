@@ -167,7 +167,7 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyArr, isNumber, changeToISOFormat } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
     updateValue: (v: {}) => void;
@@ -188,7 +188,7 @@ export default Vue.extend({
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
-      requiredSelect: (v: lib.User[]) => v.length != 0 || '1名は選択してください',
+      requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
   }),
   computed: {
@@ -305,7 +305,7 @@ export default Vue.extend({
       return this.isEmptyArr(fields) || this.isEmptyArr(milestones) || this.isEmptyArr(versions)
     },
     assigneeItems() {
-      return this.project.authority_users.filter((user: lib.OrganizationAuthority) => {
+      return this.project.authority_users.filter((user: model.OrganizationAuthority) => {
         return user.user.name;
       })
     }

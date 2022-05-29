@@ -1,6 +1,6 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
-import * as lib from '~/modules/store';
-import { Comments } from '~/modules/store/comment';
+import * as model from '~/modules/model';
+import { Comments } from '~/modules/model/comment';
 import { RootState } from '~/store'
 
 const initialState = () => {
@@ -25,11 +25,11 @@ export const getters: GetterTree<TaskState, RootState> = {
 
 export const mutations: MutationTree<TaskState> = {
   reset: (state) => Object.assign(state, initialState()),
-  comments: (state, comments: lib.Comment[]) => state.comments.insertComments(comments),
+  comments: (state, comments: model.Comment[]) => state.comments.insertComments(comments),
   content: (state, content: string) => state.content = content,
   editMode: (state, editMode: boolean) => state.editMode = editMode,
-  addComment: (state, comment: lib.Comment) => state.comments.addComment(comment),
-  updateComment: (state, comment: lib.Comment) => state.comments.updateComment(comment),
+  addComment: (state, comment: model.Comment) => state.comments.addComment(comment),
+  updateComment: (state, comment: model.Comment) => state.comments.updateComment(comment),
   deleteComment: (state, id) => state.comments.deleteComment(id),
   selectComment: (state, comment) => state.selectedComment = comment,
 }
@@ -97,7 +97,7 @@ export const actions: ActionTree<TaskState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const commentIDs = [comment.id]
-        const treeComments = (comments: lib.Comment[]) => {
+        const treeComments = (comments: model.Comment[]) => {
           comments.forEach((comment) => {
             commentIDs.push(comment.id)
             console.log(commentIDs)

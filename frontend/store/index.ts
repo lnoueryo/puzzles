@@ -1,9 +1,9 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
-import * as lib from '~/modules/store';
+import * as model from '~/modules/model';
 
 const initialState = () => {
   return {
-    user: lib.user,
+    user: model.user,
     pageReady: false,
     projectReady: false,
     snackbar: false,
@@ -36,7 +36,7 @@ export const getters: GetterTree<RootState, RootState> = {
 
 export const mutations: MutationTree<RootState> = {
   reset: (state) => Object.assign(state, initialState()),
-  userData: (state, userData: lib.MainUserInfo) => state.user.insertUser(userData),
+  userData: (state, userData: model.MainUserInfo) => state.user.insertUser(userData),
   selectProject: (state, params) => state.user.selectProject(params),
   selectUser: (state, params) => state.user.selectUser(params),
   pageReady: (state, pageReady) => state.pageReady = pageReady,

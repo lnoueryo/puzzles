@@ -1,16 +1,16 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
-import * as lib from '~/modules/store';
-import {Tasks} from '~/modules/store/table';
+import * as model from '~/modules/model';
+import { Table } from '~/modules/table';
 import { RootState } from '~/store'
 
 const initialState = () => {
   return {
-    table: lib.preprocessTable(),
-    statuses: lib.statuses,
-    types: lib.types,
-    priorities: lib.priorities,
-    authorities: lib.authorities,
-    tasks: new Tasks(),
+    table: new Table(),
+    statuses: model.statuses,
+    types: model.types,
+    priorities: model.priorities,
+    authorities: model.authorities,
+    tasks: new model.Tasks(),
     selectedComment: {id: 0, index: 0, parent: 0},
   }
 }
@@ -20,7 +20,7 @@ export const state = initialState()
 export type TaskState = ReturnType<typeof initialState>
 
 export const getters: GetterTree<TaskState, RootState> = {
-  table: state => state.table,
+  table: state => state.table.items,
   statuses: state => state.statuses,
   types: state => state.types,
   priorities: state => state.priorities,
@@ -44,7 +44,7 @@ export const getters: GetterTree<TaskState, RootState> = {
 
 export const mutations: MutationTree<TaskState> = {
   reset: (state) => Object.assign(state, initialState()),
-  tasks: (state, tasks: lib.Task[]) => state.tasks.insertTasks(tasks),
+  tasks: (state, tasks: model.Task[]) => state.tasks.insertTasks(tasks),
   cellKey: (state, cellKey) => {
     const cell = state.table.cells[cellKey.index];
     cell.header.active = cellKey.active;
@@ -56,34 +56,34 @@ export const mutations: MutationTree<TaskState> = {
       if(cell.header.active === 2) {
         state.tasks.resetSort();
         const cellKey = {index: 0, active: 0}
-        lib.storeCondition({cellKey})
-        return state.table.cells = lib.resetActive(state.table.cells)
+        state.table.storeCondition({cellKey})
+        return state.table.cells = state.table.resetActive(state.table.cells)
       };
-      state.table.cells = lib.resetActive(state.table.cells);
+      state.table.cells = state.table.resetActive(state.table.cells);
     }
     cell.header.active += 1;
     state.tasks.sortBy(cell);
     const cellKey = {index, active: cell.header.active};
-    lib.storeCondition({cellKey});
+    state.table.storeCondition({cellKey});
   },
   selectField: (state, field) => {
-    lib.storeCondition({field});
+    state.table.storeCondition({field});
     return state.tasks.selectField(field);
   },
   selectMilestone: (state, milestone) => {
-    lib.storeCondition({milestone});
+    state.table.storeCondition({milestone});
     return state.tasks.selectMilestone(milestone);
   },
   selectVersion: (state, version) => {
-    lib.storeCondition({version});
+    state.table.storeCondition({version});
     return state.tasks.selectVersion(version);
   },
   selectAssignee: (state, assignee) => {
-    lib.storeCondition({assignee});
+    state.table.storeCondition({assignee});
     return state.tasks.selectAssignee(assignee);
   },
   selectStatus: (state, status) => {
-    lib.storeCondition({status});
+    state.table.storeCondition({status});
     return state.tasks.selectStatus(status);
   },
   selectTask: (state, params) => state.tasks.selectTask(params),
@@ -125,7 +125,7 @@ export const actions: ActionTree<TaskState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.put('/api/task/update', form);
-        response.data.assignee = rootGetters.project.authority_users.find((authority_user: lib.ProjectAuthority) => {
+        response.data.assignee = rootGetters.project.authority_users.find((authority_user: model.ProjectAuthority) => {
           return authority_user.user_id == response.data.assignee_id;
         }).user
         commit('updateTask', response.data);

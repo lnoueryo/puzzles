@@ -20,11 +20,11 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
     preprocessProjectAuthority: () => void;
-    projectForm: () => lib.ProjectAuthority
+    projectForm: () => model.ProjectAuthority
   }
 }
 export default Vue.extend({
@@ -40,12 +40,12 @@ export default Vue.extend({
       milestones: [{id: 0, name: ''}],
       fields: [{id: 0, name: ''}],
       versions: [{id: 0, name: ''}],
-      users: [] as lib.User[]
+      users: [] as model.User[]
     },
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
-      requiredSelect: (v: lib.User[]) => v.length != 0 || '1名は選択してください',
+      requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
     error: '',
   }),
@@ -89,7 +89,7 @@ export default Vue.extend({
       }
     },
     projectForm() {
-      const project = {...this.newProject} as lib.Project
+      const project = {...this.newProject} as model.Project
       const isFirstMilestone = !!this.newProject.milestones[0].name;
       const isFirstField = !!this.newProject.fields[0].name;
       const isFirstVersion = !!this.newProject.versions[0].name;

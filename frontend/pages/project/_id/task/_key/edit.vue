@@ -22,7 +22,7 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isReadyObj, isEmptyArr, checkStatus, isEmptyObj, changeToISOFormat, changeToTimeStampFormat, changeToDateISOFormat } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 
 declare module 'vue/types/vue' {
   interface Vue {
@@ -36,11 +36,11 @@ export default Vue.extend({
     pageReady: false,
     loading: false,
     dialog: false,
-    selectedTask: {} as lib.Task,
+    selectedTask: {} as model.Task,
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
-      requiredSelect: (v: lib.User[]) => v.length != 0 || '1名は選択してください',
+      requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
   }),
   computed: {
@@ -83,9 +83,9 @@ export default Vue.extend({
       const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
       const type = this.types.find((type: {id: number}) => type.id === this.selectedTask.type_id);
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
-      const field = this.project.fields.find((field: lib.Field) => field.id === this.selectedTask.field_id) || {};
-      const milestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
-      const version = this.project.versions.find((version: lib.Version) => version.id === this.selectedTask.version_id) || {};
+      const field = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id) || {};
+      const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
+      const version = this.project.versions.find((version: model.Version) => version.id === this.selectedTask.version_id) || {};
       const actual_time = 0
       const created_at = new Date(this.selectedTask.created_at);
       const requiredDataforDisplay = {
@@ -103,13 +103,13 @@ export default Vue.extend({
       return newTask;
     },
     dialogForm() {
-    const newAssignee = this.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id);
-    const newStatus = this.statuses.find((status: lib.Status) => status.id === this.selectedTask.status_id);
-    const newType = this.types.find((type: lib.Type) => type.id === this.selectedTask.type_id);
-    const newPriority = this.priorities.find((priority: lib.Priority) => priority.id === this.selectedTask.priority_id);
-    const newMilestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.selectedTask.milestone_id);
-    const newField = this.project.fields.find((field: lib.Field) => field.id === this.selectedTask.field_id);
-    const newVersion = this.project.versions.find((version: lib.Field) => version.id === this.selectedTask.version_id);
+    const newAssignee = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id);
+    const newStatus = this.statuses.find((status: model.Status) => status.id === this.selectedTask.status_id);
+    const newType = this.types.find((type: model.Type) => type.id === this.selectedTask.type_id);
+    const newPriority = this.priorities.find((priority: model.Priority) => priority.id === this.selectedTask.priority_id);
+    const newMilestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id);
+    const newField = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id);
+    const newVersion = this.project.versions.find((version: model.Field) => version.id === this.selectedTask.version_id);
       return [
         {title: '課題のタイトル', newData: this.selectedTask.title, oldData: this.task.title },
         {title: '担当者', newData: newAssignee.user.name, oldData: this.task.assignee.name },

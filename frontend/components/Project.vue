@@ -154,7 +154,7 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isReadyObj, isEmptyObj, checkStatus } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
     openAuthorityDialog: () => void
@@ -166,7 +166,7 @@ export default Vue.extend({
     addUserDialog: false,
     authorityDialog: false,
     deleteDialog: false,
-    changeAuthority: {} as lib.Authority,
+    changeAuthority: {} as model.Authority,
     selectedUser: {},
     projectImageError: false
     
@@ -188,8 +188,8 @@ export default Vue.extend({
       ]
     },
     unregisteredUsers() {
-      return this.organization.organization.users.filter((oUser: lib.OrganizationAuthority) => {
-        return !this.project.authority_users.some((user: lib.ProjectAuthority) => user.user_id == oUser.user_id)
+      return this.organization.organization.users.filter((oUser: model.OrganizationAuthority) => {
+        return !this.project.authority_users.some((user: model.ProjectAuthority) => user.user_id == oUser.user_id)
       });
     },
     authorities() {
@@ -205,12 +205,12 @@ export default Vue.extend({
     const item = JSON.parse(itemStr);
   },
   methods: {
-    openAuthorityDialog(authorityUser: lib.ProjectAuthority) {
+    openAuthorityDialog(authorityUser: model.ProjectAuthority) {
       this.selectedUser = authorityUser;
       this.changeAuthority = authorityUser.type;
       this.authorityDialog = true;
     },
-    openDeleteDialog(authorityUser: lib.ProjectAuthority) {
+    openDeleteDialog(authorityUser: model.ProjectAuthority) {
       this.selectedUser = authorityUser;
       this.deleteDialog = true;
     },
@@ -225,7 +225,7 @@ export default Vue.extend({
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
         this.authorityDialog = false;
-        this.selectedUser = {} as lib.ProjectAuthority;
+        this.selectedUser = {} as model.ProjectAuthority;
         }, () => {
           alert('エラーです。');
         })
@@ -243,7 +243,7 @@ export default Vue.extend({
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
         this.addUserDialog = false;
-        this.selectedUser = {} as lib.ProjectAuthority;
+        this.selectedUser = {} as model.ProjectAuthority;
         }, () => {
           alert('エラーです。');
         })
@@ -259,7 +259,7 @@ export default Vue.extend({
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
         this.deleteDialog = false;
-        this.selectedUser = {} as lib.ProjectAuthority;
+        this.selectedUser = {} as model.ProjectAuthority;
         }, () => {
           alert('エラーです。');
         })

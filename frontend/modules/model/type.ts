@@ -134,17 +134,7 @@ export interface Comment {
   replies: Comment[]
 }
 
-export interface Table {
-  style: {minWidth: string | number}
-  thead: {style: {minWidth: string, backgroundColor: string}},
-  tbody: {style: {minWidth: string, overflowX: string, overflowY: string, maxHeight: string}},
-  cells: Cell[]
-}
-export interface Cell {
-  name: keyof Task
-  header: {title: string, active: number, style: {width: string | number}}
-  sortKey: number
-}
+
 export interface Authority {
   id: number
   name: string

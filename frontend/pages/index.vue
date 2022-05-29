@@ -208,11 +208,11 @@
 <script lang="ts">
 import Vue from 'vue'
 import { isReadyObj, checkStatus } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
-    organization: lib.Organization;
-    user: lib.User
+    organization: model.Organization;
+    user: model.User
   }
 }
 export default Vue.extend({
@@ -242,7 +242,7 @@ export default Vue.extend({
     addUserDialog: false,
     authorityDialog: false,
     deleteDialog: false,
-    changeAuthority: {} as lib.Authority,
+    changeAuthority: {} as model.Authority,
     selectedUser: {},
     organizationImageError: false,
   }),
@@ -275,12 +275,12 @@ export default Vue.extend({
     }
   },
   methods: {
-    openAuthorityDialog(authorityUser: lib.ProjectAuthority) {
+    openAuthorityDialog(authorityUser: model.ProjectAuthority) {
       this.selectedUser = authorityUser;
       this.changeAuthority = authorityUser.type;
       this.authorityDialog = true;
     },
-    openDeleteDialog(authorityUser: lib.ProjectAuthority) {
+    openDeleteDialog(authorityUser: model.ProjectAuthority) {
       this.selectedUser = authorityUser;
       this.deleteDialog = true;
     },
@@ -295,7 +295,7 @@ export default Vue.extend({
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
         this.authorityDialog = false;
-        this.selectedUser = {} as lib.OrganizationAuthority;
+        this.selectedUser = {} as model.OrganizationAuthority;
         }, () => {
           alert('エラーです。');
         })
@@ -311,13 +311,13 @@ export default Vue.extend({
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.checkStatus(response.status, () => {
         this.deleteDialog = false;
-        this.selectedUser = {} as lib.ProjectAuthority;
+        this.selectedUser = {} as model.ProjectAuthority;
         }, () => {
           alert('エラーです。');
         })
       }
     },
-    toProfile(authUser: lib.OrganizationAuthority) {
+    toProfile(authUser: model.OrganizationAuthority) {
       if(!authUser.user.name) return;
       if(this.user.id == authUser.user_id) {
         this.$router.push({name: 'profile'});

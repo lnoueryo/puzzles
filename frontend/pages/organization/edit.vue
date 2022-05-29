@@ -23,20 +23,20 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
     preprocessProjectAuthority: () => void;
   }
 }
-interface ProjectAuthority extends lib.ProjectAuthority {
+interface ProjectAuthority extends model.ProjectAuthority {
   disabled: boolean
-  project: lib.Project
+  project: model.Project
 }
 export default Vue.extend({
   data:() => ({
     isAuthorized: false,
-    organizationAuthority: {} as lib.OrganizationAuthority,
+    organizationAuthority: {} as model.OrganizationAuthority,
     formReady: false,
     loading: false,
     dialog: false,

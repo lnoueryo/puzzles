@@ -1,10 +1,10 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex'
-import * as lib from '~/modules/store';
+import * as model from '~/modules/model';
 import { RootState } from '~/store'
 
 const initialState = () => {
   return {
-    user: lib.user,
+    user: model.user,
     name: '' as string
   }
 }
@@ -19,11 +19,11 @@ export const getters: GetterTree<ProjectState, RootState> = {
 
 export const mutations: MutationTree<ProjectState> = {
   reset: (state) => Object.assign(state, initialState()),
-  createProject: (state, project: lib.Project) => state.user.createProject(project),
-  updateProject: (state, project: lib.Project) => state.user.updateProject(project),
-  createProjectAuthority: (state, projectAuthority: lib.ProjectAuthority) => state.user.createProjectAuthority(projectAuthority),
-  updateProjectAuthority: (state, projectAuthority: lib.ProjectAuthority) => state.user.updateProjectAuthority(projectAuthority),
-  deleteProjectAuthority: (state, projectAuthority: lib.ProjectAuthority) => state.user.deleteProjectAuthority(projectAuthority),
+  createProject: (state, project: model.Project) => state.user.createProject(project),
+  updateProject: (state, project: model.Project) => state.user.updateProject(project),
+  createProjectAuthority: (state, projectAuthority: model.ProjectAuthority) => state.user.createProjectAuthority(projectAuthority),
+  updateProjectAuthority: (state, projectAuthority: model.ProjectAuthority) => state.user.updateProjectAuthority(projectAuthority),
+  deleteProjectAuthority: (state, projectAuthority: model.ProjectAuthority) => state.user.deleteProjectAuthority(projectAuthority),
 }
 
 export const actions: ActionTree<ProjectState, RootState> = {

@@ -44,13 +44,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import { isEmptyArr, isReadyArr, checkStatus } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
     getHierarchy: (obj: {}) => void;
     comments: [];
-    createIDArray: (comments: lib.Comment[]) => number[]
-    selectComment: (comment: lib.Comment, index: number) => void
+    createIDArray: (comments: model.Comment[]) => number[]
+    selectComment: (comment: model.Comment, index: number) => void
   }
 }
 export default Vue.extend({
@@ -85,10 +85,10 @@ export default Vue.extend({
     this.commentsIDs = this.createIDArray(this.comments);
   },
   methods: {
-    createIDArray(comments: lib.Comment[]): number[] {
-      return comments.map((comment: lib.Comment) => comment.id as number) as number[];
+    createIDArray(comments: model.Comment[]): number[] {
+      return comments.map((comment: model.Comment) => comment.id as number) as number[];
     },
-    selectComment(comment: lib.Comment, index: number) {
+    selectComment(comment: model.Comment, index: number) {
       const newComment = JSON.parse(JSON.stringify(comment))
       if(this.selectedComment.id == newComment.id) newComment.id = 0
       const obj = {...newComment, ...{index}}
@@ -105,7 +105,7 @@ export default Vue.extend({
     checkInput(el: string) {
       (this.$refs[el] as HTMLInputElement[])[0].click()
     },
-    editComment(comment: lib.Comment, index: number) {
+    editComment(comment: model.Comment, index: number) {
       this.$store.dispatch('comment/editMode', true)
       this.$store.commit('comment/content', comment.content)
       this.selectComment(comment, index)
@@ -113,7 +113,7 @@ export default Vue.extend({
     finishEditComment() {
       this.$store.dispatch('comment/editMode', false)
     },
-    async deleteComment(comment: lib.Comment) {
+    async deleteComment(comment: model.Comment) {
       let response;
       try {
         response = await this.$store.dispatch('comment/deleteComment', comment);

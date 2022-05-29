@@ -62,14 +62,75 @@ func allDatabase() {
 	// createProjectAuthority(SQDB, MQDB)
 	// CreateFields(SQDB, MQDB)
 	// CreateMilestones(SQDB, MQDB)
+	// CreateVersions(SQDB, MQDB)
+	// CreateTasks(SQDB, MQDB)
 	// createFieldUsers(SQDB, MQDB)
 	// CreateComments(SQDB, MQDB)
 	// createProjectUsers(SQDB, MQDB)
 	// ReadOrganization()
 	// MQDB.Migrator().DropTable(&OrganizationAuth{})
 	// MQDB.Migrator().CreateTable(&OrganizationAuth{})
+	Task(SQDB, MQDB)
 	fmt.Println((time.Now()).Sub(start))
 	// readTask(MQDB)
+}
+
+func Task(SQDB *gorm.DB, MQDB *gorm.DB) {
+    f, err := os.Open("task1.csv")
+    if err != nil {
+        fmt.Print(err)
+    }
+
+    r := csv.NewReader(f)
+    var tasks []md.Task
+	var timestamp = "2006-01-02 15:04:05"
+    for {
+        record, err := r.Read()
+        if err == io.EOF {
+            break
+        }
+		id, _ := strconv.Atoi(record[0])
+		assignee_id, _ := strconv.Atoi(record[1])
+		assigner_id, _ := strconv.Atoi(record[2])
+		status_id, _ := strconv.Atoi(record[3])
+		field_id, _ := strconv.Atoi(record[4])
+		milestone_id, _ := strconv.Atoi(record[5])
+		version_id, _ := strconv.Atoi(record[6])
+		priority_id, _ := strconv.Atoi(record[7])
+		type_id, _ := strconv.Atoi(record[8])
+		project_id, _ := strconv.Atoi(record[9])
+		parent_id, _ := strconv.Atoi(record[10])
+		EstimatedTime, _ := strconv.ParseFloat(record[14], 32)
+		ActualTime, _ := strconv.ParseFloat(record[15], 32)
+		StartTime, _ := time.Parse(timestamp, record[16])
+		Deadline, _ := time.Parse(timestamp, record[17])
+		CreatedAt, _ := time.Parse(timestamp, record[18])
+		UpdatedAt, _ := time.Parse(timestamp, record[19])
+        task := md.Task{
+			ID: id,
+			AssigneeID: assignee_id,
+			AssignerID: assigner_id,
+			StatusID: status_id,
+			FieldID: &field_id,
+			MilestoneID: &milestone_id,
+			VersionID: &version_id,
+			PriorityID: priority_id,
+			TypeID: type_id,
+			ProjectID: project_id,
+			ParentID: parent_id,
+			Key: record[11],
+			Title: record[12],
+			Detail: record[13],
+			EstimatedTime: float32(EstimatedTime),
+			ActualTime: float32(ActualTime),
+			StartTime: StartTime,
+			Deadline: Deadline,
+			CreatedAt: CreatedAt,
+			UpdatedAt: UpdatedAt,
+		}
+		tasks = append(tasks, task)
+    }
+	DB.Save(&tasks)
 }
 
 func RecursivePreload(DB *gorm.DB) *gorm.DB {
@@ -328,7 +389,7 @@ func CreateTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 	Migrate(SQDB, MQDB, md.Task{})
 	CreateTask(SQDB, MQDB)
 	var projects []md.Project
-	DB.Preload(clause.Associations).Find(&projects)
+	DB.Preload("AuthorityUsers", "active = ?", true).Preload(clause.Associations).Find(&projects)
 	rand.Seed(time.Now().UnixNano())
 	for _ , project := range projects {
 		if project.ID == 1 {
@@ -357,11 +418,17 @@ func CreateTasks(SQDB *gorm.DB, MQDB *gorm.DB) {
 				milestoneNum := rand.Intn(len(project.Milestones))
 				milestoneID = project.Milestones[milestoneNum].ID
 			}
+			versionID := 0
+			if len(project.Milestones) != 0 {
+				versionNum := rand.Intn(len(project.Versions))
+				versionID = project.Versions[versionNum].ID
+			}
 			task := md.Task{
 				AssigneeID: project.AuthorityUsers[assigneeNum].UserID,
 				AssignerID: project.AuthorityUsers[assignerNum].UserID,
 				FieldID: &fieldID,
 				MilestoneID: &milestoneID,
+				VersionID: &versionID,
 				StatusID: statusID,
 				PriorityID: priorityID,
 				TypeID: typeID,
@@ -464,6 +531,28 @@ func CreateComments(SQDB *gorm.DB, MQDB *gorm.DB) {
 			comments = nil
 		}
 	}
+}
+
+func CreateVersions(SQDB *gorm.DB, MQDB *gorm.DB) {
+	Migrate(SQDB, MQDB, md.Version{})
+	var versions []md.Version
+	var projects []md.Project
+	versionTypes := []string{"release1.0", "release1.1", "release1.2", "release1.3", "release1.4"}
+	DB.Find(&projects)
+	for _, project := range projects {
+		if project.ID == 1 {
+			continue
+		}
+		for _, milestoneType := range versionTypes {
+			version := md.Version{
+				Name: milestoneType,
+				ProjectID: project.ID,
+			}
+			versions = append(versions, version)
+		}
+	}
+	SQDB.Create(&versions)
+	MQDB.Create(&versions)
 }
 
 func TreeComments(MQDB *gorm.DB, project md.Project, comments []md.Comment, endNum int) {

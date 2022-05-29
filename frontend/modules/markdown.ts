@@ -1,4 +1,3 @@
-import Vue from 'vue'
 export class Markdown {
   public markdown = ['']
   public text: string = ''

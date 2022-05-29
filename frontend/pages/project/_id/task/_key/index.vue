@@ -127,10 +127,10 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj, isReadyArr } from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 declare module 'vue/types/vue' {
   interface Vue {
-    addReply: (replies: lib.Comment[], commentKey: {id: number, index: number}, currentIndex: number) => lib.Comment;
+    addReply: (replies: model.Comment[], commentKey: {id: number, index: number}, currentIndex: number) => model.Comment;
   }
 }
 export default Vue.extend({
@@ -178,8 +178,8 @@ export default Vue.extend({
       const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
       const type = this.types.find((type: {id: number}) => type.id === this.task.type_id);
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.task.priority_id);
-      const field = this.project.fields.find((field: lib.Field) => field.id === this.task.field_id) || {};
-      const milestone = this.project.milestones.find((milestone: lib.Milestone) => milestone.id === this.task.milestone_id) || {};
+      const field = this.project.fields.find((field: model.Field) => field.id === this.task.field_id) || {};
+      const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.task.milestone_id) || {};
       const actual_time = Number(this.selectedTask.actual_time);
       const created_at = new Date(this.task.created_at);
       const status_id = this.selectedTask.status_id;
@@ -273,12 +273,12 @@ export default Vue.extend({
       console.log(commentKey)
       this.$store.commit('comment/selectComment', commentKey)
     },
-    addReply(replies: lib.Comment[], commentKey: {id: number, index: number}, currentIndex: number) {
+    addReply(replies: model.Comment[], commentKey: {id: number, index: number}, currentIndex: number) {
       if(replies.length == 0 || commentKey.index < currentIndex) return replies;
       return replies.map((reply) => {
         const newReply = JSON.parse(JSON.stringify(reply))
         if(commentKey.id == reply.id) {
-          const newComment = this.newCommentForm as lib.Comment;
+          const newComment = this.newCommentForm as model.Comment;
           newComment.parent_id = 0;
           newReply.replies.push(newComment);
         } else if(reply.replies.length != 0) {
@@ -286,7 +286,7 @@ export default Vue.extend({
           newReply.replies = this.addReply(reply.replies, commentKey, currentIndex + 1);
         }
         return newReply;
-      }) as lib.Comment[]
+      }) as model.Comment[]
     },
     async updateComment() {
       let response;

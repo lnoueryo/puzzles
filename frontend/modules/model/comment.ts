@@ -1,18 +1,18 @@
-import * as lib from './type'
+import * as Type from './type'
 export class Comments {
     comments = {
-    all: [] as lib.Comment[],
+    all: [] as Type.Comment[],
   }
-  insertComments(comments: lib.Comment[]) {
+  insertComments(comments: Type.Comment[]) {
     this.comments.all = comments;
   }
-  addComment(newComment: lib.Comment) {
+  addComment(newComment: Type.Comment) {
     if(newComment.parent_id == 0) {
       this.comments.all.push(newComment);
       return
     }
-    const treeComments = (comments: lib.Comment[]) => {
-      return comments.map((comment: lib.Comment) => {
+    const treeComments = (comments: Type.Comment[]) => {
+      return comments.map((comment: Type.Comment) => {
         if(comment.id == newComment.parent_id) {
           comment.replies.push(newComment);
           return comment
@@ -21,7 +21,7 @@ export class Comments {
         return comment
       })
     }
-    this.comments.all = this.comments.all.map((comment: lib.Comment) => {
+    this.comments.all = this.comments.all.map((comment: Type.Comment) => {
       if(comment.id == newComment.parent_id) {
         comment.replies.push(newComment);
         return comment
@@ -30,9 +30,9 @@ export class Comments {
       return comment
     })
   }
-  updateComment(newComment: lib.Comment) {
-    const treeComments = (comments: lib.Comment[]) => {
-      return comments.map((comment: lib.Comment) => {
+  updateComment(newComment: Type.Comment) {
+    const treeComments = (comments: Type.Comment[]) => {
+      return comments.map((comment: Type.Comment) => {
         if(comment.id == newComment.id) {
           return {...comment, ...newComment}
         }
@@ -40,7 +40,7 @@ export class Comments {
         return comment
       })
     }
-    this.comments.all = this.comments.all.map((comment: lib.Comment) => {
+    this.comments.all = this.comments.all.map((comment: Type.Comment) => {
       if(comment.id == newComment.id) {
         return {...comment, ...newComment}
       }
@@ -49,9 +49,9 @@ export class Comments {
     })
   }
   deleteComment(id: number) {
-    const treeComments = (comments: lib.Comment[]) => {
-      const newComments: lib.Comment[] = []
-      comments.forEach((comment: lib.Comment) => {
+    const treeComments = (comments: Type.Comment[]) => {
+      const newComments: Type.Comment[] = []
+      comments.forEach((comment: Type.Comment) => {
         if(comment.id == id) return;
         if(comment?.replies?.length != 0) {
           comment.replies = treeComments(comment.replies);
@@ -60,8 +60,8 @@ export class Comments {
       })
       return newComments
     }
-    const newComments: lib.Comment[] = []
-    this.comments.all.forEach((comment: lib.Comment) => {
+    const newComments: Type.Comment[] = []
+    this.comments.all.forEach((comment: Type.Comment) => {
       if(comment.id == id) return;
       if(comment?.replies?.length != 0) {
         comment.replies = treeComments(comment.replies);

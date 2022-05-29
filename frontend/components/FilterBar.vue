@@ -103,7 +103,7 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import {isReadyObj, isEmptyArr} from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 
 declare module 'vue/types/vue' {
   interface Vue {
@@ -183,7 +183,7 @@ export default Vue.extend({
       }
     },
     assigneeItems() {
-      return this.project.authority_users.filter((user: lib.OrganizationAuthority) => {
+      return this.project.authority_users.filter((user: model.OrganizationAuthority) => {
         return user.user.name;
       })
     }

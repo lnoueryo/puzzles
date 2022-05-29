@@ -140,7 +140,7 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import {isReadyArr, isReadyObj, isEmptyArr, isEmptyObj, changeToTimeStampFormat} from '~/modules/utils'
-import * as lib from '~/modules/store'
+import * as model from '~/modules/model'
 export default Vue.extend({
   data: () => ({
     tab: null,
@@ -208,7 +208,7 @@ export default Vue.extend({
       this.$store.commit('task/pageChange', index);
     },
     openUserDialog(userID: number) {
-      this.selectedUser = this.project.authority_users.find((user: lib.ProjectAuthority) => user.user_id == userID);
+      this.selectedUser = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id == userID);
       this.userDialog = true;
     }
   }
