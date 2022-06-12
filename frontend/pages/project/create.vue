@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <project-form v-model="newProject" @submit="onClickSend" :loading="loading">
+    <form-project v-model="newProject" @submit="onClickSend" :loading="loading">
       <template slot="back">
         <div>
           戻る
@@ -11,7 +11,7 @@
           作成
         </div>
       </template>
-    </project-form>
+    </form-project>
   </div>
 </template>
 

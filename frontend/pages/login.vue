@@ -80,6 +80,7 @@ export default Vue.extend({
     }
   },
   async beforeCreate() {
+    console.log('Hello')
     this.$store.dispatch('resetAll');
       let response;
       try {
@@ -92,7 +93,6 @@ export default Vue.extend({
           this.pageReady= true;
           return;
         }
-        console.log(response.status)
         this.checkStatus(response.status, (() => {return this.$router.push('/')}), (() => {}));
       }
   },

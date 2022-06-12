@@ -1,6 +1,6 @@
 <template>
   <div>
-    <profile :selectedUser="organization" :disabled="false"/>
+    <card-profile :selectedUser="organization" :disabled="false"></card-profile>
   </div>
 </template>
 

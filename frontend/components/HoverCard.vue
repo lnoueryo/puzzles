@@ -133,7 +133,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import * as model from '~/modules/store'
+import * as model from '~/modules/model'
 export default Vue.extend({
   props: ['id', 'image', 'user', 'name', 'authority_users'],
   data: () => ({

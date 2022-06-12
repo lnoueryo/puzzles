@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <project-form v-model="selectedProject" @submit="dialog = true" :loading="loading">
+    <form-project v-model="selectedProject" @submit="dialog = true" :loading="loading">
       <template slot="back">
         <div>
           戻る
@@ -11,10 +11,10 @@
           更新
         </div>
       </template>
-    </project-form>
-    <update-dialog v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
+    </form-project>
+    <dialog-update v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
       更新の確認
-    </update-dialog>
+    </dialog-update>
   </div>
 </template>
 

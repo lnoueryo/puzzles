@@ -21,7 +21,7 @@
               ></v-text-field>
             </v-col>
           </v-row>
-          <markdown @currentText="detail = $event" :text="detail"></markdown>
+          <v-markdown @currentText="detail = $event" :text="detail"></v-markdown>
           <v-row>
             <v-col sm="5" md="6">
               <v-select

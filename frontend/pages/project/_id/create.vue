@@ -2,14 +2,14 @@
   <div v-if="pageReady">
     <v-row justify="center">
       <v-col cols="12" sm="10" md="10" lg="10">
-        <task-form v-model="selectedTask" @submit="onClickSubmit" :loading="loading">
+        <form-task v-model="selectedTask" @submit="onClickSubmit" :loading="loading">
           <template v-slot:back>
             戻る
           </template>
           <template v-slot:submit>
             作成
           </template>
-        </task-form>
+        </form-task>
       </v-col>
     </v-row>
   </div>

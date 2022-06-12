@@ -86,8 +86,8 @@ export default Vue.extend({
     tabKey: 'task',
     pageReady: false,
     tabs: [
-      {title: '全てのタスク', icon: 'mdi-clipboard-check-multiple-outline', component: 'task'},
-      {title: 'プロジェクトの概要', icon: 'mdi-clipboard-check-multiple-outline', component: 'project'},
+      {title: '全てのタスク', icon: 'mdi-clipboard-check-multiple-outline', component: 'card-task'},
+      {title: 'プロジェクトの概要', icon: 'mdi-clipboard-check-multiple-outline', component: 'card-project'},
     ],
     addUserDialog: false,
   }),

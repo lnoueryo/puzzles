@@ -1,5 +1,5 @@
 <template>
-  <div onselectstart="return false;">
+  <div>
     <v-card class="mx-auto my-4 px-8 py-4" style="max-width: 700px;">
       <div style="position: relative">
         <v-card-actions class="py-6">
@@ -26,20 +26,59 @@
           type="text"
         ></v-text-field>
         <v-text-field
-          v-model="founded"
+          v-model="field.name"
+          v-for="(field, i) in fields"
+          :key="'field_' + i"
+          :rules="[rules.length(20)]"
           filled
           color="#295caa"
-          label="設立日"
+          :label="'分野 ' + (i + 1)"
           type="text"
+          append-icon="mdi-close"
+          @click:append="onDeleteField(i)"
         ></v-text-field>
+        <v-btn class="mb-8" block @click="fields.push({name: ''})" :disabled="!fields[fields.length - 1].name">追加</v-btn>
         <v-text-field
-          v-model="number"
+          v-model="milestone.name"
+          v-for="(milestone, i) in milestones"
+          :key="'milestone_' + i"
+          :rules="[rules.length(20)]"
           filled
           color="#295caa"
-          label="電話番号"
+          :label="'マイルストーン ' + (i + 1)"
           type="text"
-        ></v-text-field>
-        <cropper v-model="image" ratio="16:9" :width="450" :pixel="900" :currentImage="$config.mediaURL + '/organizations/' + value.image"></cropper>
+          append-icon="mdi-close"
+          @click:append="onDeleteMilestone(i)"
+        >
+        </v-text-field>
+        <v-btn class="mb-8" block @click="milestones.push({name: ''})" :disabled="!milestones[milestones.length - 1].name">追加</v-btn>
+        <v-text-field
+          v-model="version.name"
+          v-for="(version, i) in versions"
+          :key="'version_' + i"
+          :rules="[rules.length(20)]"
+          filled
+          color="#295caa"
+          :label="'バージョン ' + (i + 1)"
+          type="text"
+          append-icon="mdi-close"
+          @click:append="onDeleteVersion(i)"
+        >
+        </v-text-field>
+        <v-btn class="mb-8" block @click="versions.push({name: ''})" :disabled="!versions[versions.length - 1].name">追加</v-btn>
+        <!-- <v-select
+          v-model="authorityUsers"
+          :items="projectUserItems"
+          label="管理者"
+          item-text="user.name"
+          item-value="user.id"
+          :rules="[rules.requiredSelect]"
+          item-disabled="disabled"
+          multiple
+          v-if="!isEmptyObj(project)"
+        >
+        </v-select> -->
+        <v-cropper v-model="image" :pixel="900" ratio="16:9" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.image"></v-cropper>
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -107,22 +146,48 @@ export default Vue.extend({
         this.updateValue({description});
       }
     },
-    founded: {
-      get() {
-        return this.value.founded;
+    fields: {
+      get(): model.Field[] {
+        return this.value.fields;
       },
-      set(founded) {
-        this.updateValue({founded});
+      set(fields) {
+        this.updateValue({fields});
       }
     },
-    number: {
-      get() {
-        return this.value.number;
+    milestones: {
+      get(): model.Milestone[] {
+        return this.value.milestones;
       },
-      set(number) {
-        this.updateValue({number});
+      set(milestones) {
+        this.updateValue({milestones});
       }
     },
+    versions: {
+      get(): model.Version[] {
+        return this.value.versions;
+      },
+      set(versions) {
+        this.updateValue({versions});
+      }
+    },
+    // authorityUsers: {
+    //   get(): model.ProjectAuthority[] {
+    //     return this.value.authority_users.filter((authority_user: model.ProjectAuthority) => authority_user.auth_id == 1);
+    //   },
+    //   set(_authority_users: number[]) {
+    //     const original_authority_users = JSON.parse(JSON.stringify(this.project.authority_users))
+    //     const authority_users = original_authority_users.map((authority_user: model.ProjectAuthority) => {
+    //       if (_authority_users.includes(authority_user.user.id)) {
+    //         authority_user.auth_id = 1;
+    //       } else {
+    //         authority_user.auth_id = 2;
+    //       }
+    //       return authority_user;
+    //     })
+
+    //     this.updateValue({authority_users});
+    //   }
+    // },
     image: {
       get() {
         return this.value.image_data;
@@ -160,6 +225,18 @@ export default Vue.extend({
     },
     onSubmit() {
       this.$emit('submit');
+    },
+    onDeleteField(index: number) {
+      if((this.fields as model.Field[]).length == 1) return;
+      (this.fields  as model.Field[]).splice(index, 1)
+    },
+    onDeleteMilestone(index: number) {
+      if((this.milestones as model.Milestone[]).length == 1) return;
+      (this.milestones as model.Milestone[]).splice(index, 1)
+    },
+    onDeleteVersion(index: number) {
+      if((this.versions as model.Milestone[]).length == 1) return;
+      (this.versions as model.Milestone[]).splice(index, 1)
     },
   }
 })

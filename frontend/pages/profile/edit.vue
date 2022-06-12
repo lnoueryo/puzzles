@@ -57,7 +57,7 @@
           type="password"
           v-if="!user.name"
         ></v-text-field>
-        <cropper v-model="profile.image_data" ratio="1:1" :pixel="900" :width="450" :currentImage="$config.mediaURL + '/users/' + profile.image"></cropper>
+        <v-cropper v-model="profile.image_data" ratio="1:1" :pixel="900" :width="450" :currentImage="$config.mediaURL + '/users/' + profile.image"></v-cropper>
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
           <v-spacer></v-spacer>

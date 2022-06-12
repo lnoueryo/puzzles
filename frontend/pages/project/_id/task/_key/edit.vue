@@ -2,19 +2,19 @@
   <div v-if="pageReady">
     <v-row justify="center">
       <v-col cols="12" sm="10" md="10" lg="10">
-        <task-form v-model="selectedTask" @submit="dialog = true">
+        <form-task v-model="selectedTask" @submit="dialog = true">
           <template v-slot:back>
             戻る
           </template>
           <template v-slot:submit>
             更新
           </template>
-        </task-form>
+        </form-task>
       </v-col>
     </v-row>
-    <update-dialog v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
+    <dialog-update v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
       {{ taskForm.key }}
-    </update-dialog>
+    </dialog-update>
   </div>
 </template>
 

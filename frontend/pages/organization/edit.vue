@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <organization-form v-model="organizationAuthority.organization" @submit="dialog = true" :loading="loading">
+    <form-organization v-model="organizationAuthority.organization" @submit="dialog = true" :loading="loading">
       <template slot="back">
         <div>
           戻る
@@ -11,10 +11,10 @@
           更新
         </div>
       </template>
-    </organization-form>
-    <update-dialog v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
+    </form-organization>
+    <dialog-update v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
       更新の確認
-    </update-dialog>
+    </dialog-update>
   </div>
 </template>
 
