@@ -41,16 +41,16 @@ import {checkStatus} from '~/modules/utils'
 import * as model from '~/modules/model'
 export default Vue.extend({
   data: () => ({
+    authority: {id: 1, name: '管理者'},
+    email: '',
     error: '',
     formReady: false,
-    loading: false,
-    email: '',
-    authority: { id: 1, name: '管理者' },
     items: [
-      { id: 1, name: '管理者' },
-      { id: 2, name: '一般' },
-      { id: 3, name: 'ゲスト' },
+      {id: 1, name: '管理者'},
+      {id: 2, name: '一般'},
+      {id: 3, name: 'ゲスト'},
     ],
+    loading: false,
     rules: {
       email: (v: string) => !!(v || '').match(/@/) || 'メールアドレスの形式ではありません',
       required: (v: string) => !!v || '必須項目です',
@@ -78,12 +78,12 @@ export default Vue.extend({
         if('status' in response === false) return this.$router.push('/bad-connection');
         this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), (() => {
           this.loading = false;
-          return response.data.message
+          return response.data.message;
         }));
       }
     },
     handleSuccess() {
-      const text = 'メールの送信が完了しました。'
+      const text = 'メールの送信が完了しました。';
       this.$store.dispatch('showSnackbar', text);
       this.$router.push('/');
     }

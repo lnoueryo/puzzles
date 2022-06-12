@@ -1,6 +1,10 @@
 <template>
   <div v-if="isAuthorized">
-    <form-project v-model="selectedProject" @submit="dialog = true" :loading="loading">
+    <form-project
+     v-model="selectedProject"
+     @submit="dialog = true"
+     :loading="loading"
+    >
       <template slot="back">
         <div>
           戻る
@@ -12,7 +16,12 @@
         </div>
       </template>
     </form-project>
-    <dialog-update v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
+    <dialog-update
+     v-model="dialog"
+     :form="dialogForm"
+     @submit="onClickSubmit"
+     @loading="loading = $event"
+    >
       更新の確認
     </dialog-update>
   </div>
@@ -24,6 +33,8 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
 import * as model from '~/modules/model'
+import FormProject from '~/components/FormProject.vue'
+import DialogUpdate from '~/components/DialogUpdate.vue'
 declare module 'vue/types/vue' {
   interface Vue {
     preprocessProjectAuthority: () => void;
@@ -34,19 +45,20 @@ interface ProjectAuthority extends model.ProjectAuthority {
   project: model.Project
 }
 export default Vue.extend({
+  components: { FormProject, DialogUpdate },
   data:() => ({
-    isAuthorized: false,
-    formReady: false,
-    loading: false,
+    error: '',
     dialog: false,
-    selectedProject: {} as model.Project,
+    formReady: false,
+    isAuthorized: false,
+    loading: false,
     projectUsers: [] as model.ProjectAuthority[],
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
       requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
-    error: '',
+    selectedProject: {} as model.Project,
   }),
   computed: {
     ...mapGetters([
@@ -54,10 +66,10 @@ export default Vue.extend({
       'projectAuthority',
       'user',
     ]),
+    checkStatus,
     isEmptyObj,
     isEmptyArr,
     isReadyObj,
-    checkStatus,
     organizationUsers() {
       return this.$store.getters['organization'].users;
     },
@@ -131,14 +143,6 @@ export default Vue.extend({
     }, 100);
   },
   methods: {
-    preprocessProjectAuthority() {
-      this.selectedProject = JSON.parse(JSON.stringify(this.project));
-      console.log(this.selectedProject, 123)
-      if(this.isEmptyArr(this.project.milestones)) this.selectedProject.milestones.push({id: 0, name: ''})
-      if(this.isEmptyArr(this.project.fields)) this.selectedProject.fields.push({id: 0, name: ''})
-      if(this.isEmptyArr(this.project.versions)) this.selectedProject.versions.push({id: 0, name: ''})
-      this.isAuthorized = true;
-    },
     async onClickSubmit() {
       this.dialog = false;
       let response;
@@ -156,6 +160,26 @@ export default Vue.extend({
         }
         )
       }
+    },
+    onDeleteField(index: number) {
+      if(this.selectedProject.fields.length == 1) return;
+      this.selectedProject.fields.splice(index, 1)
+    },
+    onDeleteMilestone(index: number) {
+      if(this.selectedProject.milestones.length == 1) return;
+      this.selectedProject.milestones.splice(index, 1)
+    },
+    onDeleteVersion(index: number) {
+      if(this.selectedProject.versions.length == 1) return;
+      this.selectedProject.versions.splice(index, 1)
+    },
+    preprocessProjectAuthority() {
+      this.selectedProject = JSON.parse(JSON.stringify(this.project));
+      console.log(this.selectedProject, 123)
+      if(this.isEmptyArr(this.project.milestones)) this.selectedProject.milestones.push({id: 0, name: ''})
+      if(this.isEmptyArr(this.project.fields)) this.selectedProject.fields.push({id: 0, name: ''})
+      if(this.isEmptyArr(this.project.versions)) this.selectedProject.versions.push({id: 0, name: ''})
+      this.isAuthorized = true;
     },
     projectForm() {
       const project = {} as model.Project
@@ -181,18 +205,6 @@ export default Vue.extend({
         version_delete: versionDelete,
       }
       return request;
-    },
-    onDeleteField(index: number) {
-      if(this.selectedProject.fields.length == 1) return;
-      this.selectedProject.fields.splice(index, 1)
-    },
-    onDeleteMilestone(index: number) {
-      if(this.selectedProject.milestones.length == 1) return;
-      this.selectedProject.milestones.splice(index, 1)
-    },
-    onDeleteVersion(index: number) {
-      if(this.selectedProject.versions.length == 1) return;
-      this.selectedProject.versions.splice(index, 1)
     },
   }
 })

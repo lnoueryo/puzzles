@@ -1,20 +1,43 @@
 <template>
   <div>
     <v-hover v-slot="{ hover }">
-      <v-card :elevation="hover ? 12 : 2" :class="{ 'on-hover': hover }" width="315" height="300" class="ma-4">
+      <v-card
+       class="ma-4"
+       :class="{ 'on-hover': hover }"
+       :elevation="hover ? 12 : 2"
+       width="315"
+       height="300"
+      >
         <nuxt-link :to="{name: 'project-id', params: {id: id}}">
-          <v-img class="hover-color" :aspect-ratio="16/9" :src="projectImage" @error="projectImageError = true">
+          <v-img
+           class="hover-color"
+           :src="projectImage"
+           :aspect-ratio="16/9"
+           @error="projectImageError = true"
+          >
             <template v-slot:placeholder>
-              <v-row class="fill-height ma-0" align="center" justify="center">
+              <v-row
+               class="fill-height ma-0"
+               align="center"
+               justify="center"
+              >
                 <v-progress-circular indeterminate color="grey lighten-5" />
               </v-row>
             </template>
             <div class="fill-height repeating-gradient hover-color">
               <div class="d-flex justify-end">
-                <v-btn icon :class="{ 'show-btns': hover }" color="transparent">
+                <v-btn
+                 :class="{ 'show-btns': hover }"
+                 icon
+                 color="transparent"
+                >
                   <v-icon>mdi-star</v-icon>
                 </v-btn>
-                <v-btn icon :class="{ 'show-btns': hover }" color="transparent">
+                <v-btn
+                 :class="{ 'show-btns': hover }"
+                 icon
+                 color="transparent"
+                >
                   <v-icon>mdi-pin</v-icon>
                 </v-btn>
               </div>
@@ -31,11 +54,22 @@
         <div class="d-flex align-center justify-space-between ma-2">
           <h3>メンバー：</h3>
           <div>
-            <v-tooltip bottom v-for="(_, i) in authority_users" :key="i">
+            <v-tooltip
+             bottom
+             v-for="(_, i) in authority_users"
+             :key="i"
+            >
               <template v-slot:activator="{ on, attrs }">
-                <v-btn class="mr-1" icon v-bind="attrs" v-on="on" v-if="i < 4" @click="$router.push({name: 'profile-user_id', params: {user_id: _.user_id}})">
+                <v-btn
+                 class="mr-1"
+                 icon
+                 v-bind="attrs"
+                 v-on="on"
+                 v-if="i < 4"
+                 @click="$router.push({name: 'profile-user_id', params: {user_id: _.user_id}})"
+                >
                   <v-avatar class="object-cover" size="36px">
-                    <v-img alt="Avatar" :src="$config.mediaURL + '/users/' + _.user.image" v-if="_.user.image">
+                    <v-img alt="Avatar" :src="userImage(_.user.image)" v-if="userImage(_.user.image)">
                       <template v-slot:placeholder>
                         <v-row class="fill-height ma-0" align="center" justify="center">
                           <v-progress-circular indeterminate color="grey lighten-5" />
@@ -58,13 +92,21 @@
           </div>
         </div>
         <div class="mta">
-          <v-btn text :class="{ 'show-btns': hover }" color="transparent">
+          <v-btn
+           :class="{ 'show-btns': hover }"
+           text
+           color="transparent"
+          >
             <v-icon left>
               mdi-pencil
             </v-icon>
               ダッシュボード
           </v-btn>
-          <v-btn text :class="{ 'show-btns': hover }" color="transparent">
+          <v-btn
+           :class="{ 'show-btns': hover }"
+           text
+           color="transparent"
+          >
             <v-icon left>
               mdi-plus
             </v-icon>
@@ -91,7 +133,7 @@
                 </v-btn>
               </v-toolbar>
               <v-list subheader two-line>
-                <v-list-item v-for="authUser in authority_users" :key="authUser.id"  @click="toProfile(authUser)" link class="px-8">
+                <v-list-item v-for="authUser in authority_users" :key="authUser.id"  @click="transition(authUser)" link class="px-8">
                   <v-list-item-avatar>
                     <v-img :src="$config.mediaURL + '/users/' + authUser.user.image" v-if="authUser.user.image">
                       <template v-slot:placeholder>
@@ -106,13 +148,13 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content class="mr-4 list-container">
-                    <v-list-item-title v-text="authUser.user.name" v-if="authUser.user.name"></v-list-item-title>
-                    <v-list-item-title class="error-color" v-text="'招待中'" v-else></v-list-item-title>
-                    <v-list-item-subtitle v-text="authUser.user.email"></v-list-item-subtitle>
+                    <v-list-item-title v-text="authUser.user.name" v-if="authUser.user.name" />
+                    <v-list-item-title class="error-color" v-text="'招待中'" v-else />
+                    <v-list-item-subtitle v-text="authUser.user.email" />
                   </v-list-item-content>
 
                   <v-list-item-content class="text-center">
-                    <v-list-item-subtitle v-text="authUser.type.name"></v-list-item-subtitle>
+                    <v-list-item-subtitle v-text="authUser.type.name" />
                   </v-list-item-content>
 
                 </v-list-item>
@@ -121,7 +163,9 @@
                 <v-btn
                   text
                   @click="dialog.value = false"
-                >閉じる</v-btn>
+                >
+                  閉じる
+                </v-btn>
               </v-card-actions>
             </v-card>
           </template>
@@ -140,7 +184,7 @@ export default Vue.extend({
     image: String,
     user: Object,
     name: String,
-    authority_users: Object
+    authority_users: Array
   },
   data: () => ({
     projectImageError: false,
@@ -151,23 +195,31 @@ export default Vue.extend({
       return this.authority_users?.length || 0;
     },
     projectImage() {
-      return this.projectImageError ? require('~/assets/image/project.png') : this.$config.mediaURL + '/projects/' + this.image
+      const errorImage = require('~/assets/image/project.png');
+      const projectImage = this.$config.mediaURL + '/projects/' + this.image;
+      return this.projectImageError ? errorImage : projectImage;
     }
   },
   methods: {
     isPicture(src: string) {
       if(src) {
-        return this.$config.mediaURL + '/projects/' + src;
+        const projectImage = this.$config.mediaURL + '/projects/' + this.image;
+        return projectImage;
       }
       return require('~/assets/image/project.png');
     },
-    toProfile(authUser: model.OrganizationAuthority) {
+    transition(authUser: model.OrganizationAuthority) {
       if(!authUser.user.name) return;
       if(this.user.id == authUser.user_id) {
         this.$router.push({name: 'profile'});
         return;
       }
       this.$router.push({name: 'profile-user_id', params: {user_id: String(authUser.user_id)}})
+    },
+    userImage(image: string) {
+      if(!image) return image;
+      const userImage = this.$config.mediaURL + '/users/' + image;
+      return userImage;
     }
   },
 })

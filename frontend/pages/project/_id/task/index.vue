@@ -6,7 +6,7 @@
       height="80"
     >
       <div class="text-center d-flex justyfy-space-between btn-container">
-        <v-btn class="mr-3" :to="'/project/' + project.id + '/create'" color="#295caa">
+        <v-btn class="mr-3" :to="createTaskURL" color="#295caa">
           <v-icon left>mdi-clipboard-plus-outline</v-icon>
           タスク作成
         </v-btn>
@@ -23,7 +23,11 @@
       >
         <v-tabs-slider></v-tabs-slider>
 
-        <v-tab :href="'#tab-' + (i + 1)" v-for="(tab, i) in tabs" :key="i">
+        <v-tab
+         :href="'#tab-' + (i + 1)"
+         v-for="(tab, i) in tabs"
+         :key="i"
+        >
           {{ tab.title }}
           <v-icon>{{ tab.icon }}</v-icon>
         </v-tab>
@@ -67,7 +71,11 @@
     </v-app-bar>
 
     <v-tabs-items v-model="tabKey">
-      <v-tab-item v-for="(tab, i) in tabs" :key="i + 1" :value="'tab-' + (i + 1)">
+      <v-tab-item
+       v-for="(tab, i) in tabs"
+       :key="i + 1"
+       :value="'tab-' + (i + 1)"
+      >
         <keep-alive>
           <div :is="tab.component"></div>
         </keep-alive>
@@ -82,8 +90,8 @@ import { mapGetters } from 'vuex'
 import {isReadyObj, isEmptyObj} from '~/modules/utils'
 export default Vue.extend({
   data: () => ({
-    tabKey: 'tab-1',
     pageReady: false,
+    tabKey: 'tab-1',
     tabs: [
       {title: '全てのタスク', icon: 'mdi-clipboard-check-multiple-outline', component: 'filter-table'},
       {title: 'プロジェクトの概要', icon: 'mdi-clipboard-check-multiple-outline', component: 'project'},
@@ -97,8 +105,11 @@ export default Vue.extend({
       'projectIndex',
       'projectReady',
     ]),
-    isReadyObj,
     isEmptyObj,
+    isReadyObj,
+    createTaskURL() {
+      return '/project/' + this.project.id + '/create';
+    }
   },
   created() {
     let timer = setInterval(() => {

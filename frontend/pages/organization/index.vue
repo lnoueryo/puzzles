@@ -7,11 +7,11 @@
     >
       <v-text-field
         v-model="email"
+        type="email"
         :rules="[rules.required, rules.email]"
         filled
         color="amber darken-3"
         label="メールアドレス"
-        type="email"
         @keyup.enter="onclickSend"
       ></v-text-field>
         <v-select
@@ -38,12 +38,12 @@ export default Vue.extend({
     error: '',
     formReady: false,
     isLoading: false,
-    email: 'r.inoue@goga.co.jp',
-    authority: { id: 1, name: '管理者' },
+    email: '',
+    authority: {id: 1, name: '管理者'},
     items: [
-      { id: 1, name: '管理者' },
-      { id: 2, name: '一般' },
-      { id: 3, name: 'ゲスト' },
+      {id: 1, name: '管理者'},
+      {id: 2, name: '一般'},
+      {id: 3, name: 'ゲスト'}
     ],
     rules: {
       email: (v: string) => !!(v || '').match(/@/) || 'Please enter a valid email',
@@ -59,9 +59,6 @@ export default Vue.extend({
         authority_id: this.authority.id,
       }
     }
-  },
-  created() {
-    console.log(process.browser)
   },
   methods: {
     async onClickSend() {

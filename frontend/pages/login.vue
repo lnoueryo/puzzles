@@ -1,35 +1,45 @@
 <template>
-  <form-card class="form-container" @send="onClickSend" v-if="pageReady" :loading="loading" :formReady="formReady">
+  <form-card
+    class="form-container"
+    v-if="pageReady"
+    :loading="loading"
+    :formReady="formReady"
+    @send="onClickSend"
+  >
     <template v-slot:main>
-      <v-form ref="form" v-model="formReady" class="pa-4 pt-6">
+      <v-form
+        class="pa-4 pt-6"
+        v-model="formReady"
+        ref="form"
+      >
         <v-text-field
           id="organizaiton"
+          type="text"
           v-model="organization"
           :rules="[rules.required]"
           filled
           color="#295caa"
           label="組織 ID"
-          type="text"
           @keyup.enter="onClickSend"
         ></v-text-field>
         <v-text-field
           id="email"
+          type="email"
           v-model="email"
           :rules="[rules.required, rules.email]"
           filled
           color="#295caa"
           label="メールアドレス"
-          type="email"
           @keyup.enter="onClickSend"
         ></v-text-field>
         <v-text-field
           id="password"
+          type="password"
           class="password-height"
           v-model="password"
           filled
           color="#295caa"
           label="パスワード"
-          type="password"
           @keyup.enter="onClickSend"
         ></v-text-field>
         <div class="error-color">
@@ -45,6 +55,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import FormCard from '~/components/FormCard.vue'
 import {checkStatus} from '~/modules/utils'
 declare module 'vue/types/vue' {
   interface Vue {
@@ -54,16 +65,17 @@ declare module 'vue/types/vue' {
   }
 }
 export default Vue.extend({
+  components: { FormCard },
   name: 'login',
   layout: 'login',
   data: () => ({
-    pageReady: false,
-    error: '',
-    organization: '',
     email: undefined,
-    password: undefined,
+    error: '',
     formReady: true,
     loading: false,
+    organization: '',
+    pageReady: false,
+    password: undefined,
     rules: {
       email: (v: string) => !!(v || '').match(/@/) || 'メールアドレスの形式ではありません',
       required: (v: string) => !!v || '必須項目です',
@@ -80,7 +92,6 @@ export default Vue.extend({
     }
   },
   async beforeCreate() {
-    console.log('Hello')
     this.$store.dispatch('resetAll');
       let response;
       try {

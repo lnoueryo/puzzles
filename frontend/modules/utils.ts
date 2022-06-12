@@ -8,6 +8,11 @@ const isNumber = () => {
     return pattern.test(numVal) || '半角数字のみです';
   }
 }
+const deepCopy = () => {
+  return (obj: [{}] | {}) => {
+    return JSON.parse(JSON.stringify(obj))
+  }
+}
 const changeToHalf = () => {
   return (str: string) => {
     if(typeof str === 'number') return;
@@ -79,7 +84,6 @@ const resize = (reader: FileReader) => {
     }
     image.onerror = reject
   })
-
 }
 const OK = 200;
 const created = 201;
@@ -109,4 +113,4 @@ const hello = () => {
  }
 }
 
-export { hello, isReadyObj, isReadyArr, isEmptyArr, isEmptyObj, resizeFile, checkStatus, isNumber, changeToHalf, changeToISOFormat, changeToTimeStampFormat, changeToDateISOFormat}
+export { hello, isReadyObj, isReadyArr, isEmptyArr, isEmptyObj, resizeFile, checkStatus, isNumber, changeToHalf, changeToISOFormat, changeToTimeStampFormat, changeToDateISOFormat, deepCopy}

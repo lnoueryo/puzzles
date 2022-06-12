@@ -19,28 +19,18 @@
 </template>
 
 <script lang="ts">
-
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
+import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj, deepCopy } from '~/modules/utils'
 import * as model from '~/modules/model'
-declare module 'vue/types/vue' {
-  interface Vue {
-    preprocessProjectAuthority: () => void;
-  }
-}
-interface ProjectAuthority extends model.ProjectAuthority {
-  disabled: boolean
-  project: model.Project
-}
 export default Vue.extend({
   data:() => ({
-    isAuthorized: false,
-    organizationAuthority: {} as model.OrganizationAuthority,
-    formReady: false,
-    loading: false,
     dialog: false,
     error: '',
+    formReady: false,
+    isAuthorized: false,
+    loading: false,
+    organizationAuthority: {} as model.OrganizationAuthority,
   }),
   computed: {
     ...mapGetters([
@@ -48,10 +38,11 @@ export default Vue.extend({
       'organization',
       'user',
     ]),
+    checkStatus,
     isEmptyObj,
     isEmptyArr,
     isReadyObj,
-    checkStatus,
+    deepCopy,
     dialogForm() {
       return [
         {title: '組織名', newData: this.organizationAuthority.organization.name, oldData: this.organization.organization.name},
@@ -68,7 +59,7 @@ export default Vue.extend({
       clearInterval(timer)
       const authority = this.organization.auth_id;
       if(authority != 1) return this.$router.back();
-      this.organizationAuthority = JSON.parse(JSON.stringify(this.organization))
+      this.organizationAuthority = this.deepCopy(this.organization);
       this.isAuthorized = true;
     }, 100);
   },

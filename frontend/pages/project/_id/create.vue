@@ -1,8 +1,17 @@
 <template>
   <div v-if="pageReady">
     <v-row justify="center">
-      <v-col cols="12" sm="10" md="10" lg="10">
-        <form-task v-model="selectedTask" @submit="onClickSubmit" :loading="loading">
+      <v-col
+       cols="12"
+       sm="10"
+       md="10"
+       lg="10"
+      >
+        <form-task
+         v-model="selectedTask"
+         @submit="onClickSubmit"
+         :loading="loading"
+        >
           <template v-slot:back>
             戻る
           </template>
@@ -20,6 +29,7 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isReadyObj, isEmptyArr, isEmptyObj, checkStatus, changeToDateISOFormat, changeToTimeStampFormat } from '~/modules/utils'
 import * as model from '~/modules/model'
+import FormTask from '~/components/FormTask.vue'
 declare module 'vue/types/vue' {
   interface Vue {
     changeToHalf: (string: string) => any;
@@ -27,13 +37,8 @@ declare module 'vue/types/vue' {
     validateForm: (v: model.Task) => string;
   }
 }
-interface Rule {
-  length: Function
-  required: Function
-  requiredSelect: Function
-  isNumber: Function
-}
 export default Vue.extend({
+  components: { FormTask },
   data: () => ({
     selectedTask: {} as model.Task,
     loading: false,
@@ -48,16 +53,17 @@ export default Vue.extend({
       'user',
       'project',
     ]),
-    isReadyObj,
-    isEmptyArr,
-    checkStatus,
-    isEmptyObj,
     changeToDateISOFormat,
     changeToTimeStampFormat,
+    checkStatus,
+    isEmptyArr,
+    isEmptyObj,
+    isReadyObj,
     pageReady() {
       return this.isReadyObj(this.project);
     },
     taskForm() {
+      // わかりづらいので変更
       const additionalInfo = {
         id: this.$route.params.key,
         assigner_id: this.user.id,

@@ -1,7 +1,12 @@
 <template>
   <div v-if="pageReady">
     <v-row justify="center">
-      <v-col cols="12" sm="10" md="10" lg="10">
+      <v-col
+       cols="12"
+       sm="10"
+       md="10"
+       lg="10"
+      >
         <form-task v-model="selectedTask" @submit="dialog = true">
           <template v-slot:back>
             戻る
@@ -12,7 +17,12 @@
         </form-task>
       </v-col>
     </v-row>
-    <dialog-update v-model="dialog" :form="dialogForm" @submit="onClickSubmit" @loading="loading = $event">
+    <dialog-update
+     v-model="dialog"
+     :form="dialogForm"
+     @submit="onClickSubmit"
+     @loading="loading = $event"
+    >
       {{ taskForm.key }}
     </dialog-update>
   </div>
@@ -23,6 +33,7 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isReadyObj, isEmptyArr, checkStatus, isEmptyObj, changeToISOFormat, changeToTimeStampFormat, changeToDateISOFormat } from '~/modules/utils'
 import * as model from '~/modules/model'
+import DialogUpdate from '~/components/DialogUpdate.vue'
 
 declare module 'vue/types/vue' {
   interface Vue {
@@ -32,16 +43,17 @@ declare module 'vue/types/vue' {
 }
 
 export default Vue.extend({
+  components: { DialogUpdate },
   data:() =>({
-    pageReady: false,
-    loading: false,
     dialog: false,
-    selectedTask: {} as model.Task,
+    loading: false,
+    pageReady: false,
     rules: {
       length: (len: number) => (v: string) => (v || '').length <= len || `最大20文字までです`,
       required: (v: string) => !!v || '必ずご記入ください',
       requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
+    selectedTask: {} as model.Task,
   }),
   computed: {
     ...mapGetters('task', [
@@ -138,14 +150,6 @@ export default Vue.extend({
       console.log(this.selectedTask)
       this.selectedTask.deadline = this.changeToDateISOFormat(this.selectedTask.deadline);
       this.pageReady = true;
-    },
-    changeTimeFormat(time: string) {
-      const dateObj = new Date(time);
-      const year = dateObj.getFullYear();
-      const month = dateObj.getMonth() + 1;
-      const date = dateObj.getDate();
-      const dateStr = year + '-' + month + '-' + date;
-      return dateStr;
     },
     async onClickSubmit() {
       this.loading = true;

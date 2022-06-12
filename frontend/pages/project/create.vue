@@ -1,6 +1,10 @@
 <template>
   <div v-if="isAuthorized">
-    <form-project v-model="newProject" @submit="onClickSend" :loading="loading">
+    <form-project
+     v-model="newProject"
+     @submit="onClickSend"
+     :loading="loading"
+    >
       <template slot="back">
         <div>
           戻る
@@ -21,13 +25,14 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
 import * as model from '~/modules/model'
+import FormProject from '~/components/FormProject.vue'
 declare module 'vue/types/vue' {
   interface Vue {
-    preprocessProjectAuthority: () => void;
     projectForm: () => model.ProjectAuthority
   }
 }
 export default Vue.extend({
+  components: { FormProject },
   data:() => ({
     isAuthorized: false,
     loading: false,

@@ -6,7 +6,11 @@
       height="80"
     >
       <div class="text-center d-flex justyfy-space-between btn-container">
-        <v-btn class="mr-3" :to="'/project/' + project.id + '/create'" color="#295caa">
+        <v-btn
+         class="mr-3"
+         :to="createTaskURL"
+         color="#295caa"
+        >
           <v-icon left>mdi-clipboard-plus-outline</v-icon>
           タスク作成
         </v-btn>
@@ -23,7 +27,12 @@
       >
         <v-tabs-slider></v-tabs-slider>
 
-        <v-tab :href="'#' + tab.component" v-for="(tab, i) in tabs" :key="i" @click="$router.replace({...$route, ...{query: {tab: tab.component}}})">
+        <v-tab
+         :href="'#' + tab.component"
+         v-for="(tab, i) in tabs"
+         :key="i"
+         @click="$router.replace({...$route, ...{query: {tab: tab.component}}})"
+        >
           {{ tab.title }}
           <v-icon>{{ tab.icon }}</v-icon>
         </v-tab>
@@ -67,7 +76,11 @@
     </v-app-bar>
 
     <v-tabs-items v-model="tabKey">
-      <v-tab-item v-for="(tab, i) in tabs" :key="i + 1" :value="tab.component">
+      <v-tab-item
+       v-for="(tab, i) in tabs"
+       :key="i + 1"
+       :value="tab.component"
+      >
         <keep-alive>
           <div :is="tab.component"></div>
         </keep-alive>
@@ -82,13 +95,13 @@ import { mapGetters } from 'vuex'
 import {isReadyObj, isEmptyObj} from '~/modules/utils'
 export default Vue.extend({
   data: () => ({
-    tabKey: 'task',
+    addUserDialog: false,
     pageReady: false,
+    tabKey: 'task',
     tabs: [
       {title: '全てのタスク', icon: 'mdi-clipboard-check-multiple-outline', component: 'card-task'},
       {title: 'プロジェクトの概要', icon: 'mdi-clipboard-check-multiple-outline', component: 'card-project'},
     ],
-    addUserDialog: false,
   }),
   computed: {
     ...mapGetters([
@@ -99,6 +112,9 @@ export default Vue.extend({
     ]),
     isReadyObj,
     isEmptyObj,
+    createTaskURL() {
+      return '/project/' + this.project.id + '/create';
+    }
   },
   created() {
     if('tab' in this.$route.query === false) {
