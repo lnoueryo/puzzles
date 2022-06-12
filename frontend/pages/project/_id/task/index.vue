@@ -5,7 +5,7 @@
       dark
       height="80"
     >
-      <div class="text-center d-flex justyfy-space-between" style="max-width: 200px;width: 100%">
+      <div class="text-center d-flex justyfy-space-between btn-container">
         <v-btn class="mr-3" :to="'/project/' + project.id + '/create'" color="#295caa">
           <v-icon left>mdi-clipboard-plus-outline</v-icon>
           タスク作成
@@ -19,8 +19,7 @@
         icons-and-text
         fixed-tabs
         color="#295caa"
-        class="px-6"
-        style="width: 500px"
+        class="px-6 tab-width"
       >
         <v-tabs-slider></v-tabs-slider>
 
@@ -111,3 +110,12 @@ export default Vue.extend({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .btn-container {
+    max-width: 200px;
+    width: 100%;
+  }
+  .tab-width {
+    width: 500px;
+  }
+</style>

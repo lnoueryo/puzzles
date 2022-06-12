@@ -1,11 +1,11 @@
 <template>
-  <div style="width: 100%;max-width: 600px;margin: auto;" v-if="isReadyObj(selectedUser)">
+  <div class="card-frame" v-if="isReadyObj(selectedUser)">
     <v-row class="py-8" align="center" justify="center">
       <v-list class="px-4" subheader two-line width="600">
-        <v-row class="py-8 mx-4" align="center" justify="center" style="position: relative">
-          <div style="position: relative;">
-            <v-avatar size="36px" class="mr-4" style="position: absolute;left: -50px">
-              <v-img alt="Avatar" style="object-fit: cover;" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
+        <v-row class="py-8 mx-4 relative" align="center" justify="center">
+          <div class="relative">
+            <v-avatar size="36px" class="mr-4 avatar-position">
+              <v-img class="object-cover" alt="Avatar" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
                 <template v-slot:placeholder>
                   <v-row class="fill-height ma-0" align="center" justify="center">
                     <v-progress-circular indeterminate color="grey lighten-5" />
@@ -48,19 +48,30 @@ export default Vue.extend({
     selectedUser: Object,
     disabled: Boolean
   },
-    computed: {
-        isReadyObj,
-        changeToTimeStampFormat,
-        userEntities() {
-          const userEntities = [
-            {key: 'description', title: '自己紹介'},
-            {key: 'age', title: '年齢'},
-            {key: 'sex', title: '性別'},
-            {key: 'email', title: 'メールアドレス'},
-            {key: 'address', title: '住所'},
-          ]
-          return userEntities
-        }
+  computed: {
+    isReadyObj,
+    changeToTimeStampFormat,
+    userEntities() {
+      const userEntities = [
+        {key: 'description', title: '自己紹介'},
+        {key: 'age', title: '年齢'},
+        {key: 'sex', title: '性別'},
+        {key: 'email', title: 'メールアドレス'},
+        {key: 'address', title: '住所'},
+      ]
+      return userEntities
     }
+  }
 })
 </script>
+<style lang="scss" scoped>
+  .card-frame {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+  }
+  .avatar-position {
+    position: absolute;
+    left: -50px
+  }
+</style>

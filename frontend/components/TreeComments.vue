@@ -2,7 +2,7 @@
   <div>
     <div v-for="(comment, i) in comments" :key="i">
       <div :class="['d-flex', 'comment', 'justify-space-between', {'select' : selectedComment.id === comment.id}]" @click="selectComment(comment, hierarchy)">
-        <div class="d-flex align-center" style="width: 100%">
+        <div class="d-flex align-center w100">
           <v-btn icon @click="checkInput('tree' + comment.id)" v-if="isReadyArr(comment.replies)">
             <v-icon :class="[{'active': isOpen(comment.id)}, 'icon']">mdi-triangle-small-down</v-icon>
           </v-btn>
@@ -12,11 +12,11 @@
             type="checkbox"
             :value="comment.id"
             v-model="selectedComments"
-            style="display: none"
+            class="hide-display"
           >
           <user-cell :class="{'ml-9' : isEmptyArr(comment.replies)}" :user="comment.user"></user-cell>
           <div>{{ comment.content }}</div>
-          <div style="margin-left: auto" v-if="comment.user_id == user.id">
+          <div class="mla" v-if="comment.user_id == user.id">
             <v-btn @click="finishEditComment()" v-if="editMode">終了</v-btn>
             <v-btn @click="editComment(comment, hierarchy)" v-else>編集</v-btn>
             <v-btn @click="deleteComment(comment)">削除</v-btn>
@@ -127,7 +127,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" ascoped>
+<style lang="scss" scoped>
   .select {
     background-color: #295daa5e
   }

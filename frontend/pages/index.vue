@@ -13,8 +13,7 @@
         icons-and-text
         fixed-tabs
         color="#295caa"
-        class="px-6"
-        style="width: 500px"
+        class="px-6 tab-width"
       >
         <v-tabs-slider></v-tabs-slider>
 
@@ -27,11 +26,11 @@
       <v-spacer></v-spacer>
     </v-app-bar>
     <div>
-      
+
     </div>
-    <v-row justify="center" align="center" class="py-8" style="background-color: #1E1E1E">
+    <v-row justify="center" align="center" class="py-8 bc2">
       <v-avatar size="36px" v-if="organization.image">
-        <v-img alt="Avatar" style="object-fit: cover;" :src="organizationImage" @error="organizationImageError = true">
+        <v-img class="object-cover" alt="Avatar" :src="organizationImage" @error="organizationImageError = true">
           <template v-slot:placeholder>
             <v-row class="fill-height ma-0" align="center" justify="center">
               <v-progress-circular indeterminate color="grey lighten-5" />
@@ -42,13 +41,13 @@
       <v-icon size="36px" v-else>
         mdi-account-group
       </v-icon>
-      <strong  id="organization-name" class="mx-2" style="font-size: 30px">{{ organization.name }}</strong>
+      <strong id="organization-name" class="mx-2 organization-font">{{ organization.name }}</strong>
     </v-row>
     <v-tabs-items v-model="tabKey">
       <v-tab-item :value="'tab-1'">
         <v-row class="my-10" justify="center">
           <v-icon>mdi-cog-play-outline</v-icon>
-          <strong class="mx-2" style="font-size: 30px">プロジェクト</strong>
+          <strong class="mx-2">プロジェクト</strong>
         </v-row>
         <v-row class="my-10" justify="center" v-if="projectSlides.length != 0">
           <v-carousel height="375" hide-delimiter-background :show-arrows="projectSlides.length > 1" show-arrows-on-hover>
@@ -69,8 +68,8 @@
         </v-row>
       </v-tab-item>
       <v-tab-item :value="'tab-2'">
-        <div style="width: 100%;max-width: 600px;margin: auto;" v-if="isReadyObj(organization)">
-          <v-row class="py-8" align="center" justify="center" style="position: relative">
+        <div class="project-container" v-if="isReadyObj(organization)">
+          <v-row class="py-8 relative" align="center" justify="center">
             <h2>{{ organization.name }}</h2>
             <v-btn absolute right color="#295caa"  v-if="organizationAuthority.type.name == '管理者'" :to="{name: 'organization-edit'}">
               <v-icon left>mdi-application-edit-outline</v-icon>
@@ -94,7 +93,7 @@
             <div v-else>なし</div>
           </v-row>
           <v-row class="py-8" align="center" justify="center">
-            <div class="d-flex justify-center align-center" style="position: relative;width: 100%">
+            <div class="d-flex justify-center align-center relative w100">
               <h2>ユーザー</h2>
               <v-btn absolute right color="#295caa" v-if="organizationAuthority.type.name == '管理者'" @click="$router.push({name: 'organization-create'})">
                 <v-icon left>mdi-account-multiple-plus</v-icon>
@@ -116,9 +115,9 @@
                     </v-icon>
                   </v-list-item-avatar>
 
-                <v-list-item-content class="mr-4" style="width: 400px">
+                <v-list-item-content class="mr-4 list-container">
                   <v-list-item-title v-text="authUser.user.name" v-if="authUser.user.name"></v-list-item-title>
-                  <v-list-item-title v-text="'招待中'" style="color: red" v-else></v-list-item-title>
+                  <v-list-item-title class="error-color" v-text="'招待中'" v-else></v-list-item-title>
                   <v-list-item-subtitle v-text="authUser.user.email"></v-list-item-subtitle>
                 </v-list-item-content>
 
@@ -149,7 +148,7 @@
               <v-card>
                 <v-card-title>権限変更</v-card-title>
                 <v-divider></v-divider>
-                <v-card-text style="height: 100px;">
+                <v-card-text class="h100">
                   <v-radio-group v-model="changeAuthority" column>
                     <v-radio color="#295caa" :value="authority" :label="authority.name" v-for="(authority, i) in authorities" :key="i"/>
                   </v-radio-group>
@@ -328,3 +327,19 @@ export default Vue.extend({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .tab-container {
+    width: 500px;
+  }
+  .organization-font {
+    font-size: 30px;
+  }
+  .project-container {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+  }
+  .list-container {
+    width: 400px;
+  }
+</style>

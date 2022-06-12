@@ -9,9 +9,9 @@
       clearable
     ></v-file-input>
     <div>
-      <div style="position: relative;margin: auto" @mouseleave="endDrag" @mousemove="dragMove" :style="{width: toStyleSize(imgWidth) + 'px', height: toStyleSize(imgHeight) + 'px'}">
+      <div class="relative ma" @mouseleave="endDrag" @mousemove="dragMove" :style="{width: toStyleSize(imgWidth) + 'px', height: toStyleSize(imgHeight) + 'px'}">
         <div class="cropper pa-1" ref="cropper" :style="cropperPosition" @mousedown.self="startDragSize" @mouseup="endDrag" v-if="image_data">
-          <div style="width: 100%;height: 100%;" :style="{cursor: isSizeCursor ? 'all-scroll' : 'grab'}" @mousedown="startDragPosition" @mouseup="endDrag"></div>
+          <div class="w100 h100" :style="{cursor: isSizeCursor ? 'all-scroll' : 'grab'}" @mousedown="startDragPosition" @mouseup="endDrag"></div>
         </div>
         <canvas ref="canvas" @mouseup="endDrag" @mousemove="dragMove" :style="{width: '100%', maxWidth: this.width + 'px'}"></canvas>
       </div>
@@ -22,8 +22,8 @@
         </v-btn>
       </div>
       <div class="pa-2 d-flex justify-space-between">
-        <div style="max-width: 450px;margin: auto" v-if="currentImage&&!value">
-          <v-img style="width: 100%" :src="currentImage">
+        <div class="image-container" v-if="currentImage&&!value">
+          <v-img class="w100" :src="currentImage">
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="grey lighten-5" />
@@ -31,8 +31,8 @@
             </template>
           </v-img>
         </div>
-        <div style="max-width: 450px;margin: auto" v-if="value">
-          <v-img style="width: 100%" :src="value">
+        <div class="image-container" v-if="value">
+          <v-img class="w100" :src="value">
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="grey lighten-5" />
@@ -281,12 +281,16 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .cropper {
     position: absolute;
     width: 100%;
     border: solid black 2px;
     border-style: dashed;
     cursor: all-scroll;
+  }
+  .image-container {
+    max-width: 450px;
+    margin: auto
   }
 </style>

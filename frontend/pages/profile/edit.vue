@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="mx-auto my-4 px-8 py-4" style="max-width: 700px;" v-if="isReadyObj(user)">
+    <v-card class="mx-auto my-4 px-8 py-4" max-width="700px" v-if="isReadyObj(user)">
       <div class="pb-2">
         <v-btn icon @click="$router.push({name: 'profile'})" v-if="user.name">
           <v-icon>mdi-arrow-left</v-icon>
@@ -48,12 +48,12 @@
           type="text"
         ></v-text-field>
         <v-text-field
+          class="password-height"
           v-model="profile.password"
           :rules="[rules.required, rules.length(8)]"
           filled
           color="#295caa"
           label="パスワード"
-          style="min-height: 96px"
           type="password"
           v-if="!user.name"
         ></v-text-field>
@@ -153,3 +153,8 @@ export default Vue.extend({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .password-hright {
+    min-height: 96px;
+  }
+</style>

@@ -3,13 +3,13 @@
     <v-hover v-slot="{ hover }">
       <v-card :elevation="hover ? 12 : 2" :class="{ 'on-hover': hover }" width="315" height="300" class="ma-4">
         <nuxt-link :to="{name: 'project-id', params: {id: id}}">
-          <v-img :aspect-ratio="16/9" :src="projectImage" @error="projectImageError = true" style="background-color: #00000040">
+          <v-img class="hover-color" :aspect-ratio="16/9" :src="projectImage" @error="projectImageError = true">
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="grey lighten-5" />
               </v-row>
             </template>
-            <div style="background-color: #00000040" class="fill-height repeating-gradient">
+            <div class="fill-height repeating-gradient hover-color">
               <div class="d-flex justify-end">
                 <v-btn icon :class="{ 'show-btns': hover }" color="transparent">
                   <v-icon>mdi-star</v-icon>
@@ -34,7 +34,7 @@
             <v-tooltip bottom v-for="(_, i) in authority_users" :key="i">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn class="mr-1" icon v-bind="attrs" v-on="on" v-if="i < 4" @click="$router.push({name: 'profile-user_id', params: {user_id: _.user_id}})">
-                  <v-avatar style="object-fit: cover;" size="36px">
+                  <v-avatar class="object-cover" size="36px">
                     <v-img alt="Avatar" :src="$config.mediaURL + '/users/' + _.user.image" v-if="_.user.image">
                       <template v-slot:placeholder>
                         <v-row class="fill-height ma-0" align="center" justify="center">
@@ -50,14 +50,14 @@
               </template>
               <span>{{ _.user.name }}</span>
             </v-tooltip>
-            <v-btn class="mr-1" icon v-if="5 < authUserLength" style="background-color: #ffffff1f" @click="usersDialog = true">
+            <v-btn class="mr-1 clear-btn" icon v-if="5 < authUserLength" @click="usersDialog = true">
               <v-avatar size="36px">
                 <span>+{{ authUserLength - 4 }}</span>
               </v-avatar>
             </v-btn>
           </div>
         </div>
-        <div style="margin-top: auto">
+        <div class="mta">
           <v-btn text :class="{ 'show-btns': hover }" color="transparent">
             <v-icon left>
               mdi-pencil
@@ -83,7 +83,7 @@
           <template v-slot:default="dialog">
             <v-card>
               <v-toolbar color="#295caa" dark>
-                <div class="text-h5" style="margin: auto">
+                <div class="text-h5 ma">
                   {{name}}
                 </div>
                 <v-btn icon absolute right @click="usersDialog = false">
@@ -105,9 +105,9 @@
                     </v-icon>
                   </v-list-item-avatar>
 
-                  <v-list-item-content class="mr-4" style="width: 400px">
+                  <v-list-item-content class="mr-4 list-container">
                     <v-list-item-title v-text="authUser.user.name" v-if="authUser.user.name"></v-list-item-title>
-                    <v-list-item-title v-text="'招待中'" style="color: red" v-else></v-list-item-title>
+                    <v-list-item-title class="error-color" v-text="'招待中'" v-else></v-list-item-title>
                     <v-list-item-subtitle v-text="authUser.user.email"></v-list-item-subtitle>
                   </v-list-item-content>
 
@@ -172,7 +172,7 @@ export default Vue.extend({
   },
 })
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .v-card {
   transition: all .2s ease-in-out;
   background-color: #295daa6e;
@@ -181,6 +181,15 @@ export default Vue.extend({
 .v-card:not(.on-hover) {
   background-color: #272727;
  }
+.hover-color {
+  background-color: #00000040;
+}
+.clear-btn {
+  background-color: #ffffff1f;
+}
+.list-container {
+  width: 400px;
+}
 
 /* .show-btns {
   color: rgba(255, 255, 255, 1) !important;

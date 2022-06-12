@@ -31,18 +31,19 @@
     <v-row justify="center" align="center" class="my-6">
       <v-avatar size="36px" v-if="organization.image">
         <img
-          alt="Avatar" style="object-fit: cover;"
+          class="object-cover"
+          alt="Avatar"
           :src="$config.mediaURL + '/organizations/' + organization.image"
         >
       </v-avatar>
       <v-icon size="36px" v-else>
         mdi-account-group
       </v-icon>
-      <strong class="mx-2" style="font-size: 30px">{{ organization.name }}</strong>
+      <strong class="mx-2 organization-font">{{ organization.name }}</strong>
     </v-row>
     <v-row class="my-10" justify="center">
       <v-icon>mdi-cog-play-outline</v-icon>
-      <strong class="mx-2" style="font-size: 30px">プロジェクト</strong>
+      <strong class="mx-2 organization-font">プロジェクト</strong>
     </v-row>
     <v-row class="my-10" justify="center" v-if="projectSlides.length != 0">
       <v-carousel height="375" hide-delimiter-background :show-arrows="projectSlides.length > 1" show-arrows-on-hover>
@@ -186,7 +187,7 @@ export default Vue.extend({
   },
 })
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .v-card {
   transition: all .2s ease-in-out;
   background-color: #FF8F00;
@@ -198,5 +199,8 @@ export default Vue.extend({
 
 .show-btns {
   color: rgba(255, 255, 255, 1) !important;
+}
+.organization-font {
+  font-size: 30px;
 }
 </style>

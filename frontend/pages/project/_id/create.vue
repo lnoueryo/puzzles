@@ -153,31 +153,3 @@ export default Vue.extend({
     color: cadetblue;
 }
 </style>
-
-// actual_time:0
-// assignee:Object
-// assignee_id:40262
-// assigner:Object
-// assigner_id:40262
-// comments:Array[0]
-// created_at:"2022/3/25"
-// deadline:"2022/4/1"
-// detail:"単純に面白そうということと、プロジェクトに咲いている時間が機になるので実装"
-// estimated_time:5
-// field:"フロントエンド"
-// field_id:9017
-// id:1798115
-// key:"puzzles_33"
-// milestone:"クライアント用ベータ版作成"
-// milestone_id:15026
-// parent_id:0
-// priority:"中"
-// priority_id:2
-// project_id:31302
-// start_time:"2001/1/1"
-// status:"未対応"
-// status_id:4
-// title:"勤怠システムの作成"
-// type:"追加"
-// type_id:1
-// updated_at:"2022/3/25"

@@ -2,7 +2,7 @@
   <div>
     <v-row class="mb-6" no-gutters>
       <v-col sm="5" md="6" class="pr-1">
-        <div style="overflow: scroll;height: 312px;">
+        <div class="text-container">
           <v-textarea
             ref="detail"
             filled
@@ -23,7 +23,7 @@
         </template> -->
       </v-col>
       <v-col sm="5" md="6" class="pl-1">
-        <div class="px-4" style="border-radius: 3px 3px 0 0;overflow: scroll;height: 312px;background-color: rgba(255, 255, 255, 0.08)">
+        <div class="px-4 preview-container">
           <div class="py-2" v-html="html"></div>
         </div>
       </v-col>
@@ -33,7 +33,6 @@
 
 <script>
 import Vue from 'vue'
-// import { Markdown } from '~/modules/markdown';
 export default Vue.extend({
   props: {
     text: String
@@ -205,3 +204,15 @@ export default Vue.extend({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .text-container {
+    overflow: scroll;
+    height: 312px;
+  }
+  .preview-container {
+    border-radius: 3px 3px 0 0;
+    overflow: scroll;
+    height: 312px;
+    background-color: rgba(255, 255, 255, 0.08)
+  }
+</style>

@@ -3,7 +3,7 @@
     <div>
       <filter-bar :noTask="noTask"></filter-bar>
     </div>
-    <div class="text-center" style="overflow: scroll">
+    <div class="text-center scroll">
       <div class="thead"  :style="table.thead.style">
         <!-- #006098 -->
         <!-- #009879; -->
@@ -19,13 +19,12 @@
       <div v-if="!noTask">
         <div class="py-16" v-if="isEmptyObj(project) && isEmptyArr(tasks)">
           <v-skeleton-loader
-            class="mx-auto"
+            class="mx-auto loader-frame"
             type="table"
-            style="height: 450px;width: 100%;min-width: 1560px;"
             v-if="isEmptyArr(tasks)"
           >
           </v-skeleton-loader>
-          <div style="position: absolute;top: 50%;left: 50%;">
+          <div class="circle-position">
             <v-progress-circular
               :size="50"
               color="primary"
@@ -83,7 +82,7 @@
       </v-row>
     </div>
     <div v-else>
-      <v-row class="py-16" style="position: relative;" justify="center">
+      <v-row class="py-16 relative" justify="center">
         <v-btn :to="'/project/' + project.id + '/create'" color="#295caa">新しいタスクを作成する</v-btn>
       </v-row>
     </div>
@@ -93,10 +92,10 @@
           <template v-slot:default="dialog">
             <v-row class="py-8" align="center" justify="center" v-if="isReadyObj(selectedUser)">
               <v-list class="px-4" subheader two-line width="600">
-                <v-row class="py-8 mx-4" align="center" justify="center" style="position: relative">
-                  <div style="position: relative;">
-                    <v-avatar size="36px" class="mr-4" style="position: absolute;left: -50px">
-                      <v-img alt="Avatar" style="object-fit: cover;" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
+                <v-row class="py-8 mx-4 relative" align="center" justify="center">
+                  <div class="relative">
+                    <v-avatar size="36px" class="mr-4 avatar-position">
+                      <v-img class="object-cover" alt="Avatar" :src="$config.mediaURL + '/users/' + selectedUser.user.image" v-if="selectedUser.user.image">
                         <template v-slot:placeholder>
                           <v-row class="fill-height ma-0" align="center" justify="center">
                             <v-progress-circular indeterminate color="grey lighten-5" />
@@ -214,7 +213,7 @@ export default Vue.extend({
   }
 })
 </script>
-<style>
+<style lang="scss" scoped>
 .cell {
   display: block;
   position: relative;
@@ -256,5 +255,19 @@ export default Vue.extend({
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+.loader-frame {
+  height: 450px;
+  width: 100%;
+  min-width: 1560px;
+}
+.circle-position {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.avatar-position {
+  position: absolute;
+  left: -50px
 }
 </style>

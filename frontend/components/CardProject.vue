@@ -1,6 +1,6 @@
 <template>
-    <div style="width: 100%;max-width: 600px;margin: auto;" v-if="isReadyObj(project)">
-      <v-row class="py-8" align="center" justify="center" style="position: relative">
+    <div class="card-frame" v-if="isReadyObj(project)">
+      <v-row class="py-8 relative" align="center" justify="center">
         <h2>{{ project.name }}</h2>
         <v-btn absolute right color="#295caa" v-if="projectAuthority.type.name == '管理者'" :to="{name: 'project-id-edit', params: {id: $route.params.id}}">
           <v-icon left>mdi-application-edit-outline</v-icon>
@@ -24,7 +24,7 @@
         <div v-else>なし</div>
       </v-row>
       <v-row class="py-8" align="center" justify="center">
-        <div class="d-flex justify-center align-center" style="position: relative;width: 100%">
+        <div class="d-flex justify-center align-center relative w100">
           <h2>ユーザー</h2>
           <v-btn absolute right color="#295caa" v-if="projectAuthority.type.name == '管理者'" @click="addUserDialog = true">
             <v-icon left>mdi-account-multiple-plus</v-icon>
@@ -48,7 +48,7 @@
                 </v-icon>
               </v-list-item-avatar>
 
-            <v-list-item-content class="mr-4" style="width: 400px">
+            <v-list-item-content class="mr-4 item-container">
               <v-list-item-title v-text="authUser.user.name"></v-list-item-title>
               <v-list-item-subtitle v-text="authUser.user.email"></v-list-item-subtitle>
             </v-list-item-content>
@@ -198,11 +198,6 @@ export default Vue.extend({
       return this.projectImageError ? require('~/assets/image/project.png') : this.$config.mediaURL + '/projects/' + this.project.image
     }
   },
-  created() {
-    const itemStr = sessionStorage.getItem(location.host + window.$nuxt.$route.params.id);
-    if(!itemStr) return;
-    const item = JSON.parse(itemStr);
-  },
   methods: {
     openAuthorityDialog(authorityUser: model.ProjectAuthority) {
       this.selectedUser = authorityUser;
@@ -267,3 +262,13 @@ export default Vue.extend({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .card-frame {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+  }
+  .item-container {
+    width: 400px;
+  }
+</style>

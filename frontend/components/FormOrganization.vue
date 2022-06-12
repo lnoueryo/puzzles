@@ -1,7 +1,7 @@
 <template>
   <div onselectstart="return false;">
-    <v-card class="mx-auto my-4 px-8 py-4" style="max-width: 700px;">
-      <div style="position: relative">
+    <v-card class="mx-auto my-4 px-8 py-4" max-width="700px">
+      <div class="relative">
         <v-card-actions class="py-6">
           <v-btn icon @click="$router.push(to)">
             <v-icon>mdi-arrow-left</v-icon>
@@ -40,7 +40,7 @@
           type="text"
         ></v-text-field>
         <v-cropper v-model="image" ratio="16:9" :width="450" :pixel="900" :currentImage="$config.mediaURL + '/organizations/' + value.image"></v-cropper>
-        <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
+        <div class="px-4 py-2 red--text accent-3 text-center error-height">{{ this.error }}</div>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text @click="$router.push(to)">
@@ -161,10 +161,13 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .custom-loader {
   animation: loader 1s infinite;
   display: flex;
+}
+.error-height {
+  height: 80px;
 }
 @-moz-keyframes loader {
   from {

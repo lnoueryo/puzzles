@@ -45,8 +45,8 @@
         </div>
       </div>
       <div class="px-6">
-        <div class="d-flex py-2" style="width: 100%">
-          <div style="width: 100%">
+        <div class="d-flex py-2 w100">
+          <div class="w100">
             <div class="mb-2">詳細</div>
             <div class="pa-3" style="min-height: 300px;background-color: #303030;border-radius: 5px;" v-html="task.detail"></div>
           </div>

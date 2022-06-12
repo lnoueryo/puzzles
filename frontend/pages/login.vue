@@ -1,5 +1,5 @@
 <template>
-  <form-card @send="onClickSend" style="max-width: 500px" v-if="pageReady" :loading="loading" :formReady="formReady">
+  <form-card class="form-container" @send="onClickSend" v-if="pageReady" :loading="loading" :formReady="formReady">
     <template v-slot:main>
       <v-form ref="form" v-model="formReady" class="pa-4 pt-6">
         <v-text-field
@@ -24,15 +24,15 @@
         ></v-text-field>
         <v-text-field
           id="password"
+          class="password-height"
           v-model="password"
           filled
           color="#295caa"
           label="パスワード"
-          style="min-height: 96px"
           type="password"
           @keyup.enter="onClickSend"
         ></v-text-field>
-        <div style="color: red">
+        <div class="error-color">
           {{ error }}
         </div>
       </v-form>
@@ -127,3 +127,11 @@ export default Vue.extend({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .form-container {
+    max-width: 500px;
+  }
+  .password-height {
+    min-height: 96px;
+  }
+</style>

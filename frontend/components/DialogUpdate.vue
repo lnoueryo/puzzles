@@ -4,22 +4,22 @@
       <v-card>
         <v-card-title><slot></slot></v-card-title>
         <v-divider></v-divider>
-          <v-card-text class="py-6 text-center" style="height: 400px;">
+          <v-card-text class="py-6 text-center card-height">
             <p v-if="changeNum != 0">{{changeNum}}件の変更があります。</p>
-            <div class="d-flex" style="width: 100%">
-              <div style="width: 50%">
+            <div class="d-flex w100">
+              <div class="w50">
                 <p>変更前</p>
               </div>
-              <div style="width: 50%">
+              <div class="w50">
                 <p>変更後</p>
               </div>
             </div>
             <div v-for="(content, i) in editedData" :key="i">
-              <div class="d-flex" style="width: 100%" v-if="content['image']">
-                <div style="width: 50%" v-if="content.change">
+              <div class="d-flex w100" v-if="content['image']">
+                <div class="w50" v-if="content.change">
                   <div>{{ content.title }}</div>
                   <div>
-                    <v-img style="max-width: 300px" :src="$config.mediaURL + '/projects/' + content.oldData" :lazy-src="require('~/assets/image/project.png')">
+                    <v-img class="image-width" :src="$config.mediaURL + '/projects/' + content.oldData" :lazy-src="require('~/assets/image/project.png')">
                       <template v-slot:placeholder>
                         <v-row class="fill-height ma-0" align="center" justify="center">
                           <v-progress-circular indeterminate color="grey lighten-5" />
@@ -28,19 +28,19 @@
                     </v-img>
                   </div>
                 </div>
-                <div style="width: 50%" v-if="content.change">
+                <div class="w50" v-if="content.change">
                   <div :class="[{'red--text': content.change}, {'text--primary': !content.change}]">{{ content.title }}</div>
                   <div>
-                    <img style="max-width: 300px" :src="content.newData" alt="">
+                    <img class="image-width" :src="content.newData" alt="">
                   </div>
                 </div>
               </div>
-              <div class="d-flex" style="width: 100%" v-else>
-                <div style="width: 50%">
+              <div class="d-flex w100" v-else>
+                <div class="w50">
                   <div>{{ content.title }}</div>
                   <p>{{ content.oldData }}</p>
                 </div>
-                <div style="width: 50%">
+                <div class="w50">
                   <div :class="[{'red--text': content.change}, {'text--primary': !content.change}]">{{ content.title }}</div>
                   <p>{{ content.newData }}</p>
                 </div>
@@ -102,6 +102,12 @@ export default {
 .custom-loader {
   animation: loader 1s infinite;
   display: flex;
+}
+.card-height {
+  height: 400px;
+}
+.image-width {
+  max-width: 300px;
 }
 @-moz-keyframes loader {
   from {

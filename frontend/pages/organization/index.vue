@@ -1,5 +1,5 @@
 <template>
-  <form-card @send="onClickSend" style="max-width: 500px">
+  <form-card @send="onClickSend" class="form-container">
     <v-form
       ref="form"
       v-model="formReady"
@@ -83,3 +83,8 @@ export default Vue.extend({
   }
 })
 </script>
+<style lang="scss" scoped>
+  .form-container {
+    max-width: 500px;
+  }
+</style>
