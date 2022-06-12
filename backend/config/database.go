@@ -28,6 +28,7 @@ func ConnectMysql(DBSettings Database) (*gorm.DB, error) {
 		Logger: logger.Default.LogMode(logger.Silent),
 	  })
 	if err != nil {
+		fmt.Println(err)
 		panic("failed to connect database")
 	}
 	DB = db
@@ -52,6 +53,7 @@ func ConnectSqlite3() (*gorm.DB, error) {
 
 func createMysqlPath(DBSettings Database) string {
 	path := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?%v", DBSettings.User, DBSettings.Password, DBSettings.Host, DBSettings.Port, DBSettings.Name, DBSettings.Query)
+	fmt.Println(path)
 	if os.Getenv("DB") == "CLOUDSQL" {
 		path = fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s?%s", DBSettings.User, DBSettings.Password, DBSettings.Host, DBSettings.Name, DBSettings.Query)
 	}

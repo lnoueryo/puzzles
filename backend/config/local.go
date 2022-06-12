@@ -6,7 +6,7 @@ import (
 
 func configureLocalSettings() {
 	App.UseCache = false
-	App.Addr = "127.0.0.1:8080"
+	App.Addr = "0.0.0.0:8080"
 
 	// DB接続
 	DBSet := Database{

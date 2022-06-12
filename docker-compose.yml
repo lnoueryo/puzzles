@@ -1,0 +1,39 @@
+version: '3'
+services:
+  nuxt:
+    container_name: puzzles_frontend
+    build:
+      context: "."
+      dockerfile: "DockerfileFrontend"
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=1
+    volumes:
+      - "./frontend:/app"
+    tty: true
+    command: npm run dev
+  go:
+    container_name: puzzles_backend
+    build:
+      context: "."
+      dockerfile: "DockerfileBackend"
+    ports:
+      - "8080:8080"
+    environment:
+      CHOKIDAR_USEPOLLING: 1
+      GOOGLE_APPLICATION_CREDENTIALS: "./credentials/puzzles-345814-229e7076a0d5.json"
+    volumes:
+      - "./backend:/app"
+    tty: true
+    command: go run main.go watch
+  mysql:
+    image: mysql:latest # プロダクトで使うならバージョンはlatestじゃないほうが良いです
+    container_name: puzzles_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Popo@6252 # MySQLパスワード設定
+      MYSQL_DATABASE: puzzle # MySQLデータベース名設定
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
+    ports:
+      - "3306:3306"

@@ -4,7 +4,6 @@ import (
 	"backend/modules/crypto"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -69,9 +68,7 @@ func (l *Login) CheckLoginFormBlank() error {
 func (l *Login) FindUser(u *User) (*User, error) {
 	// Password check
 	cryptoPassword := crypto.Encrypt(l.Password)
-	errorlog.Print(cryptoPassword)
 	result := DB.Preload("Organizations", "organization_id = ?", l.Organization).Preload(clause.Associations).First(&u, "email = ? and password = ?", l.Email, cryptoPassword)
-	fmt.Println(cryptoPassword)
 	// result := DB.Preload("Organizations", "id = ?", l.Organization).Preload(clause.Associations).Find(&u, "email = ? and password = ?", l.Email, cryptoPassword)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		// message := "your email address has not been registered"

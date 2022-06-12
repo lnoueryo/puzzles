@@ -43,7 +43,6 @@ func init() {
 		// if .env is not in local and production environment
 		panic("Not found .env")
 	}
-	
 	if appEnv == "local" {
 			configureLocalSettings()
 	} else {

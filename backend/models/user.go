@@ -393,7 +393,9 @@ func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
 		Organization:	u.Organization,
 		CreatedAt:		time.Now(),
 	}
-	s.CreateSession(config.App.Project)
+	err := s.CreateSession(config.App.Project); if err != nil {
+		return s, err
+	}
 	cookie := http.Cookie{
 		Name:     "_cookie",
 		Value:    s.ID,

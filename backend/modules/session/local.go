@@ -11,8 +11,10 @@ import (
 
 func (s *Session)CreateSession(project string) error {
 	if project != "" {
-		err := s.DSCreateSession(project)
-		return err
+		err := s.DSCreateSession(project); if err != nil {
+			return err
+		}
+		return nil
 	}
 	s.GenerateSessionID()
 	// session用ファイル作成
