@@ -175,12 +175,8 @@ declare module 'vue/types/vue' {
 }
 export default Vue.extend({
   props: {
-    value: {
-      type: Object
-    },
-    loading: {
-      type: Boolean,
-    }
+    value: Object,
+    loading: Boolean
   },
   data: () => ({
     formReady: false,

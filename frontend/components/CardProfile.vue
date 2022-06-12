@@ -44,7 +44,10 @@
 import Vue from 'vue'
 import { isReadyObj, changeToTimeStampFormat } from '~/modules/utils'
 export default Vue.extend({
-  props: ['selectedUser', 'disabled'],
+  props: {
+    selectedUser: Object,
+    disabled: Boolean
+  },
     computed: {
         isReadyObj,
         changeToTimeStampFormat,

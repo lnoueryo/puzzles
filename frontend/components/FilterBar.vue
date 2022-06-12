@@ -111,7 +111,9 @@ declare module 'vue/types/vue' {
   }
 }
 export default Vue.extend({
-  props: ['noTask'],
+  props: {
+    noTask: Boolean
+  },
   data: () => ({
     tab: null,
   }),

@@ -169,7 +169,6 @@ export default Vue.extend({
     changeAuthority: {} as model.Authority,
     selectedUser: {},
     projectImageError: false
-    
   }),
   computed: {
     ...mapGetters([

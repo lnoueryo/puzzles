@@ -18,6 +18,9 @@
 <script lang="ts">
 import Vue from 'vue'
 export default Vue.extend({
-  props: ['styleValue', 'user']
+  props: {
+    styleValue: Object,
+    user: Object
+  }
 })
 </script>

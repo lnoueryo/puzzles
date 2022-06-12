@@ -65,15 +65,9 @@
 <script>
 export default {
   props: {
-    value: {
-      type: Boolean
-    },
-    form: {
-      type: Array
-    },
-    loading: {
-      type: Boolean
-    }
+    value: Boolean,
+    form: Array,
+    loading: Boolean
   },
   data: () => ({
     changeNum: 0,

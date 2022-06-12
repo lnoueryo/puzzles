@@ -56,15 +56,9 @@ declare module 'vue/types/vue' {
 export default Vue.extend({
   props: {
     comments: [],
-    hierarchy: {
-      type: Number
-    },
-    selectedComment: {
-      type: Object
-    },
-    editMode: {
-      type: Boolean
-    }
+    hierarchy: Number,
+    selectedComment: Object,
+    editMode: Boolean
   },
   data: () => ({
     selectedComments: [],

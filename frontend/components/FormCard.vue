@@ -24,12 +24,8 @@ export default Vue.extend({
   name: 'login',
   layout: 'login',
   props: {
-    formReady: {
-      type: Boolean
-    },
-    loading: {
-      type: Boolean
-    },
+    formReady: Boolean,
+    loading: Boolean,
   },
 })
 </script>

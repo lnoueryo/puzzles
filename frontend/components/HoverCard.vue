@@ -135,7 +135,13 @@
 import Vue from 'vue'
 import * as model from '~/modules/model'
 export default Vue.extend({
-  props: ['id', 'image', 'user', 'name', 'authority_users'],
+  props: {
+    id: Number,
+    image: String,
+    user: Object,
+    name: String,
+    authority_users: Object
+  },
   data: () => ({
     projectImageError: false,
     usersDialog: false,

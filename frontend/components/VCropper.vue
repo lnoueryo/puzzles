@@ -55,21 +55,11 @@ declare module 'vue/types/vue' {
 }
 export default Vue.extend({
   props: {
-    width: {
-      type: Number
-    },
-    pixel: {
-      type: Number
-    },
-    currentImage: {
-      type: String
-    },
-    value: {
-      type: String
-    },
-    ratio: {
-      type: String
-    }
+    width: Number,
+    pixel: Number,
+    currentImage: String,
+    value: String,
+    ratio: String
   },
   // props: ['width', 'currentImage'],
   data: () => ({

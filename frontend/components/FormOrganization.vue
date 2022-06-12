@@ -67,12 +67,8 @@ interface ProjectAuthority extends model.ProjectAuthority {
 }
 export default Vue.extend({
   props: {
-    value: {
-      type: Object
-    },
-    loading: {
-      type: Boolean
-    }
+    value: Object,
+    loading: Boolean
   },
   data:() => ({
     isAuthorized: false,

@@ -35,7 +35,9 @@
 import Vue from 'vue'
 // import { Markdown } from '~/modules/markdown';
 export default Vue.extend({
-  props: ['text'],
+  props: {
+    text: String
+  },
   data:() => ({
     markdown: [''],
     currentIndex: 0,
