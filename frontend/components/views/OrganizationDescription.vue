@@ -216,10 +216,10 @@ export default Vue.extend({
       return this.$store.getters['user'];
     },
     organizationAuthority() {
-      return this.$store.getters['organization'];
+      return this.$store.getters['organizationAuthority'];
     },
     organization() {
-      return this.$store.getters['organization'].organization;
+      return this.$store.getters['organizationAuthority'].organization;
     },
     isAdmin() {
       return this.organizationAuthority.type.name == '管理者';
@@ -228,7 +228,16 @@ export default Vue.extend({
       const errorImage = require('~/assets/image/organization.png');
       const organizationImage = this.$config.mediaURL + '/organizations/' + this.organization.image;
       return this.organizationImageError ? errorImage : organizationImage;
-    }
+    },
+    userOptions() {
+      return [
+        {title: '権限変更', event: this.openAuthorityDialog},
+        {title: '削除', event: this.openDeleteDialog},
+      ]
+    },
+    authorities() {
+      return this.$store.getters['task/authorities']
+    },
   },
   methods: {
     userImage(image: string) {

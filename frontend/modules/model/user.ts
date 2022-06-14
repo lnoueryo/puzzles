@@ -1,8 +1,9 @@
 import * as Type from './type'
+/** ユーザーの情報を管理するオブジェクト */
 export class MainUser {
   private mainUser = {
     user: {} as Type.User,
-    organization: {} as Type.OrganizationAuthority,
+    organizationAuthority: {} as Type.OrganizationAuthority,
     projects: [] as Type.Project[],
     selectedProject: {},
     projectAuthority: {} as Type.ProjectAuthority,
@@ -16,7 +17,7 @@ export class MainUser {
   init() {
     this.mainUser = {
       user: {} as Type.User,
-      organization: {} as Type.OrganizationAuthority,
+      organizationAuthority: {} as Type.OrganizationAuthority,
       projects: [] as Type.Project[],
       selectedProject: {},
       projectAuthority: {} as Type.ProjectAuthority,
@@ -25,6 +26,7 @@ export class MainUser {
       userID: 0,
     }
   }
+  /** 最初に受けとったデータの前処理 */
   preprocessUser(user: Type.MainUserInfo) {
     this.mainUser = {...this.mainUser, ...user}
     if(!this.mainUser.projects) return this.mainUser.projects = []
@@ -32,15 +34,19 @@ export class MainUser {
       return new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf();
     });
   }
+  /** ユーザーのプロフィール情報 */
   get user() {
     return this.mainUser.user;
   }
-  get organization() {
-    return this.mainUser.organization;
+  /** ユーザーの組織情報 */
+  get organizationAuthority() {
+    return this.mainUser.organizationAuthority;
   }
+  /** ユーザーのプロジェクト情報 */
   get projects() {
     return this.mainUser.projects;
   }
+  /**　プロジェクトをスライドに表示 */
   get projectSlides() {
     const divideConst = 3;
     const projectSlides: Type.Project[][] = []
@@ -54,16 +60,15 @@ export class MainUser {
     });
     return projectSlides;
   }
-  // get selectedProject() {
-  //   return this.mainUser.selectedProject as Type.Project;
-  // }
+  /** 選択されたプロジェクトの情報 */
   get selectedProject(): Type.Project {
     return this.mainUser.projects.find((project) => {
       return project.id == this.mainUser.projectID;
     }) ?? {} as Type.Project;
   }
+  /** 組織のオブジェクトから */
   get selectedUser(): Type.OrganizationAuthority {
-    return this.mainUser.organization?.organization?.users.find((user) => {
+    return this.mainUser.organizationAuthority?.organization?.users.find((user) => {
       return user.user_id == this.mainUser.userID;
     }) ?? {} as Type.OrganizationAuthority;
   }

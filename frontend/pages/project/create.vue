@@ -57,7 +57,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters([
       'user',
-      'organization',
+      'organizationAuthority',
       'projectAuthority',
     ]),
     isEmptyObj,
@@ -67,9 +67,9 @@ export default Vue.extend({
   },
   async created() {
     let timer = setInterval(() => {
-      if(this.isEmptyObj(this.organization)) return;
+      if(this.isEmptyObj(this.organizationAuthority)) return;
       clearInterval(timer)
-      const authority = this.organization.auth_id;
+      const authority = this.organizationAuthority.auth_id;
       if(authority != 1) return this.$router.back();
       this.isAuthorized = true;
     }, 100);
@@ -101,7 +101,7 @@ export default Vue.extend({
       project.milestones = isFirstMilestone ? this.newProject.milestones : [];
       project.fields = isFirstField ? this.newProject.fields : [];
       project.versions = isFirstVersion ? this.newProject.versions : [];
-      project.organization_id = this.organization.organization_id;
+      project.organization_id = this.organizationAuthority.organization_id;
       project.authority_users = [
         {user_id: this.user.id, auth_id: 1, active: true} as any
       ];

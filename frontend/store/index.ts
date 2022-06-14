@@ -19,7 +19,7 @@ export type RootState = ReturnType<typeof initialState>
 
 export const getters: GetterTree<RootState, RootState> = {
   user: state => state.user.user,
-  organization: state => state.user.organization,
+  organizationAuthority: state => state.user.organizationAuthority,
   projects: state => state.user.projects,
   project: state => state.user.selectedProject,
   selectedUser: state => state.user.selectedUser,
@@ -69,7 +69,7 @@ export const actions: ActionTree<RootState, RootState> = {
     })
   },
   async session({commit}) {
-    console.log('Get Session')
+    console.info('Get Session')
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.get('/api/session');

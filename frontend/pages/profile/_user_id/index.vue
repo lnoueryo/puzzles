@@ -11,8 +11,6 @@ import { isReadyObj, changeToTimeStampFormat } from '~/modules/utils'
 export default Vue.extend({
   computed: {
     ...mapGetters([
-    'user',
-    'organization',
     'selectedUser',
     ]),
     isReadyObj,

@@ -101,7 +101,7 @@ func CreateMainUser(r *http.Request) (MainUser, error) {
         return userID == u.ID
     })
 	u.Organizations[0].Organization.Projects = nil
-	mainUser.Organization = u.Organizations[0]
+	mainUser.OrganizationAuthority = u.Organizations[0]
 	u.Organizations = nil
 	mainUser.User = u
 	return mainUser, nil

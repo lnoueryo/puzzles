@@ -30,12 +30,12 @@ export default Vue.extend({
     formReady: false,
     isAuthorized: false,
     loading: false,
-    organizationAuthority: {} as model.OrganizationAuthority,
+    _organizationAuthority: {} as model.OrganizationAuthority,
   }),
   computed: {
     ...mapGetters([
       'project',
-      'organization',
+      'organizationAuthority',
       'user',
     ]),
     checkStatus,
@@ -45,21 +45,21 @@ export default Vue.extend({
     deepCopy,
     dialogForm() {
       return [
-        {title: '組織名', newData: this.organizationAuthority.organization.name, oldData: this.organization.organization.name},
-        {title: 'プロジェクトの概要', newData: this.organizationAuthority.organization.description, oldData: this.organization.organization.description},
-        {title: '設立日', newData: this.organizationAuthority.organization.founded, oldData: this.organization.organization.founded},
-        {title: '電話番号', newData: this.organizationAuthority.organization.number, oldData: this.organization.organization.number},
-        {title: 'イメージの変更', newData: this.organizationAuthority.organization.image_data || this.organizationAuthority.organization.image, oldData: this.organization.organization.image, image: true},
+        {title: '組織名', newData: this._organizationAuthority.organization.name, oldData: this.organizationAuthority.organization.name},
+        {title: 'プロジェクトの概要', newData: this._organizationAuthority.organization.description, oldData: this.organizationAuthority.organization.description},
+        {title: '設立日', newData: this._organizationAuthority.organization.founded, oldData: this.organizationAuthority.organization.founded},
+        {title: '電話番号', newData: this._organizationAuthority.organization.number, oldData: this.organizationAuthority.organization.number},
+        {title: 'イメージの変更', newData: this._organizationAuthority.organization.image_data || this._organizationAuthority.organization.image, oldData: this.organizationAuthority.organization.image, image: true},
       ];
     }
   },
   async created() {
     let timer = setInterval(() => {
-      if(this.isEmptyObj(this.organization)) return;
+      if(this.isEmptyObj(this.organizationAuthority)) return;
       clearInterval(timer)
-      const authority = this.organization.auth_id;
+      const authority = this.organizationAuthority.auth_id;
       if(authority != 1) return this.$router.back();
-      this.organizationAuthority = this.deepCopy(this.organization);
+      this._organizationAuthority = this.deepCopy(this.organizationAuthority);
       this.isAuthorized = true;
     }, 100);
   },

@@ -192,7 +192,7 @@ export default {
       return this.$store.getters['user'];
     },
     organizationAuthority() {
-      return this.$store.getters['organization'];
+      return this.$store.getters['organizationAuthority'];
     },
     project() {
       return this.$store.getters['project'];

@@ -173,7 +173,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters([
       'user',
-      'organization',
+      'organizationAuthority',
       'project',
       'projectAuthority',
     ]),
@@ -187,7 +187,7 @@ export default Vue.extend({
       ]
     },
     unregisteredUsers() {
-      return this.organization.organization.users.filter((oUser: model.OrganizationAuthority) => {
+      return this.organizationAuthority.organization.users.filter((oUser: model.OrganizationAuthority) => {
         return !this.project.authority_users.some((user: model.ProjectAuthority) => user.user_id == oUser.user_id)
       });
     },

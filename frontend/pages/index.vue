@@ -132,7 +132,7 @@ export default Vue.extend({
       return this.$store.getters['task/authorities']
     },
     organization() {
-      return this.$store.getters['organization'].organization;
+      return this.$store.getters['organizationAuthority'].organization;
     },
     organizationImage() {
       const errorImage = require('~/assets/image/organization.png');

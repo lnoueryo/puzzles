@@ -1,6 +1,6 @@
 <template>
   <div>
-    <card-profile :selectedUser="organization" :disabled="false" />
+    <card-profile :selectedUser="organizationAuthority" :disabled="false" />
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import { mapGetters } from 'vuex'
 export default Vue.extend({
   computed: {
     ...mapGetters([
-      'organization'
+      'organizationAuthority'
     ])
   }
 })

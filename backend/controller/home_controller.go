@@ -17,9 +17,9 @@ type Message struct {
 }
 
 type MainUser struct {
-	User models.User 							`json:"user"`
-	Organization models.OrganizationAuthority 	`json:"organization"`
-	Projects []models.Project 					`json:"projects"`
+	User models.User									`json:"user"`
+	OrganizationAuthority models.OrganizationAuthority 	`json:"organizationAuthority"`
+	Projects []models.Project							`json:"projects"`
 }
 
 

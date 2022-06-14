@@ -38,7 +38,6 @@ const breadCrumbs = (store: any, route: any) => {
   const paths = [{text: 'Home', disabled: false, href: '/'}]
   route.matched[0].path.split('/').forEach((devidedPath: string) => {
     if(devidedPath == '') return;
-    console.log(path)
     if(devidedPath[0] == ':') {
       const params = route.params[devidedPath.replace(':', '')]
       path += '/' + params

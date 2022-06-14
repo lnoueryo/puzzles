@@ -135,7 +135,6 @@ export default Vue.extend({
   computed: {
     ...mapGetters([
       'user',
-      'organization',
     ]),
     checkStatus,
     isEmptyObj,
