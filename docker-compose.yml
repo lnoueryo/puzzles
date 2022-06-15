@@ -12,7 +12,7 @@ services:
     volumes:
       - "./frontend:/app"
     tty: true
-    command: npm run dev
+    # command: npm run dev
   go:
     container_name: puzzles_backend
     build:
@@ -26,7 +26,7 @@ services:
     volumes:
       - "./backend:/app"
     tty: true
-    command: go run main.go watch
+    # command: go run main.go watch
   mysql:
     image: mysql:latest # プロダクトで使うならバージョンはlatestじゃないほうが良いです
     container_name: puzzles_mysql
