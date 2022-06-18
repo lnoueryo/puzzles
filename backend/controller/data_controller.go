@@ -37,10 +37,8 @@ type CSVRequest struct {
 	Request []string `json:"request"`
 }
 
-func(*Data)Index(w http.ResponseWriter, r *http.Request) {
-	
-}
 
+// DBのデータをCSVに変換しダウンロード
 func(*Data)Download(w http.ResponseWriter, r *http.Request) {
 	byteArray, _ := ioutil.ReadAll(r.Body)
 	var csvRequest CSVRequest
@@ -225,6 +223,7 @@ func(*Data)Download(w http.ResponseWriter, r *http.Request) {
 	w.Write(b.Bytes())
 }
 
+// CSVをアップロードし、DBを更新
 func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "POST" {
@@ -591,7 +590,7 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 	w.Write(errJson)
 }
 
-
+// 受け取ったJSONを構造体に変換
 func GetJson(r *http.Request) (Project, error) {
 	var project Project
 	err := json.NewDecoder(r.Body).Decode(&project)

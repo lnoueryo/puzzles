@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
@@ -36,9 +35,8 @@ var ApiKey APIKey
 var infolog *log.Logger
 var errorlog *log.Logger
 
+// envによる環境の決定
 func init() {
-
-	
 	appEnv, err := readEnvFile(); if err!= nil {
 		// if .env is not in local and production environment
 		panic("Not found .env")
@@ -51,6 +49,7 @@ func init() {
 	commonSettings()
 }
 
+// envファイルの読み込み
 func readEnvFile() (string, error) {
 
 	// local
@@ -66,6 +65,7 @@ func readEnvFile() (string, error) {
 	return os.Getenv("APP_ENV"), err
 }
 
+// 本番、開発環境共通のセッティング
 func commonSettings() {
 	// log
 	infolog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -90,32 +90,4 @@ func commonSettings() {
 	App.Email.From = os.Getenv("EMAIL_FROM")
 	App.Email.Username = os.Getenv("EMAIL_USERNAME")
 	App.Email.Password = os.Getenv("EMAIL_PASSWORD")
-}
-
-func CreateTemplateCache() (map[string]*template.Template, error) {
-	myCache := map[string]*template.Template{}
-
-	pages, err := filepath.Glob("./templates/pages/*.html")
-	if err != nil {
-		return myCache, err
-	}
-	for _, page := range pages {
-		name := filepath.Base(page)
-		ts := template.Must(template.New(name).ParseFiles(page))
-		matches, err := filepath.Glob("./templates/layouts/app.html")
-		if err != nil {
-			return myCache, err
-		}
-
-		if len(matches) > 0 {
-			ts, err = ts.ParseGlob("./templates/layouts/app.html")
-			if err != nil {
-				return myCache, err
-			}
-		}
-
-		myCache[name] = ts
-	}
-	return myCache, nil
-
 }

@@ -27,6 +27,7 @@ func timeToString(t time.Time) string {
 	return str
 }
 
+// セッションIDの作成
 func (s *Session)GenerateSessionID() {
 	sessionId := string(s.UserID) + timeToString(s.CreatedAt) + timeToString(time.Now())
 	hashedByteSessionId := sha256.Sum256([]byte(sessionId))

@@ -8,7 +8,7 @@ import (
 
 
 
-
+// ランダムの文字列を作成
 func MakeRandomStr(n uint32) (string, error) {
 	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 

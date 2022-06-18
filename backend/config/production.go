@@ -4,13 +4,8 @@ import (
 	"os"
 )
 
+// 本番環境の設定
 func configureProdSettings() {
-	App.UseCache = true
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		errorlog.Fatal(err)
-	}
-	App.TemplateCache = tc
 	App.Addr = ":8080"
 	if os.Getenv("DB") == "CLOUDSQL" {
 		DBSet := Database{

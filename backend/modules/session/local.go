@@ -8,7 +8,7 @@ import (
 )
 
 
-
+// ローカルにセッションファイル作成
 func (s *Session)CreateSession(project string) error {
 	if project != "" {
 		err := s.DSCreateSession(project); if err != nil {
@@ -37,6 +37,7 @@ func (s *Session)CreateSession(project string) error {
 	return nil
 }
 
+// ローカルのセッションファイル削除
 func DeleteSession(ID string, project string) error {
 	if project != "" {
 		err := DSDeleteSession(ID, project);if err != nil {
@@ -48,6 +49,7 @@ func DeleteSession(ID string, project string) error {
 	return nil
 }
 
+// ローカルのセッションファイル読み込み
 func (s *Session) ReadSession(filename string) error {
 	f, err := os.Open(filename)
 	if err != nil {
@@ -61,6 +63,7 @@ func (s *Session) ReadSession(filename string) error {
 	return nil
 }
 
+// セッションファイルの有無確認
 func CheckSession(ID string, project string) (Session, error) {
 	var s Session
 	if ID == "" {

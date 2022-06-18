@@ -4,7 +4,8 @@
 go: 1.18.3
 
 ## init
-```:.env.dev
+create ".env.dev" file
+```
 APP_ENV=`"local"`
 APP_HOST=`"localhost"`
 ALLOW_ORIGIN=`"http://localhost:3000"`
@@ -29,7 +30,8 @@ $ docker exec -it puzzles_backend go run main.go watch
 ```
 
 ## deploy
-```:.env.dev
+creata ".env" file
+```
 APP_ENV=`"production"`
 APP_HOST=`app host`
 ALLOW_ORIGIN=`app origin`

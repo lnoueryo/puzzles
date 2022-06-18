@@ -21,6 +21,7 @@ const (
 	PROTOCOL = "smtp"
 )
 
+// メールの送信
 func SendEmail(m Mail) error {
 	index := strings.Index(m.From,"@")
 	host := m.From[index+1:]
@@ -32,6 +33,7 @@ func SendEmail(m Mail) error {
     return nil
 }
 
+// メールボディの作成
 func (m Mail) body() string {
     return "To: " + m.To + "\r\n" +
         "Subject: " + m.Sub + "\r\n\r\n" +

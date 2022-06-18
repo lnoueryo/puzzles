@@ -6,7 +6,7 @@ import (
 )
 
 
-
+// データストアにセッション作成
 func (s *Session)DSCreateSession(project string) error {
 	s.GenerateSessionID()
 	ctx := context.Background()
@@ -23,6 +23,7 @@ func (s *Session)DSCreateSession(project string) error {
 	return nil
 }
 
+// データストアのセッション取得
 func DSGetSession(ID string, project string) (Session, error) {
 	var s Session
 	ctx := context.Background()
@@ -38,6 +39,7 @@ func DSGetSession(ID string, project string) (Session, error) {
 	return s, nil
 }
 
+// データストアのセッション削除
 func DSDeleteSession(ID string, project string) error {
 	ctx := context.Background()
 	dsClient, err := datastore.NewClient(ctx, project);if err != nil {

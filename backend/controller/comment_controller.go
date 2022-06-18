@@ -9,6 +9,7 @@ import (
 
 type Comment struct{}
 
+// コメントの作成
 func (c *Comment)Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		errMap := map[string]string{"message": "not found"}
@@ -62,6 +63,7 @@ func (c *Comment)Create(w http.ResponseWriter, r *http.Request) {
 	w.Write(commentJson)
 }
 
+// コメントの取得
 func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		errMap := map[string]string{"message": "not found"}
@@ -93,7 +95,7 @@ func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
 	w.Write(commentJson)
 }
 
-
+// コメントの更新
 func (c *Comment)Update(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "PUT" {
 		errMap := map[string]string{"message": "not found"}
@@ -123,6 +125,7 @@ func (c *Comment)Update(w http.ResponseWriter, r *http.Request) {
 	w.Write(taskJson)
 }
 
+// コメントの削除
 func (_ *Comment)Delete(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "DELETE" {
 		errMap := map[string]string{"message": "not found"}

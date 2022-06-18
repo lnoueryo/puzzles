@@ -4,8 +4,8 @@ import (
 	"os"
 )
 
+// 開発環境の設定
 func configureLocalSettings() {
-	App.UseCache = false
 	App.Addr = "0.0.0.0:8080"
 
 	// DB接続

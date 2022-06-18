@@ -12,7 +12,7 @@ type Logger struct {
 	handler http.Handler
 }
 
-// Auth checks if it's valid session
+// セッションの確認
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("_cookie");if err != nil {
@@ -34,8 +34,7 @@ func Auth(next http.Handler) http.Handler {
 	})
 }
 
-//ServeHTTP handles the request by passing it to the real
-//handler and logging the request details
+//　リクエストのたびにログを作成
 func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")

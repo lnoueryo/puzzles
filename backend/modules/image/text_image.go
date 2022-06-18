@@ -29,6 +29,7 @@ var (
     }
 )
 
+// 文字が描画されたイメージを作成
 func CreateImage(text string, filename string) (*bytes.Buffer, error) {
     buf := &bytes.Buffer{}
     // フォントファイルを読み込み
@@ -67,11 +68,12 @@ func CreateImage(text string, filename string) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func ResizeImage() {
-	input, _ := os.Open("abc.png")
+// イメージをリサイズ
+func ResizeImage(readpath string, savepath string) {
+	input, _ := os.Open(readpath)
 	defer input.Close()
 
-	output, _ := os.Create("a.png")
+	output, _ := os.Create(savepath)
 	defer output.Close()
 
 	// Decode the image (from PNG to image.Image):
@@ -87,6 +89,7 @@ func ResizeImage() {
 	png.Encode(output, dst)
 }
 
+// バックグラウンドのカラーをランダムで指定
 func colorImage() *image.RGBA {
     rand.Seed(time.Now().UnixNano())
 	result := [] uint8{}

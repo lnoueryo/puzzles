@@ -4,7 +4,6 @@ import (
 	"backend/models"
 	"backend/modules/crypto"
 	"backend/modules/mail"
-	"backend/modules/oauth"
 	"backend/modules/session"
 	"encoding/json"
 	"net/http"
@@ -13,11 +12,14 @@ import (
 
 type Auth struct{}
 
+// ログイン処理
 func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
+	// バリデーション
 	u, err := models.TryToLogin(w, r)
 	if err != nil {
 		errorlog.Print(err)
@@ -27,6 +29,8 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
+
+	// ユーザーが発見できた場合セッションを作成
 	s, err := u.CreateSession(w)
 	if err != nil {
 		errorlog.Print(err)
@@ -36,16 +40,20 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
+
 	sessionJson, _ := json.Marshal(s)
 	w.WriteHeader(http.StatusOK)
 	w.Write(sessionJson)
 }
 
+// ログアウト処理
 func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != "POST" {
 		http.NotFound(w, r)
 		return
 	}
+
 	s, err := GetSession(r)
 	if err != nil {
 		errorlog.Print(err)
@@ -57,11 +65,12 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-	infolog.Println("delete")
+
 	err = session.DeleteSession(s.ID, project)
 	if err != nil {
 		errorlog.Print(err)
 	}
+
 	cookie, err := r.Cookie("_cookie")
 	if err != nil {
 		errorlog.Print(err)
@@ -81,15 +90,7 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 	w.Write(successJson)
 }
 
-func (au *Auth) GitHubLogin(w http.ResponseWriter, r *http.Request) {
-	userInfo, err := oauth.GithubOAuth(w, r)
-	if err != nil {
-		errorlog.Print(err)
-	}
-	// databaseの処理Createを記載する↓↓
-	http.Redirect(w, r, "/?access_token="+userInfo.AccessToken, http.StatusFound)
-}
-
+// ユーザー追加
 func (*Auth) InviteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		errMap := map[string]string{"message": "not found"}
@@ -114,6 +115,7 @@ func (*Auth) InviteUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(errJson)
 }
 
+// ユーザーが本人であることの確認
 func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
     q := r.URL.Query()
 	code, ok := q["code"];if !ok {
@@ -121,12 +123,16 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, url, 301)
 		return
 	}
+
+	// URLのパラメーターがない場合
 	verification := code[0]
 	if verification == "" {
 		url := allowOrigin + "/expiry"
 		http.Redirect(w, r, url, 301)
 		return
 	}
+
+	// verificationコードが正しいか確認
 	var oa models.OrganizationAuthority
 	err := oa.Find(verification);if err != nil {
 		url := allowOrigin + "/expiry"
@@ -134,6 +140,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 有効期限の有無確認
 	oneDay := time.Now().Add(-time.Hour * 24)
 	if !oneDay.Before(oa.UpdatedAt) {
 		url := allowOrigin + "/expiry"
@@ -141,6 +148,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// activeを有効に変更
 	err = oa.ChangeActive(); if err != nil {
 		errorlog.Print(err)
 		url := allowOrigin + "/bad-connection"
@@ -164,6 +172,8 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 		}
 		m.Message += "\n初回パスワード: " + password
 	}
+
+	// ユーザー登録成功のメール送信
 	err = mail.SendEmail(m); if err !=nil {
 		errorlog.Print(err)
 		errorlog.Print(m)

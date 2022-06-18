@@ -9,6 +9,7 @@ import (
 
 type Task struct{}
 
+// タスクの取得
 func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		errMap := map[string]string{"message": "not found"}
@@ -50,6 +51,7 @@ func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 	w.Write(tJson)
 }
 
+// タスクの作成
 func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		errMap := map[string]string{"message": "not found"}
@@ -102,6 +104,7 @@ func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
 	w.Write(taskJson)
 }
 
+// タスクの更新
 func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "PUT" {
 		errMap := map[string]string{"message": "not found"}

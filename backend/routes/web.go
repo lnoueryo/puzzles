@@ -32,15 +32,12 @@ func Routes() http.Handler{
 	// normal
 	mux.HandleFunc("/api/login", auth.Login)
 	// mux.HandleFunc("/sign-up", auth.Register)
-	mux.HandleFunc("/oauth/callback", auth.GitHubLogin)
 	mux.HandleFunc("/register/verification", auth.Confirm)
 
 	// Auth
-	mux.Handle("/api/home", Auth(http.HandlerFunc(home.Index)))
 	mux.Handle("/api/user/update", Auth(http.HandlerFunc(home.Update)))
 	mux.Handle("/api/organization/update", Auth(http.HandlerFunc(organization.Update)))
 	mux.Handle("/api/organization-authority/update", Auth(http.HandlerFunc(organizationAuthority.Update)))
-	mux.Handle("/api/project", Auth(http.HandlerFunc(project.Index)))
 	mux.Handle("/api/project/edit", Auth(http.HandlerFunc(project.Edit)))
 	mux.Handle("/api/project/create", Auth(http.HandlerFunc(project.Create)))
 	mux.Handle("/api/project/update", Auth(http.HandlerFunc(project.Update)))

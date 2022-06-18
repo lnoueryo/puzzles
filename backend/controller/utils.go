@@ -5,9 +5,7 @@ import (
 	"backend/models"
 	"backend/modules/mail"
 	"backend/modules/session"
-	"bytes"
 	"errors"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -51,29 +49,6 @@ func init() {
 	allowOrigin = config.App.AllowOrigin
 	credentialsPath = config.App.CredentialsPath
 	project = config.App.Project
-}
-
-func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateData) {
-	var tc map[string]*template.Template
-	if config.App.UseCache {
-		tc = config.App.TemplateCache
-	} else {
-		tc, _ = config.CreateTemplateCache()
-	}
-	t, ok := tc[tmpl]
-	if !ok {
-		errorlog.Print("could not get template")
-	}
-
-	buf := new(bytes.Buffer)
-
-	_ = t.Execute(buf, td)
-
-	_, err := buf.WriteTo(w)
-
-	if err != nil {
-		errorlog.Print("could not get template")
-	}
 }
 
 func GetSession(r *http.Request) (session.Session, error) {

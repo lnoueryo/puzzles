@@ -25,29 +25,7 @@ type MainUser struct {
 
 type Home struct{}
 
-func (_ *Home) Index(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method != "GET" {
-		errMap := map[string]string{"message": "not found"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-	}
-	var org models.Organization
-	s, _ := GetSession(r)
-	err := org.GetOrganization(s.Organization); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "bad connection"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(sessionJson)
-	}
-	orgJson, _ := json.Marshal(org)
-	w.WriteHeader(http.StatusOK)
-	w.Write(orgJson)
-}
-
+// セッションが有効であるか確認
 func (_ *Home) Show(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "GET" {
@@ -70,6 +48,7 @@ func (_ *Home) Show(w http.ResponseWriter, r *http.Request) {
 	w.Write(uJson)
 }
 
+// ユーザー情報の更新
 func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "PUT" {
 		errMap := map[string]string{"message": "not found"}
