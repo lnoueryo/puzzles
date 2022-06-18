@@ -39,7 +39,7 @@ func Deploy() {
 }
 
 func SetProject() {
-	cmd := exec.Command("gcloud", "auth", "activate-service-account", "deploy@puzzles-345814.iam.gserviceaccount.com", "--key-file=" + os.Getenv("CREDENTIALS_PATH"), "--project=puzzles-345814")
+	cmd := exec.Command("gcloud", "auth", "activate-service-account", "deploy@puzzles-345814.iam.gserviceaccount.com", "--key-file=" + os.Getenv("CREDENTIALS_PATH"), "--project=" + os.Getenv("PROJECT"))
 	stdout, _ := cmd.StdoutPipe()
 	cmd.Stderr = cmd.Stdout
 	err := cmd.Start()

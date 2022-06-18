@@ -1,28 +1,49 @@
-起動時の処理
-1.環境の確認
-2.テンプレートの読み込み、キャッシュ
+# backend
 
+## version
+go: 1.18.3
 
-デプロイ
-gcloud run deploy --source .
+## init
+```:.env.dev
+APP_ENV=`"local"`
+APP_HOST=`"localhost"`
+ALLOW_ORIGIN=`"http://localhost:3000"`
+CREDENTIALS_PATH=`"credentials/"service account json file`
+DB_NAME=`"puzzle"`
+DB_HOST=`"mysql"`
+DB_USER=`"root"`
+DB_PASSWORD=`password`
+DB_PORT=`"3306"`
+DB_QUERY=`"parseTime=true"`
+APP_ORIGIN=`"http://localhost:8080"`
+EMAIL_FROM=`Gmail`
+EMAIL_USERNAME=`Gmail`
+EMAIL_PASSWORD=`Gmail password`
+```
+```
+$ docker exec -it puzzles_backend go run main.go watch
+```
 
-.envファイルと.env.devの作成
-本番環境には.envを、develop環境には.env.devを書く
-GITHUB_CLIENT_ID=
-GITHUB_SECRET_ID=
-APP_ENV=local
-APP_HOST=localhost
-DB_NAME=practices
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=""
-DB_PORT=3306
-DB_QUERY=parseTime=true
+## test
+```
+```
 
-deploy時は.env.devを上げないため.envを読みに行く。
-
-// golang測定用
-start := time.Now();
-// 処理
-end := time.Now();
-infolog.Printf("%f秒\n",(end.Sub(start)).Seconds())
+## deploy
+```:.env.dev
+APP_ENV=`"production"`
+APP_HOST=`app host`
+ALLOW_ORIGIN=`app origin`
+PROJECT=`GCP project`
+DB=`"CLOUDSQL"`
+DB_NAME=`db name`
+DB_HOST=`db host`
+DB_USER=`db user`
+DB_PASSWORD=`db password`
+DB_PORT=`"3306"`
+DB_QUERY=`"parseTime=true"`
+SESSION=`"DATASTORE"`
+APP_ORIGIN=`"api origin"`
+```
+```
+$ go run main.go deploy
+```
