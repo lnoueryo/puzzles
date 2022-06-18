@@ -51,7 +51,6 @@ export class Table {
   }
   constructor() {
     let tableWidth = 0
-    const copyCells = JSON.parse(JSON.stringify(this.cells))
     this.items.cells = this.cells.map((cell) => {
       tableWidth += (cell.header.style.width as number);
       cell.header.style.width = cell.header.style.width + 'px'
@@ -65,14 +64,5 @@ export class Table {
       cells[index].header.active = 0;
     }
     return cells
-  }
-  storeCondition = (v: {}) => {
-    const key = location.host + window.$nuxt.$route.params.id;
-    let item = sessionStorage.getItem(key);
-    let newItem = v;
-    if(item) {
-      newItem = {...JSON.parse(item), ...v};
-    }
-    sessionStorage.setItem(key, JSON.stringify(newItem));
   }
 }

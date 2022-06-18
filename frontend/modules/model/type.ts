@@ -140,7 +140,7 @@ export interface Authority {
   name: string
 }
 
-export interface Params {
+export interface URLParams {
   id: string
   key: string
   user_id: string

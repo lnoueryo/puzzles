@@ -4,7 +4,7 @@
     v-if="pageReady"
     :loading="loading"
     :formReady="formReady"
-    @send="onClickSend"
+    @send="onClickLogin"
   >
     <template v-slot:main>
       <v-form
@@ -20,7 +20,7 @@
           filled
           color="#295caa"
           label="組織 ID"
-          @keyup.enter="onClickSend"
+          @keyup.enter="onClickLogin"
         ></v-text-field>
         <v-text-field
           id="email"
@@ -30,7 +30,7 @@
           filled
           color="#295caa"
           label="メールアドレス"
-          @keyup.enter="onClickSend"
+          @keyup.enter="onClickLogin"
         ></v-text-field>
         <v-text-field
           id="password"
@@ -40,7 +40,7 @@
           filled
           color="#295caa"
           label="パスワード"
-          @keyup.enter="onClickSend"
+          @keyup.enter="onClickLogin"
         ></v-text-field>
         <div class="error-color">
           {{ error }}
@@ -91,22 +91,21 @@ export default Vue.extend({
       }
     }
   },
+  /** 既にログイン済みか確認 */
   async beforeCreate() {
     this.$store.dispatch('resetAll');
-      let response;
-      try {
-        response = await this.$store.dispatch('session');
-      } catch (error) {
-        response = error;
-      } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
-        if(response.status == 304) {
-          this.pageReady= true;
-          return;
-        }
-        this.checkStatus(response.status, (() => {return this.$router.push('/')}), (() => {}));
-      }
+    let response;
+    try {
+      response = await this.$store.dispatch('session');
+    } catch (error) {
+      response = error;
+    } finally {
+      if('status' in response === false) return this.$router.push('/bad-connection');
+      if(response.status == 304) return this.pageReady= true;
+      this.checkStatus(response.status, (() => {return this.$router.push('/')}), (() => {}));
+    }
   },
+  /** ローカルストレージからログイン情報を取得 */
   created() {
     const storageJson = JSON.parse(localStorage.getItem(window.location.host) as string);
     if(storageJson) {
@@ -115,7 +114,8 @@ export default Vue.extend({
     }
   },
   methods: {
-    async onClickSend() {
+    /** ログイン処理 */
+    async onClickLogin() {
       this.loading = true;
       let response;
       try {
@@ -126,10 +126,12 @@ export default Vue.extend({
         if('status' in response === false) return this.$router.push('/bad-connection')
         this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), ((): string => {
           this.loading = false;
-          return '組織ID、メールアドレス、またはパスワードが違います。'
+          const errorMessage = '組織ID、メールアドレス、またはパスワードが違います。'
+          return errorMessage;
         }));
       }
     },
+    /** ログイン成功後ホームに遷移 */
     handleSuccess() {
       const jsonString = JSON.stringify({organization: this.organization, email: this.email})
       localStorage.setItem(window.location.host, jsonString);

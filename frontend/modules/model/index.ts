@@ -1,5 +1,4 @@
-// import { resetActive, cells, preprocessTable, storeCondition} from '../table'
-import type { User, Organization, Project, Task, Field, Milestone, Version, Status, Type, Priority, OrganizationAuthority, Authority, ProjectAuthority, Comment, Params, Response, MainUserInfo } from './type'
+import type { User, Organization, Project, Task, Field, Milestone, Version, Status, Type, Priority, OrganizationAuthority, Authority, ProjectAuthority, Comment, URLParams, Response, MainUserInfo } from './type'
 import { MainUser } from './user';
 import { Tasks } from './task';
 export const user = new MainUser()
@@ -32,8 +31,7 @@ export const statuses = [
     {id: 1, name: '管理者'},
     {id: 2, name: '一般'},
   ]
-export { User, Organization, Project, Task, Field, Milestone, Version, Status, Type, Priority, OrganizationAuthority, Authority, ProjectAuthority, Comment, Params, Response, MainUserInfo }
-// export { resetActive, statuses, cells, preprocessTable, types, priorities, authorities, storeCondition, }
+export { User, Organization, Project, Task, Field, Milestone, Version, Status, Type, Priority, OrganizationAuthority, Authority, ProjectAuthority, Comment, URLParams, Response, MainUserInfo }
 export { Tasks }
 
 

@@ -2,7 +2,7 @@
   <div v-if="isAuthorized">
     <form-project
      v-model="newProject"
-     @submit="onClickSend"
+     @submit="onClickCreate"
      :loading="loading"
     >
       <template slot="back">
@@ -65,6 +65,7 @@ export default Vue.extend({
     isReadyObj,
     checkStatus,
   },
+  /** ユーザーの権限を確認 */
   async created() {
     let timer = setInterval(() => {
       if(this.isEmptyObj(this.organizationAuthority)) return;
@@ -75,7 +76,7 @@ export default Vue.extend({
     }, 100);
   },
   methods: {
-    async onClickSend() {
+    async onClickCreate() {
       this.loading = true;
       let response;
       try {

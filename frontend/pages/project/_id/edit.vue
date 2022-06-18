@@ -19,7 +19,7 @@
     <dialog-update
      v-model="dialog"
      :form="dialogForm"
-     @submit="onClickSubmit"
+     @submit="onClickUpdate"
      @loading="loading = $event"
     >
       更新の確認
@@ -31,19 +31,17 @@
 
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj } from '~/modules/utils'
+import { isEmptyObj, isEmptyArr, checkStatus, isReadyObj, deepCopy } from '~/modules/utils'
 import * as model from '~/modules/model'
 import FormProject from '~/components/FormProject.vue'
 import DialogUpdate from '~/components/DialogUpdate.vue'
 declare module 'vue/types/vue' {
   interface Vue {
     preprocessProjectAuthority: () => void;
+    project: () => model.Project
   }
 }
-interface ProjectAuthority extends model.ProjectAuthority {
-  disabled: boolean
-  project: model.Project
-}
+
 export default Vue.extend({
   components: { FormProject, DialogUpdate },
   data:() => ({
@@ -70,6 +68,7 @@ export default Vue.extend({
     isEmptyObj,
     isEmptyArr,
     isReadyObj,
+    deepCopy,
     organizationUsers() {
       return this.$store.getters['organization'].users;
     },
@@ -133,6 +132,7 @@ export default Vue.extend({
       ];
     }
   },
+  /** ユーザーの権限確認 */
   async created() {
     let timer = setInterval(() => {
       if(this.isEmptyObj(this.project)) return;
@@ -143,7 +143,7 @@ export default Vue.extend({
     }, 100);
   },
   methods: {
-    async onClickSubmit() {
+    async onClickUpdate() {
       this.dialog = false;
       let response;
       try {
@@ -161,21 +161,8 @@ export default Vue.extend({
         )
       }
     },
-    onDeleteField(index: number) {
-      if(this.selectedProject.fields.length == 1) return;
-      this.selectedProject.fields.splice(index, 1)
-    },
-    onDeleteMilestone(index: number) {
-      if(this.selectedProject.milestones.length == 1) return;
-      this.selectedProject.milestones.splice(index, 1)
-    },
-    onDeleteVersion(index: number) {
-      if(this.selectedProject.versions.length == 1) return;
-      this.selectedProject.versions.splice(index, 1)
-    },
     preprocessProjectAuthority() {
-      this.selectedProject = JSON.parse(JSON.stringify(this.project));
-      console.log(this.selectedProject, 123)
+      this.selectedProject = this.deepCopy((this.project) as model.Project);
       if(this.isEmptyArr(this.project.milestones)) this.selectedProject.milestones.push({id: 0, name: ''})
       if(this.isEmptyArr(this.project.fields)) this.selectedProject.fields.push({id: 0, name: ''})
       if(this.isEmptyArr(this.project.versions)) this.selectedProject.versions.push({id: 0, name: ''})

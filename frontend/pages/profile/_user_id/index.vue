@@ -1,6 +1,6 @@
 <template>
   <div>
-    <profile :selectedUser="selectedUser" disabled="true" />
+    <card-profile :selectedUser="selectedUser" :disabled="true" />
   </div>
 </template>
 
@@ -11,8 +11,9 @@ import { isReadyObj, changeToTimeStampFormat } from '~/modules/utils'
 export default Vue.extend({
   computed: {
     ...mapGetters([
-    'selectedUser',
-    ]),
+        'selectedUser',
+        'organizationAuthority',
+      ]),
     isReadyObj,
     changeToTimeStampFormat,
     userEntities() {
@@ -25,6 +26,6 @@ export default Vue.extend({
       ]
       return userEntities
     }
-  }
+  },
 })
 </script>

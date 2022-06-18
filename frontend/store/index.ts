@@ -36,12 +36,12 @@ export const getters: GetterTree<RootState, RootState> = {
 
 export const mutations: MutationTree<RootState> = {
   reset: (state) => Object.assign(state, initialState()),
-  userData: (state, userData: model.MainUserInfo) => state.user.insertUser(userData),
+  insertUserData: (state, userData: model.MainUserInfo) => state.user.insertUser(userData),
   selectProject: (state, params) => state.user.selectProject(params),
   selectUser: (state, params) => state.user.selectUser(params),
   pageReady: (state, pageReady) => state.pageReady = pageReady,
   projectReady: (state, projectReady) => state.projectReady = projectReady,
-  initUser: state => state.user.init(),
+  resetUser: state => state.user.reset(),
   snackbar: (state, show) => state.snackbar = show,
   snackbarText: (state, text) => state.snackbarText = text,
   updateUser: (state, user) => state.user.updateUser(user),
@@ -56,7 +56,7 @@ export const actions: ActionTree<RootState, RootState> = {
   },
   reset({commit}) {
     commit('reset');
-    commit('initUser');
+    commit('resetUser');
   },
   async login({}, form) {
     return new Promise(async(resolve, reject) => {
@@ -74,7 +74,7 @@ export const actions: ActionTree<RootState, RootState> = {
       try {
         const response = await this.$axios.get('/api/session');
         resolve(response);
-        commit('userData', response.data);
+        commit('insertUserData', response.data);
         if(!response.data.user.name) return this.$router.push('/profile/edit');
       } catch (error: any) {
         reject(error.response);
@@ -97,12 +97,13 @@ export const actions: ActionTree<RootState, RootState> = {
       try {
         const response = await this.$axios.put('/api/user/update', form);
         resolve(response);
-        commit('userData', response.data);
+        commit('insertUserData', response.data);
       } catch (error: any) {
         reject(error.response);
       }
     })
   },
+  /** 新たにユーザー登録を行うユーザーにメールを送信 */
   async sendEmail({}, form) {
     return new Promise(async(resolve, reject) => {
       try {
@@ -121,7 +122,7 @@ export const actions: ActionTree<RootState, RootState> = {
         const response = await this.$axios.put('/api/organization/update', form);
         // console.log((new Blob([JSON.stringify (response)])).size);
         resolve(response);
-        commit('userData', response.data);
+        commit('insertUserData', response.data);
       } catch (error: any) {
         reject(error.response);
       }
@@ -133,7 +134,7 @@ export const actions: ActionTree<RootState, RootState> = {
         const response = await this.$axios.put('/api/organization-authority/update', form);
         // console.log((new Blob([JSON.stringify (response)])).size);
         resolve(response);
-        commit('userData', response.data);
+        commit('insertUserData', response.data);
       } catch (error: any) {
         reject(error.response);
       }

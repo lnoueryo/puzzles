@@ -16,12 +16,15 @@ export class Tasks {
     selectedTask: {},
     taskIndex: -1,
   }
+  /** ユーザーのタスク情報を格納 */
   insertTasks(tasks: Type.Task[]) {
     this.tasks.all = this.preprocessTasks(tasks);
     this.tasks.sortedTasks = this.tasks.all;
     this.resetSort();
   }
-  init() {
+
+  /** ユーザーのタスク情報をリセット */
+  reset() {
     this.tasks = {
       all: [] as Task[],
       sortedTasks: [] as Task[],
@@ -38,67 +41,24 @@ export class Tasks {
       taskIndex: -1,
     }
   }
-  get listNum() {
-    return this.tasks.listNumArr[this.tasks.listIndex];
-  }
-  get totalPageNum() {
-    return Math.floor(this.filterTasks.length / this.listNum);
-  }
-  get displayedFirstTaskNum() {
-    const firstList = this.tasks.pageIndex * this.listNum + 1;
-    return firstList;
-  }
-  get displayedLastTaskNum() {
-    let lastList = (this.tasks.pageIndex + 1) * this.listNum;
-    if(this.filterTasks.length < lastList) lastList = this.filterTasks.length;
-    return lastList;
-  }
-  get currentDisplayedTasksNum() {
-    return this.displayedFirstTaskNum + ' - ' + this.displayedLastTaskNum;
-  }
-  get filterTasks() {
-    return this.tasks.sortedTasks.filter((task) => {
-      if(!this.tasks.selectStatus.includes('完了') && task.status === '完了') return;
-      let assignee = true;
-      let field = true;
-      let milestone = true;
-      let version = true;
-      let status = true;
-      if(this.tasks.selectAssignee) assignee = task.assignee.name == this.tasks.selectAssignee;
-      if(this.tasks.selectField) field = task.field == this.tasks.selectField;
-      if(this.tasks.selectMilestone) milestone = task.milestone == this.tasks.selectMilestone;
-      if(this.tasks.selectVersion) version = task.version == this.tasks.selectVersion;
-      if(this.tasks.selectStatus.length != 0) status = this.tasks.selectStatus.includes(task.status);
-      return assignee && field && milestone && version && status;
-    })
-  }
-  get main () {
-    return this.filterTasks.filter((_, index) => {
-      const start = this.tasks.pageIndex * this.listNum - 1;
-      const end = (this.tasks.pageIndex + 1) * this.listNum;
-      return start < index && index < end;
-    })
-  }
-  get selectedTask () {
-    return this.tasks.selectedTask
-  }
+
+  /** 表示されるタスクの数listNumArrのインデックス変更 */
   changeListIndex(index: number) {
     this.tasks.pageIndex = 0;
     this.tasks.listIndex = index;
   }
+
+  /** タスクをソートキーを元にソート */
   sortBy(cell: Table.Cell) {
     if('sortKey' in cell === false) return;
     const compare = this.selectFunc(cell.sortKey, cell.header.active, cell.name as keyof Task)
     this.tasks.sortedTasks.sort(compare);
   }
+  /** タスクを取り込む際のデータ処理 */
   preprocessTasks = (tasks: Type.Task[]): Task[] => {
-    // const newTasks = tasks.map((task) => {
-    //   return this.preprocessTask(task)
-    // })
     const newTasks = []
     for (let index = 0; index < tasks.length; index++) {
       newTasks.push(this.preprocessTask(tasks[index]));
-    
     }
     return newTasks;
   }
@@ -116,15 +76,13 @@ export class Tasks {
     newTask.deadline = this.changeTimeFormat(task.deadline);
     return {...task, ...newTask};
   }
-  selectTask(params: Type.Params) {
+
+  /** 選択されたタスクのオブジェクトを保持 */
+  selectTask(params: Type.URLParams) {
     this.tasks.selectedTask = {}
     const t0 = performance.now();
     let key = 0;
     if('key' in params) key = Number(params.key);
-    // this.tasks.selectedTask = this.tasks.all.find((task, index) => {
-    //   this.tasks.taskIndex = index;
-    //   return task.id == key
-    // }) ?? {}
     for (let index = 0; index < this.tasks.all.length; index++) {
       if(this.tasks.all[index].id == key) {
         this.tasks.taskIndex = index;
@@ -136,11 +94,15 @@ export class Tasks {
     console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
     if(Object.keys(this.tasks.selectedTask).length == 0) this.tasks.taskIndex = -1;
   }
+
+  /** 新しいタスクの追加 */
   addTask(task: Type.Task) {
     this.tasks.all.push(this.preprocessTask(task));
     this.tasks.sortedTasks = this.tasks.all;
     this.resetSort();
   }
+
+  /** タスクの更新 */
   updateTask(updatedTask: Type.Task) {
     this.tasks.all = this.tasks.all.map((task) => {
       if(task.id == updatedTask.id) {
@@ -152,7 +114,7 @@ export class Tasks {
     })
     this.tasks.sortedTasks = [...[], ...this.tasks.all];
     this.resetSort();
-    this.selectTask({key: String(updatedTask.id)} as Type.Params)
+    this.selectTask({key: String(updatedTask.id)} as Type.URLParams)
   }
   changeTimeFormat = (time: string) => {
     const dateObj = new Date(time);
@@ -162,6 +124,8 @@ export class Tasks {
     const dateStr = year + '/' + month + '/' + date;
     return dateStr;
   }
+
+  /** タイプとキーをもとにソートする関数を返す */
   selectFunc(type: number, activeNum: number, key: keyof Task) {
     if(type === 0) {
       if(activeNum === 1) {
@@ -225,32 +189,108 @@ export class Tasks {
       }
     }
   }
+
+  /** 選択された担当者名を保持 */
   selectAssignee(name: string) {
     this.tasks.pageIndex = 0;
     this.tasks.selectAssignee = name;
   }
+
+  /** 選択されたフィールドを保持 */
   selectField(name: string) {
     this.tasks.pageIndex = 0;
     this.tasks.selectField = name;
   }
+
+  /** 選択されたマイルストーンを保持 */
   selectMilestone(name: string) {
     this.tasks.pageIndex = 0;
     this.tasks.selectMilestone = name;
   }
+
+  /** 選択されたヴァージョンを保持 */
   selectVersion(name: string) {
     this.tasks.pageIndex = 0;
     this.tasks.selectVersion = name;
   }
+
+  /** 選択されたステータスを保持 */
   selectStatus(statusArr: string[]) {
     this.tasks.pageIndex = 0;
     this.tasks.selectStatus = statusArr;
   }
+
+  /** 並び順をリセット */
   resetSort() {
     this.tasks.sortedTasks.sort((a: Task, b: Task) => {
       const dateB = b[this.tasks.basicSortKey] as string;
       const dateA = a[this.tasks.basicSortKey] as string;
       return new Date(dateB).valueOf() - new Date(dateA).valueOf();
     });
+  }
+
+  /** プロジェクトごとにタスクの絞り込み条件をセッションストレージに格納 */
+  storeCondition = (v: {}) => {
+    const key = location.host + window.$nuxt.$route.params.id;
+    let item = sessionStorage.getItem(key);
+    let newItem = v;
+    if(item) {
+      newItem = {...JSON.parse(item), ...v};
+    }
+    sessionStorage.setItem(key, JSON.stringify(newItem));
+  }
+
+  /** タスクの表示数 */
+  get listNum(): number {
+    return this.tasks.listNumArr[this.tasks.listIndex];
+  }
+
+  /** タスクのページ数 */
+  get totalPageNum(): number {
+    return Math.floor(this.filterTasks.length / this.listNum);
+  }
+
+  /** 現在のページに表示されているタスクの最初の番数 */
+  get displayedFirstTaskNum(): number {
+    const firstList = this.tasks.pageIndex * this.listNum + 1;
+    return firstList;
+  }
+
+  /** 現在のページに表示されているタスクの最後の番数 */
+  get displayedLastTaskNum(): number {
+    let lastList = (this.tasks.pageIndex + 1) * this.listNum;
+    if(this.filterTasks.length < lastList) lastList = this.filterTasks.length;
+    return lastList;
+  }
+  get currentDisplayedTasksNum(): string {
+    return this.displayedFirstTaskNum + ' - ' + this.displayedLastTaskNum;
+  }
+
+  /** 担当者、フィールド、マイルストーン、ヴァージョン、ステータスによるタスクのフィルタリング */
+  get filterTasks() {
+    return this.tasks.sortedTasks.filter((task) => {
+      if(!this.tasks.selectStatus.includes('完了') && task.status === '完了') return;
+      const assignee = !this.tasks.selectAssignee ?? task.assignee.name == this.tasks.selectAssignee;
+      const field =  !this.tasks.selectField ?? task.field == this.tasks.selectField;
+      const milestone = !this.tasks.selectMilestone ?? task.milestone == this.tasks.selectMilestone;
+      const version = !this.tasks.selectVersion ?? task.version == this.tasks.selectVersion;
+      const status = this.tasks.selectStatus.length == 0 ?? this.tasks.selectStatus.includes(task.status);
+      return assignee && field && milestone && version && status;
+    })
+  }
+
+  /** ページによるタスクのフィルタリング */
+  get main () {
+    return this.filterTasks.filter((_, index) => {
+      const start = this.tasks.pageIndex * this.listNum - 1;
+      const end = (this.tasks.pageIndex + 1) * this.listNum;
+      return start < index && index < end;
+    })
+  }
+
+  /** 選択されたタスクの情報 */
+  get selectedTask () {
+    return this.tasks.selectedTask
   }
 }
 

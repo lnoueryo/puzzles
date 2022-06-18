@@ -9,7 +9,7 @@
       >
         <form-task
          v-model="selectedTask"
-         @submit="onClickSubmit"
+         @submit="onClickCreate"
          :loading="loading"
         >
           <template v-slot:back>
@@ -63,40 +63,43 @@ export default Vue.extend({
       return this.isReadyObj(this.project);
     },
     taskForm() {
-      // わかりづらいので変更
+      /** タスク作成時に選択できない固定の値 */
       const additionalInfo = {
-        id: this.$route.params.key,
+        assigner: this.user,
         assigner_id: this.user.id,
         project_id: Number(this.$route.params.id),
+        actual_time: 0,
       }
+
+      /** 型の変更が必要な値 */
       const cleansedData = {
         estimated_time: Number(this.selectedTask.estimated_time),
         start_time: this.selectedTask.start_time ? new Date(this.selectedTask.start_time) : null,
         deadline: this.selectedTask.deadline ? new Date(this.selectedTask.deadline) : null,
       }
-      const assigner = this.user;
+
+      /** idよりオブジェクトの検索が必要な値 */
       const assignee = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
       const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
       const type = this.types.find((type: {id: number}) => type.id === this.selectedTask.type_id);
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
       const field = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id) || {};
       const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
-      const actual_time = 0
       const requiredDataforDisplay = {
-        assigner,
         assignee,
         status,
         type,
         field,
         milestone,
         priority,
-        actual_time,
         comments: [],
       }
       const newTask = {...this.selectedTask, ...additionalInfo, ...cleansedData, ...requiredDataforDisplay}
       return newTask;
     },
   },
+
+  /** 新しく作成するタスクの初期設定 */
   created() {
     let timer = setInterval(() => {
       if(this.isEmptyObj(this.user)) return;
@@ -113,8 +116,9 @@ export default Vue.extend({
     }, 100)
   },
   methods: {
-    async onClickSubmit() {
+    async onClickCreate() {
       this.loading = true;
+      /** バリデーション追加 */
       // const validation = this.validateForm(this.taskForm);
       // if(validation) {
       //   return;

@@ -56,7 +56,7 @@ export const mutations: MutationTree<TaskState> = {
       if(cell.header.active === 2) {
         state.tasks.resetSort();
         const cellKey = {index: 0, active: 0}
-        state.table.storeCondition({cellKey})
+        state.tasks.storeCondition({cellKey})
         return state.table.cells = state.table.resetActive(state.table.cells)
       };
       state.table.cells = state.table.resetActive(state.table.cells);
@@ -64,26 +64,26 @@ export const mutations: MutationTree<TaskState> = {
     cell.header.active += 1;
     state.tasks.sortBy(cell);
     const cellKey = {index, active: cell.header.active};
-    state.table.storeCondition({cellKey});
+    state.tasks.storeCondition({cellKey});
   },
   selectField: (state, field) => {
-    state.table.storeCondition({field});
+    state.tasks.storeCondition({field});
     return state.tasks.selectField(field);
   },
   selectMilestone: (state, milestone) => {
-    state.table.storeCondition({milestone});
+    state.tasks.storeCondition({milestone});
     return state.tasks.selectMilestone(milestone);
   },
   selectVersion: (state, version) => {
-    state.table.storeCondition({version});
+    state.tasks.storeCondition({version});
     return state.tasks.selectVersion(version);
   },
   selectAssignee: (state, assignee) => {
-    state.table.storeCondition({assignee});
+    state.tasks.storeCondition({assignee});
     return state.tasks.selectAssignee(assignee);
   },
   selectStatus: (state, status) => {
-    state.table.storeCondition({status});
+    state.tasks.storeCondition({status});
     return state.tasks.selectStatus(status);
   },
   selectTask: (state, params) => state.tasks.selectTask(params),
@@ -98,6 +98,7 @@ export const actions: ActionTree<TaskState, RootState> = {
   reset({commit}) {
     commit('reset');
   },
+  /** 選択されたタスクの最大表示数より、最大表示数が格納されている配列のインデックスを取得 */
   async listIndex({commit, getters}, v: number) {
     const index = getters['listNumArr'].findIndex((listNum: number) => listNum === v);
     commit('listIndex', index);
@@ -149,6 +150,8 @@ export const actions: ActionTree<TaskState, RootState> = {
       }
     })
   },
+
+  /** セッションストレージからタスクの絞り込み条件を取得 */
   setCondition({commit}) {
     const itemStr = sessionStorage.getItem(location.host + window.$nuxt.$route.params.id);
     if(!itemStr) return;
