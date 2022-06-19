@@ -1,10 +1,10 @@
 name: Deploy to Firebase Hosting
 # どのタイミングで実行するかの設定
-# release*ブランチにプッシュされたら実行する。
+# developブランチにプッシュされたら実行する。
 on:
   push:
     branches:
-      - release*
+      - develop
 
 # 実行するジョブ(一連の操作)の設定
 jobs:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@release*
+        uses: actions/checkout@develop
       - name: Install Dependencies
         run: npm install
       - name: Build
@@ -24,7 +24,7 @@ jobs:
           MEDIA_URL: ${{ secrets.AUTH_DOMAIN }}
       - name: Archive Production Artifact
         # generateしたdistフォルダを永続化する
-        uses: actions/upload-artifact@release*
+        uses: actions/upload-artifact@develop
         with:
           name: dist
           path: dist
@@ -34,15 +34,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@release*
+        uses: actions/checkout@develop
         # build job で永続化したdistフォルダを取得する
       - name: Download Artifact
-        uses: actions/download-artifact@release*
+        uses: actions/download-artifact@develop
         with:
           name: dist
           path: dist
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@release*
+        uses: w9jds/firebase-action@develop
         with:
           args: deploy --only hosting --project=${{ secrets.PROJECT_ID }}
         env:
