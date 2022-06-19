@@ -21,7 +21,7 @@ jobs:
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           API_URL: ${{ secrets.API_URL }}
-          MEDIA_URL: ${{ secrets.AUTH_DOMAIN }}
+          MEDIA_URL: ${{ secrets.MEDIA_URL }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           entrypoint: ./frontend
