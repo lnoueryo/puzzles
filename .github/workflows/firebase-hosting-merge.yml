@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependencies
-        run: npm install
+        run: npm --prefix ./frontend install
       - name: Build
-        run: npm run generate
+        run: npm --prefix ./frontend run generate
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           API_URL: ${{ secrets.API_KEY }}
