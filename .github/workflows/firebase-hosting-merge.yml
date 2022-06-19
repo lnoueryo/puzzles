@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: npm ci && npm run build
+        run: npm run generate
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           API_URL: ${{ secrets.API_KEY }}
