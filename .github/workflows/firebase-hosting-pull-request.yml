@@ -7,16 +7,22 @@ jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
     steps:
       - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm install
       - name: Build
-        run: npm ci && npm run build
+        run: npm run generate
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
-          API_URL: ${{ secrets.API_KEY }}
+          API_URL: ${{ secrets.API_URL }}
           MEDIA_URL: ${{ secrets.AUTH_DOMAIN }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
+          entrypoint: ./frontend
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PUZZLES_345814 }}'
           projectId: puzzles-345814
