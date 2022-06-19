@@ -123,6 +123,21 @@ func DLMilestone(milestones []models.Milestone) *bytes.Buffer {
 	return b
 }
 
+func DLVersion(versions []models.Version) *bytes.Buffer {
+	rows := [][]string{{"id", "name"}}
+	for _, version := range versions {
+		row := []string{}
+		ID := strconv.Itoa(version.ID)
+		Name := version.Name
+		row = append(row, ID, Name)
+		rows = append(rows, row)
+	}
+    b := new(bytes.Buffer)
+    writer := csv.NewWriter(b)
+	writer.WriteAll(rows)
+	return b
+}
+
 func DLOrganizationAuthority(organizationAuthorities []models.OrganizationAuthority) *bytes.Buffer {
 	rows := [][]string{{"id", "user_id", "organization_id", "authority_id", "active", "created_at", "updated_at"}}
 	for _, organizationAuthority := range organizationAuthorities {
@@ -239,7 +254,7 @@ func DLStatus(statuses []models.Status) *bytes.Buffer {
 }
 
 func DLTask(tasks []models.Task) *bytes.Buffer {
-	rows := [][]string{{"id", "assignee_id", "assigner_id", "status_id", "field_id", "milestone_id", "priority_id", "type_id", "project_id", "parent_id", "key", "title", "detail", "estimated_time", "actual_time", "start_time", "deadline", "created_at", "updated_at"}}
+	rows := [][]string{{"id", "assignee_id", "assigner_id", "status_id", "field_id", "milestone_id", "version_id", "priority_id", "type_id", "project_id", "parent_id", "key", "title", "detail", "estimated_time", "actual_time", "start_time", "deadline", "created_at", "updated_at"}}
 	for _, task := range tasks {
 		row := []string{}
 		ID := strconv.Itoa(task.ID)
@@ -249,6 +264,7 @@ func DLTask(tasks []models.Task) *bytes.Buffer {
 		FieldID := strconv.Itoa(*task.FieldID)
 		MilestoneID := strconv.Itoa(*task.MilestoneID)
 		PriorityID := strconv.Itoa(task.PriorityID)
+		VersionID := strconv.Itoa(*task.VersionID)
 		TypeID := strconv.Itoa(task.TypeID)
 		ProjectID := strconv.Itoa(task.ProjectID)
 		ParentID := strconv.Itoa(task.ParentID)
@@ -261,7 +277,7 @@ func DLTask(tasks []models.Task) *bytes.Buffer {
 		Deadline := task.Deadline.String()
 		CreatedAt := task.CreatedAt.String()
 		UpdatedAt := task.UpdatedAt.String()
-		row = append(row, ID, AssigneeID, AssignerID, StatusID, FieldID, MilestoneID, PriorityID, TypeID, ProjectID, ParentID, Key, Title, Detail, EstimatedTime, ActualTime, StartTime, Deadline, CreatedAt, UpdatedAt)
+		row = append(row, ID, AssigneeID, AssignerID, StatusID, FieldID, MilestoneID, VersionID, PriorityID, TypeID, ProjectID, ParentID, Key, Title, Detail, EstimatedTime, ActualTime, StartTime, Deadline, CreatedAt, UpdatedAt)
 		rows = append(rows, row)
 	}
     b := new(bytes.Buffer)

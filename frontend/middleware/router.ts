@@ -4,7 +4,7 @@ import { checkStatus, isReadyObj, isEmptyObj } from '~/modules/utils'
 const status = checkStatus();
 const readyObj = isReadyObj();
 const emptyObj = isEmptyObj();
-const allowedPath = new Set(['/login', '/expiry', '/success', '/bad-connection'])
+const allowedPath = new Set(['/login', '/expiry', '/success', '/bad-connection', '/data/csv'])
 let projectID: string;
 const router: Middleware = async({store, route, redirect}) => {
   if(emptyObj(store.getters.user)) store.commit('pageReady', false);

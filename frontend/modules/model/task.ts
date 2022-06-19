@@ -268,13 +268,14 @@ export class Tasks {
 
   /** 担当者、フィールド、マイルストーン、ヴァージョン、ステータスによるタスクのフィルタリング */
   get filterTasks() {
+    console.log(!this.tasks.selectAssignee)
     return this.tasks.sortedTasks.filter((task) => {
       if(!this.tasks.selectStatus.includes('完了') && task.status === '完了') return;
-      const assignee = !this.tasks.selectAssignee ?? task.assignee.name == this.tasks.selectAssignee;
-      const field =  !this.tasks.selectField ?? task.field == this.tasks.selectField;
-      const milestone = !this.tasks.selectMilestone ?? task.milestone == this.tasks.selectMilestone;
-      const version = !this.tasks.selectVersion ?? task.version == this.tasks.selectVersion;
-      const status = this.tasks.selectStatus.length == 0 ?? this.tasks.selectStatus.includes(task.status);
+      const assignee = !this.tasks.selectAssignee || task.assignee.name == this.tasks.selectAssignee;
+      const field =  !this.tasks.selectField || task.field == this.tasks.selectField;
+      const milestone = !this.tasks.selectMilestone || task.milestone == this.tasks.selectMilestone;
+      const version = !this.tasks.selectVersion || task.version == this.tasks.selectVersion;
+      const status = this.tasks.selectStatus.length == 0 || this.tasks.selectStatus.includes(task.status);
       return assignee && field && milestone && version && status;
     })
   }

@@ -43,6 +43,7 @@ export default {
         'comments',
         'fields',
         'milestones',
+        'versions',
         'organization_authorities',
         'organizations',
         'priorities',

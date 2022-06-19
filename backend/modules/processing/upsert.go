@@ -3,7 +3,6 @@ package processing
 import (
 	"backend/models"
 	"encoding/csv"
-	"fmt"
 	"io"
 	"strconv"
 	"time"
@@ -254,6 +253,46 @@ func UpsertMilestone(file io.Reader) ([]models.Milestone, []string) {
 		milestones = append(milestones, milestone)
 	}
 	return milestones, errorArray
+}
+
+func UpsertVersion(file io.Reader) ([]models.Version, []string) {
+	reader := csv.NewReader(file)
+	content, _ := reader.ReadAll()
+	var versions []models.Version
+	var errorArray []string
+	if len(content) <= 1 {
+		errMessage := "Versionテーブルのcsvが空です"
+		errorArray = append(errorArray, errMessage)
+		return versions, errorArray
+	}
+	for i, row := range content[1:] {
+		if len(row) != 5 {
+			errMessage := "Milestone: " + strconv.Itoa(i + 2) + "列目のレコードに足りない値があります"
+			errorArray = append(errorArray, errMessage)
+			continue
+		}
+		ID, err := strconv.Atoi(row[0]); if err != nil {
+			errMessage := "Milestone: " + strconv.Itoa(i + 2) + "列目のidが数字ではありません"
+			errorArray = append(errorArray, errMessage)
+			continue
+		}
+		ProjectID, err := strconv.Atoi(row[2]); if err != nil {
+			errMessage := "Milestone: " + strconv.Itoa(i + 2) + "列目のproject_idが数字ではありません"
+			errorArray = append(errorArray, errMessage)
+			continue
+		}
+		CreatedAt, _ := time.Parse(timestamp, row[3])
+		UpdatedAt, _ := time.Parse(timestamp, row[4])
+		version := models.Version{
+			ID: ID,
+			Name: row[1],
+			ProjectID: ProjectID,
+			CreatedAt: CreatedAt,
+			UpdatedAt: UpdatedAt,
+		}
+		versions = append(versions, version)
+	}
+	return versions, errorArray
 }
 
 func UpsertOrganizationAuthority(file io.Reader) ([]models.OrganizationAuthority, []string) {
@@ -511,7 +550,7 @@ func UpsertTask(file io.Reader) ([]models.Task, []string) {
 	}
 
 	for i, row := range content[1:] {
-		if len(row) != 19 {
+		if len(row) != 20 {
 			errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のレコードに足りない値があります"
 			errorArray = append(errorArray, errMessage)
 			continue
@@ -550,47 +589,53 @@ func UpsertTask(file io.Reader) ([]models.Task, []string) {
 				continue
 			}
 		}
-		PriorityID, err := strconv.Atoi(row[6]); if err != nil {
+		VersionID, err := strconv.Atoi(row[6]); if err != nil {
+			if row[6] != "NULL" {
+				errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のmilestone_idが数字ではありません"
+				errorArray = append(errorArray, errMessage)
+				continue
+			}
+		}
+		PriorityID, err := strconv.Atoi(row[7]); if err != nil {
 			errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のpriority_idが数字ではありません"
 			errorArray = append(errorArray, errMessage)
 			continue
 		}
-		TypeID, err := strconv.Atoi(row[7]); if err != nil {
+		TypeID, err := strconv.Atoi(row[8]); if err != nil {
 			errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のtype_idが数字ではありません"
 			errorArray = append(errorArray, errMessage)
 			continue
 		}
-		ProjectID, err := strconv.Atoi(row[8]); if err != nil {
+		ProjectID, err := strconv.Atoi(row[9]); if err != nil {
 			errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のproject_idが数字ではありません"
 			errorArray = append(errorArray, errMessage)
 			continue
 		}
-		ParentID, err := strconv.Atoi(row[9]); if err != nil {
-			if row[9] != "NULL" {
+		ParentID, err := strconv.Atoi(row[10]); if err != nil {
+			if row[10] != "NULL" {
 				errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のparent_idが数字ではありません"
 				errorArray = append(errorArray, errMessage)
 				continue
 			}
 		}
-		EstimatedTime, err := strconv.ParseFloat(row[13], 32); if err != nil {
-			if row[13] != "NULL" {
+		EstimatedTime, err := strconv.ParseFloat(row[14], 32); if err != nil {
+			if row[14] != "NULL" {
 				errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のestimated_timeが数字ではありません"
 				errorArray = append(errorArray, errMessage)
 				continue
 			}
 		}
-		ActualTime, err := strconv.ParseFloat(row[14], 32); if err != nil {
-			if row[14] != "NULL" {
-				fmt.Println(row[14])
+		ActualTime, err := strconv.ParseFloat(row[15], 32); if err != nil {
+			if row[15] != "NULL" {
 				errMessage := "Task: " + strconv.Itoa(i + 2) + "列目のactual_timeが数字ではありません"
 				errorArray = append(errorArray, errMessage)
 				continue
 			}
 		}
-		StartTime, _ := time.Parse(timestamp, row[15])
-		Deadline, _ := time.Parse(timestamp, row[16])
-		CreatedAt, _ := time.Parse(timestamp, row[17])
-		UpdatedAt, _ := time.Parse(timestamp, row[18])
+		StartTime, _ := time.Parse(timestamp, row[16])
+		Deadline, _ := time.Parse(timestamp, row[17])
+		CreatedAt, _ := time.Parse(timestamp, row[18])
+		UpdatedAt, _ := time.Parse(timestamp, row[19])
 		task := models.Task{
 			ID: ID,
 			AssigneeID: AssigneeID,
@@ -599,12 +644,13 @@ func UpsertTask(file io.Reader) ([]models.Task, []string) {
 			FieldID: &FieldID,
 			MilestoneID: &MilestoneID,
 			PriorityID: PriorityID,
+			VersionID: &VersionID,
 			TypeID: TypeID,
 			ProjectID: ProjectID,
 			ParentID: ParentID,
-			Key: row[10],
-			Title: row[11],
-			Detail: row[12],
+			Key: row[11],
+			Title: row[12],
+			Detail: row[13],
 			EstimatedTime: float32(EstimatedTime),
 			ActualTime: float32(ActualTime),
 			StartTime: StartTime,

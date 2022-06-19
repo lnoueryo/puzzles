@@ -118,6 +118,17 @@ func(*Data)Download(w http.ResponseWriter, r *http.Request) {
 			}
 			csvBufferArray = append(csvBufferArray, csvBuffer)
 		}
+		if request == "versions" {
+			var versions []models.Version
+			err := DB.Find(&versions).Error; if err != nil {
+				errorlog.Print("Versionテーブルの読み込みに失敗しました。")
+			}
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLVersion(versions),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
 		if request == "organization_authorities" {
 			var organization_authorities []models.OrganizationAuthority
 			err := DB.Find(&organization_authorities).Error; if err != nil {
@@ -364,6 +375,34 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Milestoneテーブルの書き込みに失敗しました。"
+					errorlog.Print(message)
+					errorlog.Print(err)
+					errArray = append(errArray, message)
+				}
+			}
+			if len(errArray) != 0 {
+				errorArray = append(errorArray, errArray)
+			}
+			continue
+		}
+		if file.Filename == "versions.csv" {
+			versions, errArray := dp.UpsertVersion(f);
+			bulk := []models.Version{}
+			for _, record := range versions {
+				bulk = append(bulk, record)
+				if len(bulk) > 500 {
+					err := DB.Save(bulk).Error; if err != nil {
+						message := "Versionテーブルの書き込みに失敗しました。"
+						errorlog.Print(message)
+						errorlog.Print(err)
+						errArray = append(errArray, message)
+					}
+					bulk = nil
+				}
+			}
+			if len(bulk) != 0 {
+				err := DB.Save(bulk).Error; if err != nil {
+					message := "Versionテーブルの書き込みに失敗しました。"
 					errorlog.Print(message)
 					errorlog.Print(err)
 					errArray = append(errArray, message)
