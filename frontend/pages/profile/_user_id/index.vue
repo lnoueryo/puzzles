@@ -1,6 +1,6 @@
 <template>
   <div>
-    <card-profile :selectedUser="selectedUser" :disabled="true" />
+    <card-profile :selectedUser="selectedUser" :editable="editable" />
   </div>
 </template>
 
@@ -11,6 +11,7 @@ import { isReadyObj, changeToTimeStampFormat } from '~/modules/utils'
 export default Vue.extend({
   computed: {
     ...mapGetters([
+        'user',
         'selectedUser',
         'organizationAuthority',
       ]),
@@ -25,6 +26,10 @@ export default Vue.extend({
         {key: 'address', title: '住所'},
       ]
       return userEntities
+    },
+    editable() {
+      if(this.user?.id == this.selectedUser?.id) return this.$router.push({name: 'profile'})
+      return this.user?.id == this.selectedUser?.id;
     }
   },
 })

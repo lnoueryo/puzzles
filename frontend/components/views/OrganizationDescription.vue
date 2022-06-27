@@ -76,8 +76,7 @@
           <v-list-item
             v-for="authUser in organization.users"
             :key="authUser.id"
-            @click="toProfile(authUser)"
-            link
+            @click="$router.push({ name: 'profile-user_id', params: { user_id: authUser.id } })"
           >
             <v-list-item-avatar>
               <v-img :src="userImage(authUser.user.image)" v-if="userImage(authUser.user.image)">

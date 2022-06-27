@@ -62,10 +62,11 @@ declare module 'vue/types/vue' {
 export default Vue.extend({
   computed: {
     user() {
+      console.log(this.$store.getters['organizationAuthority'])
       return this.$store.getters['user'];
     },
     organizationAuthority() {
-      return this.$store.getters['organization'];
+      return this.$store.getters['organizationAuthority'];
     },
     projectSlides() {
       return this.$store.getters['projectSlides'];

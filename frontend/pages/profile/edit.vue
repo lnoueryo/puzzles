@@ -79,7 +79,7 @@
         <div class="px-4 py-2 red--text accent-3 text-center" style="height: 80px">{{ this.error }}</div>
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click="$router.push(to)" v-if="user.name">
+          <v-btn text @click="$router.push({name: 'profile'})" v-if="user.name">
             戻る
           </v-btn>
           <v-btn
@@ -154,7 +154,6 @@ export default Vue.extend({
   created() {
     let timer = setInterval(() => {
       if(this.isEmptyObj(this.user)) return;
-      console.log(this.$store.getters['mediaUser'])
       clearInterval(timer);
       this.profile = {...this.profile, ...this.user};
       this.profile.age = !this.profile.age ? '' : this.profile.age

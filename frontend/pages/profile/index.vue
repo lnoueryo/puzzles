@@ -1,6 +1,6 @@
 <template>
   <div>
-    <card-profile :selectedUser="organizationAuthority" :disabled="false" />
+    <card-profile :selectedUser="organizationAuthority" :editable="true" />
   </div>
 </template>
 
