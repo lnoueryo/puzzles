@@ -231,7 +231,7 @@ export default Vue.extend({
     userOptions() {
       return [
         {title: '権限変更', event: this.openAuthorityDialog},
-        {title: '削除', event: this.openDeleteDialog},
+        // {title: '削除', event: this.openDeleteDialog},
       ]
     },
     authorities() {
@@ -251,7 +251,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error.response;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
         this.authorityDialog = false;
         this.selectedUser = {} as model.OrganizationAuthority;
@@ -263,11 +263,11 @@ export default Vue.extend({
     async onDeleteAuthority() {
       let response
       try {
-        response = await this.$store.dispatch('project/deleteProjectAuthority', this.selectedUser);
+        response = await this.$store.dispatch('project/deleteOrganizationAuthority', this.selectedUser);
       } catch (error: any) {
         response = error.response;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
         this.deleteDialog = false;
         this.selectedUser = {} as model.ProjectAuthority;

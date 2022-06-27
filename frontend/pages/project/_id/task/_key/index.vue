@@ -223,7 +223,7 @@ export default Vue.extend({
     } catch (error: any) {
       response = error.response;
     } finally {
-      if('status' in response === false) return this.$router.push('/bad-connection')
+      if('status' in response === false) return this.$router.push('/error/bad-connection')
       this.checkStatus(response.status, () => {}, () => {
         this.loading = false;
         alert('エラーです。');
@@ -244,7 +244,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error.response;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id-task', params: {id: this.$route.params.id}});
         }, () => {
@@ -261,7 +261,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         console.log(response)
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {},
         () => {
           this.loading = false;
@@ -296,7 +296,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         console.log(response)
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {this.$store.dispatch('comment/editMode', false)},
         () => {
           // this.loading = false;

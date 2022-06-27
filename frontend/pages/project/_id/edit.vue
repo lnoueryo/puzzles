@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <form-project
+    <FormProject
      v-model="selectedProject"
      @submit="dialog = true"
      :loading="loading"
@@ -15,15 +15,15 @@
           更新
         </div>
       </template>
-    </form-project>
-    <dialog-update
+    </FormProject>
+    <DialogUpdate
      v-model="dialog"
      :form="dialogForm"
      @submit="onClickUpdate"
      @loading="loading = $event"
     >
       更新の確認
-    </dialog-update>
+    </DialogUpdate>
   </div>
 </template>
 
@@ -151,7 +151,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id', params: {id: this.$route.params.id}})
         },

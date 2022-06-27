@@ -72,7 +72,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'index', params: {id: this.$route.params.id}})
         },

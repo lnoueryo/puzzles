@@ -308,7 +308,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         if ("status" in response === false)
-          return this.$router.push("/bad-connection");
+          return this.$router.push("/error/bad-connection");
         this.checkStatus(
           response.status,
           () => {
@@ -342,7 +342,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         if ("status" in response === false)
-          return this.$router.push("/bad-connection");
+          return this.$router.push("/error/bad-connection");
         this.checkStatus(
           response.status,
           () => {
@@ -366,7 +366,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         if ("status" in response === false)
-          return this.$router.push("/bad-connection");
+          return this.$router.push("/error/bad-connection");
         this.checkStatus(
           response.status,
           () => {

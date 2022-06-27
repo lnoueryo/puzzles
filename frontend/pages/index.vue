@@ -64,10 +64,10 @@
     </v-row>
     <v-tabs-items v-model="tabKey">
       <v-tab-item :value="'tab-1'">
-        <project-slides />
+        <ProjectSlides />
       </v-tab-item>
       <v-tab-item :value="'tab-2'">
-        <organization-description />
+        <OrganizationDescription />
       </v-tab-item>
     </v-tabs-items>
     <!-- <v-carousel cycle height="100" hide-delimiters show-arrows-on-hover interval="4500" class="mb-4">

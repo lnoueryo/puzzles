@@ -7,24 +7,24 @@
        md="10"
        lg="10"
       >
-        <form-task v-model="selectedTask" @submit="dialog = true">
+        <FormTask v-model="selectedTask" @submit="dialog = true">
           <template v-slot:back>
             戻る
           </template>
           <template v-slot:submit>
             更新
           </template>
-        </form-task>
+        </FormTask>
       </v-col>
     </v-row>
-    <dialog-update
+    <DialogUpdate
      v-model="dialog"
      :form="dialogForm"
      @submit="onClickSubmit"
      @loading="loading = $event"
     >
       {{ taskForm.key }}
-    </dialog-update>
+    </DialogUpdate>
   </div>
 </template>
 
@@ -163,7 +163,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error.response;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id', params: {id: this.$route.params.id}});
         },

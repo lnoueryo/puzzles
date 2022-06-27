@@ -115,7 +115,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         console.log(response)
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {},
         () => {
           // this.loading = false;
