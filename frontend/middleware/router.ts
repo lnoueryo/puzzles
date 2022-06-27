@@ -4,7 +4,7 @@ import { checkStatus, isReadyObj, isEmptyObj } from '~/modules/utils'
 const status = checkStatus();
 const readyObj = isReadyObj();
 const emptyObj = isEmptyObj();
-const allowedPath = new Set(['/login', '/expiry', '/success', '/bad-connection', '/data/csv'])
+const allowedPath = new Set(['/login', '/expiry', '/success', '/error/bad-connection', '/data/csv'])
 let projectID: string;
 const router: Middleware = async({store, route, redirect}) => {
   if(emptyObj(store.getters.user)) store.commit('pageReady', false);
@@ -26,7 +26,7 @@ const getSession = async(store: any, redirect: any) => {
   } catch (error) {
     response = error;
   } finally {
-    if('status' in response === false) return redirect('/bad-connection')
+    if(!response || 'status' in response === false) return redirect('/error/bad-connection')
     return status(response.status, () => {
       store.commit('pageReady', true);
     });
@@ -83,7 +83,7 @@ const getTask = (store: any, route: any, redirect: any) => {
     } catch (error: any) {
       response = error.response
     } finally {
-      if('status' in response === false) return redirect('/bad-connection')
+      if('status' in response === false) return redirect('/error/bad-connection')
       status(response.status, () => {}, () => {
         alert('エラーです。');
       })

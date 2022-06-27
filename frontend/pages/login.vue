@@ -100,7 +100,7 @@ export default Vue.extend({
     } catch (error) {
       response = error;
     } finally {
-      if('status' in response === false) return this.$router.push('/bad-connection');
+      if(!response || 'status' in response === false) return this.$router.push('/error/bad-connection');
       if(response.status == 304) return this.pageReady= true;
       this.checkStatus(response.status, (() => {return this.$router.push('/')}), (() => {}));
     }
@@ -123,7 +123,7 @@ export default Vue.extend({
       } catch (error) {
         response = error;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.error = this.checkStatus(response.status, (() => {return this.handleSuccess()}), ((): string => {
           this.loading = false;
           const errorMessage = '組織ID、メールアドレス、またはパスワードが違います。'
