@@ -104,3 +104,45 @@ func temp() {
 
 	fmt.Printf("Updated value from %q to %q\n", old, e.Value)
 }
+
+
+// import(
+// 	"log"
+// 	"time"
+// 	"golang.org/x/net/websocket"
+// )
+
+// func (h *Home) Chat(ws *websocket.Conn) {
+// 	ws_array = append(ws_array, ws)
+// 	data_receive(ws)
+// }
+
+
+// func data_receive(ws *websocket.Conn) {
+// 	for {
+// 		var message models.Project
+// 		type Count struct{ID int}
+// 		if err := websocket.JSON.Receive(ws, &message); err != nil {
+// 			log.Println("Receive error:", err)
+// 			break
+// 		} else {
+// 			for _, con := range ws_array {
+// 				con := con
+// 				c := make(chan string)
+// 				go func() {
+// 					for {
+// 						msg, ok := <-c
+// 						if ok {
+// 							err = websocket.JSON.Send(con, msg)
+// 						}
+// 					}
+// 				}()
+// 				c <- "start"
+// 				time.Sleep(time.Second)
+// 				c <- "half"
+// 				time.Sleep(time.Second)
+// 				c <- "{\"id\": hello}"
+// 			}
+// 		}
+// 	}
+// }

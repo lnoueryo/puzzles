@@ -17,6 +17,7 @@ func init() {
 		panic("not found .env.dev")
 	}
 }
+
 func Deploy() {
 	for _, value := range requiredDirectory {
 		Dir(value, "backend/"+value)

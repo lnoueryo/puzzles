@@ -12,8 +12,9 @@ import (
 
 type ProjectAuthority struct {}
 
+// ユーザーをプロジェクトに追加する
 func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
-	// projectにprojectauthorityを入れてフロントから送る
+
 	if r.Method != "POST" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -21,7 +22,7 @@ func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-	
+
     pa, err := models.GetProjectAuthorityJson(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
@@ -38,27 +39,15 @@ func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	s, _ := GetSession(r)
-	activity := models.Activity{
-		UserID: s.UserID,
-		ProjectID: pa.ProjectID,
-		ContentID: 6,
-	}
-
-	err = activity.Create(); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-	}
 
 	pJson, _ := json.Marshal(pa)
 	w.WriteHeader(http.StatusCreated)
 	w.Write(pJson)
 }
 
+// プロジェクトの権限変更
 func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != "PUT" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -75,23 +64,9 @@ func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
         return
     }
+
 	err = pa.Update(); if err != nil {
 		errMap := map[string]string{"message": err.Error()}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-		return
-	}
-	s, _ := GetSession(r)
-	activity := models.Activity{
-		UserID: s.UserID,
-		ProjectID: pa.ProjectID,
-		ContentID: 6,
-	}
-
-	err = activity.Create(); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
@@ -103,7 +78,9 @@ func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
 	w.Write(projectJson)
 }
 
+// ユーザーをプロジェクトから除外
 func (_ *ProjectAuthority)Delete(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != "DELETE" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -121,6 +98,7 @@ func (_ *ProjectAuthority)Delete(w http.ResponseWriter, r *http.Request) {
 		w.Write(sessionJson)
 		return
     }
+
 	var IDs []int
 	for _, ID := range idSlice {
 		id, err := strconv.Atoi(ID)

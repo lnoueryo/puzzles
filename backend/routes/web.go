@@ -4,7 +4,7 @@ import (
 	"backend/config"
 	"backend/controller"
 	"net/http"
-	"golang.org/x/net/websocket"
+	// "golang.org/x/net/websocket"
 )
 
 var home controller.Home
@@ -31,14 +31,12 @@ func Routes() http.Handler{
 
 	// normal
 	mux.HandleFunc("/api/login", auth.Login)
-	// mux.HandleFunc("/sign-up", auth.Register)
 	mux.HandleFunc("/register/verification", auth.Confirm)
 
 	// Auth
 	mux.Handle("/api/user/update", Auth(http.HandlerFunc(home.Update)))
 	mux.Handle("/api/organization/update", Auth(http.HandlerFunc(organization.Update)))
 	mux.Handle("/api/organization-authority/update", Auth(http.HandlerFunc(organizationAuthority.Update)))
-	mux.Handle("/api/project/edit", Auth(http.HandlerFunc(project.Edit)))
 	mux.Handle("/api/project/create", Auth(http.HandlerFunc(project.Create)))
 	mux.Handle("/api/project/update", Auth(http.HandlerFunc(project.Update)))
 	mux.Handle("/api/project-authority/create", Auth(http.HandlerFunc(projectAuthority.Create)))
@@ -62,8 +60,8 @@ func Routes() http.Handler{
 	mux.HandleFunc("/task", task.Index)
 	
 	// websocket
-	mux.Handle("/chat", websocket.Handler(home.Chat))
-	mux.Handle("/websocket/project/create", websocket.Handler(home.Chat))
+	// mux.Handle("/chat", websocket.Handler(home.Chat))
+	// mux.Handle("/websocket/project/create", websocket.Handler(home.Chat))
 
 	wrappedMux := NewLogger(mux)
 	return wrappedMux

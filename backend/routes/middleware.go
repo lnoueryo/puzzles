@@ -36,20 +36,29 @@ func Auth(next http.Handler) http.Handler {
 
 //　リクエストのたびにログを作成
 func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// クロスオリジン用にセット
 	w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Methods","GET,PUT,POST,DELETE,UPDATE,OPTIONS")
+
+	// CSVのインポートエクスポートの場合
 	if r.URL.Path == "/api/data/download" {
 		w.Header().Set("Content-Type", "application/zip")
 		w.Header().Set("Content-Disposition", "attachment; filename=a.zip")
+
+	// JSONの場合
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 	}
+
+	// preflight用に200でいったん返す
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+
+	// セッション情報をログに吐き出す
 	start := time.Now()
 	cookie, err := r.Cookie("_cookie");if err != nil {
 		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, r.RemoteAddr, time.Since(start))

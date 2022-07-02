@@ -11,53 +11,9 @@ import (
 
 type OrganizationAuthority struct {}
 
-func (*OrganizationAuthority)Create(w http.ResponseWriter, r *http.Request) {
-	// projectにprojectauthorityを入れてフロントから送る
-	if r.Method != "POST" {
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-		return
-	}
-	
-    pa, err := models.GetProjectAuthorityJson(r);if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-        return
-    }
-
-	err = pa.Create(); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "couldn't create project"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-	}
-	s, _ := GetSession(r)
-	activity := models.Activity{
-		UserID: s.UserID,
-		ProjectID: pa.ProjectID,
-		ContentID: 6,
-	}
-
-	err = activity.Create(); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-	}
-
-	pJson, _ := json.Marshal(pa)
-	w.WriteHeader(http.StatusCreated)
-	w.Write(pJson)
-}
-
+// 組織権限の変更を行う
 func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != "PUT" {
 		errorlog.Print("put method required")
 		errMap := map[string]string{"message": "not found"}
@@ -66,7 +22,6 @@ func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-	infolog.Print("HELLO")
 
     oa, err := models.GetOrganizationAuthorityJson(r);if err != nil {
 		errorlog.Print(err)
@@ -76,6 +31,8 @@ func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
         return
     }
+
+	// 権限の変更
 	err = oa.ChangeAuthority(); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": err.Error()}
@@ -84,21 +41,6 @@ func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-
-	// activity := models.Activity{
-	// 	UserID: s.UserID,
-	// 	ProjectID: pa.ProjectID,
-	// 	ContentID: 6,
-	// }
-
-	// err = activity.Create(); if err != nil {
-	// 	errorlog.Print(err)
-	// 	errMap := map[string]string{"message": "not found"}
-	// 	errJson, _ := json.Marshal(errMap)
-	// 	w.WriteHeader(http.StatusNotFound)
-	// 	w.Write(errJson)
-	// 	return
-	// }
 
 	mainUser, err := CreateMainUser(r); if err != nil {
 		errorlog.Print(err)
@@ -114,6 +56,7 @@ func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*OrganizationAuthority)Delete(w http.ResponseWriter, r *http.Request) {
+	// 未実装
 	if r.Method != "DELETE" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)

@@ -407,62 +407,6 @@ func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
 	http.SetCookie(w, &cookie)
 	return s, nil
 }
-// func (u *User)CreateSession(w http.ResponseWriter) (Session, error) {
-// 	// sessionID 作成
-// 	var s Session
-// 	var oa OrganizationAuthority
-// 	sessionId := string(u.ID) + timeToString(u.CreatedAt) + timeToString(time.Now())
-// 	hashedByteSessionId := sha256.Sum256([]byte(sessionId))
-// 	hashedSessionId := fmt.Sprintf("%x", (hashedByteSessionId))
-// 	result := DB.Preload("Type").Preload(clause.Associations).Find(&oa, "user_id = ? and organization_id = ?", u.ID, u.Organization)
-// 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-// 		return s, result.Error
-// 	}
-// 	fmt.Println(oa)
-// 	u.Authority = oa.Type.Name
-// 	// session用ファイル作成
-// 	s = Session{
-// 		ID:				hashedSessionId,
-// 		UserID:			u.ID,
-// 		Name:			u.Name,
-// 		Age:			u.Age,
-// 		Sex:			u.Sex,
-// 		Email:			u.Email,
-// 		Address:		u.Address,
-// 		Image:			u.Image,
-// 		Description:	u.Description,
-// 		Organization:	u.Organization,
-// 		Authority:		u.Authority,
-// 		CreatedAt:		time.Now(),
-// 	}
-// 	// sessionフォルダの有無判定
-// 	_, err := os.Stat("session")
-// 	if err != nil {
-// 		os.Mkdir("session", 0777)
-// 	}
-// 	filepath := fmt.Sprintf("./session/%v.txt", hashedSessionId)
-// 	f, err := os.Create(filepath)
-// 	if err != nil {
-// 		return s, err
-// 	}
-// 	defer f.Close()
-// 	enc := gob.NewEncoder(f)
-
-// 	if err := enc.Encode(s); err != nil {
-// 		return s, err
-// 	}
-// 	// Path is needed for all path
-// 	cookie := http.Cookie{
-// 		Name:     "_cookie",
-// 		Value:    hashedSessionId,
-// 		HttpOnly: true,
-// 		Secure:   true,
-// 		Path:     "/",
-// 		SameSite: 4,
-// 	}
-// 	http.SetCookie(w, &cookie)
-// 	return s, nil
-// }
 
 func GetUserJson(r *http.Request) (User, error) {
 	var user User

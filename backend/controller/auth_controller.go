@@ -81,6 +81,8 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
+
+	// クッキーを無効にする
 	cookie.MaxAge = -1
 	http.SetCookie(w, cookie)
 	message := "logout is successful"
@@ -100,6 +102,7 @@ func (*Auth) InviteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ユーザーを組織に招待
 	err := models.InviteUser(r); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": err.Error()}
@@ -120,7 +123,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
     q := r.URL.Query()
 	code, ok := q["code"];if !ok {
 		url := allowOrigin + "/expiry"
-		http.Redirect(w, r, url, 301)
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
 		return
 	}
 
@@ -128,7 +131,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 	verification := code[0]
 	if verification == "" {
 		url := allowOrigin + "/expiry"
-		http.Redirect(w, r, url, 301)
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
 		return
 	}
 
@@ -136,15 +139,16 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 	var oa models.OrganizationAuthority
 	err := oa.Find(verification);if err != nil {
 		url := allowOrigin + "/expiry"
-		http.Redirect(w, r, url, 301)
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
 		return
 	}
 
 	// 有効期限の有無確認
-	oneDay := time.Now().Add(-time.Hour * 24)
+	before24hours := -time.Hour * 24
+	oneDay := time.Now().Add(before24hours)
 	if !oneDay.Before(oa.UpdatedAt) {
 		url := allowOrigin + "/expiry"
-		http.Redirect(w, r, url, 301)
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
 		return
 	}
 
@@ -152,7 +156,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 	err = oa.ChangeActive(); if err != nil {
 		errorlog.Print(err)
 		url := allowOrigin + "/bad-connection"
-		http.Redirect(w, r, url, 404)
+		http.Redirect(w, r, url, http.StatusNotFound)
 		return
 	}
 
@@ -161,13 +165,16 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 	m.Sub = "承認されました"
 	m.To = oa.User.Email
 	m.Message = "組織ID: " + oa.OrganizationID + "\nメールアドレス: " + oa.User.Email
+
+	// ユーザー登録が初めての場合
 	if oa.User.Name == "" {
-		password, _ := crypto.MakeRandomStr(20)
+		var passwordLength uint32 = 20
+		password, _ := crypto.MakeRandomStr(passwordLength)
 		oa.User.ChangePassword = password
 		err = oa.User.Update(); if err !=nil {
 			errorlog.Print(err)
 			url := allowOrigin + "/bad-connection"
-			http.Redirect(w, r, url, 404)
+			http.Redirect(w, r, url, http.StatusNotFound)
 			return
 		}
 		m.Message += "\n初回パスワード: " + password
@@ -179,5 +186,5 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 		errorlog.Print(m)
 		return
 	}
-	http.Redirect(w, r, url, 301)
+	http.Redirect(w, r, url, http.StatusMovedPermanently)
 }

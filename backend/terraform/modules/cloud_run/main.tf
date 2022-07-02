@@ -7,6 +7,7 @@ resource "google_cloud_run_service" "default" {
       service_account_name = var.service_account_name
       containers {
         image = var.image
+        # メモリ1Gib
         resources {
           limits = { "memory" : "1Gi" }
         }
@@ -36,6 +37,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
+# ドメインを紐づける
 resource "google_cloud_run_domain_mapping" "default" {
   location = google_cloud_run_service.default.location
   name     = var.domain

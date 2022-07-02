@@ -19,38 +19,44 @@ type Login struct {
 	Password		string    `json:"password"`
 }
 
-
+// ログインのバリデーション
 func TryToLogin(w http.ResponseWriter, r *http.Request) (*User, error) {
+
 	var u *User
 	l, err := getLoginJson(r)
 	if err != nil {
 		return u, err
 	}
+
+	// ログインフォーム空白確認
 	err = l.CheckLoginFormBlank()
 	if err != nil {
 		return u, err
 	}
 
+	// メールアドレスのフォームチェック
 	err = CheckEmailFormat(l.Email)
 	if err != nil {
 		return u, err
 	}
 
+	// 全ての項目を踏まえログイン情報が正しい確認
 	u, err = l.FindUser(u)
 	if err != nil {
 		return u, err
 	}
 
-	// u.Organization = l.Organization
 	return u, nil
 }
 
 func (l *Login) CheckLoginFormBlank() error {
+
 	if l.Organization == "" {
 		message := "organization is blank"
 		err := errors.New(message)
 		return err
 	}
+
 	if l.Email == "" {
 		message := "email address is blank"
 		err := errors.New(message)
@@ -69,13 +75,12 @@ func (l *Login) FindUser(u *User) (*User, error) {
 	// Password check
 	cryptoPassword := crypto.Encrypt(l.Password)
 	result := DB.Preload("Organizations", "organization_id = ?", l.Organization).Preload(clause.Associations).First(&u, "email = ? and password = ?", l.Email, cryptoPassword)
-	// result := DB.Preload("Organizations", "id = ?", l.Organization).Preload(clause.Associations).Find(&u, "email = ? and password = ?", l.Email, cryptoPassword)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		// message := "your email address has not been registered"
 		message := "email or password is wrong"
 		err := errors.New(message)
 		return u, err
 	}
+
 	if len(u.Organizations) == 0 {
 		message := "organization is wrong"
 		err := errors.New(message)
@@ -90,6 +95,7 @@ func getLoginJson(r *http.Request) (Login, error) {
 	if err != nil {
 		return login, err
 	}
+
 	if len(body) > 0 {
 		err = json.Unmarshal(body, &login)
 		if err != nil {
@@ -97,6 +103,7 @@ func getLoginJson(r *http.Request) (Login, error) {
 		}
 		return login, nil
 	}
+
 	message := "request body is empty"
 	err = errors.New(message)
 	return login, err

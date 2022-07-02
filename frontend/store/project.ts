@@ -45,20 +45,6 @@ export const actions: ActionTree<ProjectState, RootState> = {
       }
     })
   },
-  async selectEditProject({commit}, id: number) {
-    return new Promise(async(resolve, reject) => {
-      try {
-        const response = await this.$axios.get('/api/project/edit', {
-          params: {id: id}
-        });
-        resolve(response);
-        commit('project', response.data);
-      } catch (error: any) {
-        console.log(error);
-        reject(error.response);
-      }
-    })
-  },
   async createProject({commit}, form) {
     return new Promise(async(resolve, reject) => {
       try {

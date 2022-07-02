@@ -85,20 +85,7 @@ func (t *Task)Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	s, _ := GetSession(r)
-	activity := models.Activity{
-		UserID: s.UserID,
-		ProjectID: task.ProjectID,
-		ContentID: 1,
-	}
 
-	err = activity.Create(); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-	}
 	taskJson, _ := json.Marshal(task)
 	w.WriteHeader(http.StatusCreated)
 	w.Write(taskJson)
@@ -129,20 +116,7 @@ func (t *Task)Update(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	s, _ := GetSession(r)
-	activity := models.Activity{
-		UserID: s.UserID,
-		ProjectID: task.ProjectID,
-		ContentID: 2,
-	}
-	infolog.Print(task)
-	err = activity.Create(); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-	}
+
 	taskJson, _ := json.Marshal(task)
 	w.WriteHeader(http.StatusCreated)
 	w.Write(taskJson)

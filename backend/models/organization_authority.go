@@ -14,11 +14,11 @@ import (
 
 type OrganizationAuthority struct {
 	ID				int				`gorm:"AUTO_INCREMENT"json:"id"`
-	UserID			int				`json:"user_id"`
-	OrganizationID	string			`json:"organization_id"`
-    AuthorityID		int				`json:"auth_id"`
 	Active			bool			`json:"active"`
 	Verification	string			`json:"verification"`
+    AuthorityID		int				`json:"auth_id"`
+	OrganizationID	string			`json:"organization_id"`
+	UserID			int				`json:"user_id"`
 	User 			User			`gorm:"foreignkey:UserID;"json:"user"`
 	Organization 	Organization	`gorm:"foreignkey:OrganizationID;"json:"organization"`
 	Type			Authority		`gorm:"foreignkey:AuthorityID;"json:"type"`

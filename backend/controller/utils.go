@@ -51,12 +51,15 @@ func init() {
 	project = config.App.Project
 }
 
+// 既存のセッションを取得
 func GetSession(r *http.Request) (session.Session, error) {
+
 	var s session.Session
 	cookie, err := r.Cookie("_cookie");if err != nil {
 		err := errors.New("session is expired")
 		return s, err
 	}
+
 	s, err = session.CheckSession(cookie.Value, project)
 	if err != nil {
 		return s, err
@@ -64,7 +67,9 @@ func GetSession(r *http.Request) (session.Session, error) {
 	return s, nil
 }
 
+// 新たにセッション作成
 func CreateMainUser(r *http.Request) (MainUser, error) {
+	// BUG(inoueryo) 何かしらデータ更新を行う際に新しくセッションを作成し、古いものは削除されていない可能性あり
 	var mainUser MainUser
 	var u models.User
 	s, err := GetSession(r)
@@ -72,6 +77,7 @@ func CreateMainUser(r *http.Request) (MainUser, error) {
 		errorlog.Print(err)
 		return mainUser, err
 	}
+
 	mainUser.Projects = ProjectFilter(u.Organizations[0].Organization.Projects, func(userID int) bool {
         return userID == u.ID
     })
@@ -82,6 +88,7 @@ func CreateMainUser(r *http.Request) (MainUser, error) {
 	return mainUser, nil
 }
 
+// ユーザーが参加しているプロジェクトをフィルター
 func ProjectFilter(projects []models.Project, f func(int) bool) []models.Project {
 	var userProjects []models.Project
 	for _, project := range projects {
