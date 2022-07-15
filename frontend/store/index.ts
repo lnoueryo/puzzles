@@ -131,7 +131,7 @@ export const actions: ActionTree<RootState, RootState> = {
   updateOrganizationAuthority({commit}, form) {
     return new Promise(async(resolve, reject) => {
       try {
-        const response = await this.$axios.put('/api//update', form);
+        const response = await this.$axios.put('/api/update', form);
         resolve(response);
         commit('insertUserData', response.data);
       } catch (error: any) {
