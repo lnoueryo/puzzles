@@ -31,7 +31,6 @@
          :href="'#' + tab.component"
          v-for="(tab, i) in tabs"
          :key="i"
-         @click="$router.replace({...$route, ...{query: {tab: tab.component}}})"
         >
           {{ tab.title }}
           <v-icon>{{ tab.icon }}</v-icon>
