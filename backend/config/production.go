@@ -7,17 +7,18 @@ import (
 // 本番環境の設定
 func configureProdSettings() {
 	App.Addr = ":8080"
-	if os.Getenv("DB") == "CLOUDSQL" {
-		DBSet := Database{
-			Name:     os.Getenv("DB_NAME"),
-			Host:     os.Getenv("DB_HOST"),
-			User:     os.Getenv("DB_USER"),
-			Password: os.Getenv("DB_PASSWORD"),
-			Port:     os.Getenv("DB_PORT"),
-			Query:    os.Getenv("DB_QUERY"),
-		}
-		ConnectMysql(DBSet)
-		return
+	App.AllowOrigin = "https://puzzles.jounetsism.biz"
+	App.Origin = "puzzles-api.jounetsism.biz"
+	App.Project = "puzzles-345814"
+	DBSet := Database{
+		Name:     os.Getenv("DB_NAME"),
+		Host:     os.Getenv("DB_HOST"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Port:     "3306",
+		Query:    "parseTime=true",
 	}
-	ConnectSqlite3()
+	_, err := ConnectMysql(DBSet);if err != nil {
+		ConnectSqlite3()
+	}
 }

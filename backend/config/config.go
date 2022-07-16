@@ -21,48 +21,23 @@ type AppConfig struct {
 	Host			string
 	Origin			string
 	AllowOrigin		string
-	CredentialsPath	string
 	Email			mail.Mail
 	Project			string
 }
-type APIKey struct {
-	GitHubClientId string
-	GitHubSecretId string
-}
 
 var App AppConfig
-var ApiKey APIKey
 var infolog *log.Logger
 var errorlog *log.Logger
 
 // envによる環境の決定
 func init() {
-	appEnv, err := readEnvFile(); if err!= nil {
-		// if .env is not in local and production environment
-		panic("Not found .env")
-	}
-	if appEnv == "local" {
-			configureLocalSettings()
-	} else {
+
+    err := godotenv.Load(".env.dev"); if err != nil {
 		configureProdSettings()
+	} else {
+		configureLocalSettings()
 	}
 	commonSettings()
-}
-
-// envファイルの読み込み
-func readEnvFile() (string, error) {
-
-	// local
-    err := godotenv.Load(".env.dev"); if err == nil {
-		return os.Getenv("APP_ENV"), nil
-	}
-
-	// production
-	err = godotenv.Load(".env"); if err == nil {
-		return os.Getenv("APP_ENV"), nil
-	}
-
-	return os.Getenv("APP_ENV"), err
 }
 
 // 本番、開発環境共通のセッティング
@@ -72,19 +47,10 @@ func commonSettings() {
 	errorlog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	App.InfoLog = infolog
 	App.ErrorLog = errorlog
-	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN")
-	App.Host = os.Getenv("APP_HOST")
-	App.Origin = os.Getenv("APP_ORIGIN")
-	App.CredentialsPath = os.Getenv("CREDENTIALS_PATH")
-	App.Project = os.Getenv("PROJECT")
 
 	// file path
 	App.Static = "public"
 	App.Media = "upload"
-
-	// APIKey
-	ApiKey.GitHubClientId = os.Getenv("GITHUB_CLIENT_ID")
-	ApiKey.GitHubSecretId = os.Getenv("GITHUB_SECRET_ID")
 
 	// email
 	App.Email.From = os.Getenv("EMAIL_FROM")

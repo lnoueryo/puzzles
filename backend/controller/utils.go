@@ -77,7 +77,7 @@ func CreateMainUser(r *http.Request) (MainUser, error) {
 	}
 
 	mainUser.Projects = ProjectFilter(u.Organizations[0].Organization.Projects, func(userID int) bool {
-        return userID == u.ID
+		return userID == u.ID
     })
 	u.Organizations[0].Organization.Projects = nil
 	mainUser.OrganizationAuthority = u.Organizations[0]
