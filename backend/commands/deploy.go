@@ -12,11 +12,6 @@ import (
 
 var requiredDirectory = []string{"config", "controller", "credentials", "models", "modules", "public", "routes", "templates"}
 var requiredFiles = []string{"Dockerfile", "go.mod", "go.sum", "gorm.db", ".env", "server/main.go", "cloudbuild.yaml"}
-func init() {
-	err := godotenv.Load(".env.dev"); if err != nil {
-		panic("not found .env.dev")
-	}
-}
 
 func Deploy(env string) {
 	for _, value := range requiredDirectory {
@@ -29,7 +24,10 @@ func Deploy(env string) {
 		File(value, "backend/"+value)
 	}
 	if env == "local" {
-		err := os.Chdir("./backend")
+		err := godotenv.Load(".env.dev"); if err != nil {
+			panic("not found .env.dev")
+		}
+		err = os.Chdir("./backend")
 		currDir, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
