@@ -24,7 +24,7 @@ func CMD() {
 	}
 
 	if verb == "deploy" {
-		Deploy()
+		Deploy(object)
 		return
 	}
 

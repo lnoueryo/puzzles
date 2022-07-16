@@ -18,7 +18,7 @@ func init() {
 	}
 }
 
-func Deploy() {
+func Deploy(env string) {
 	for _, value := range requiredDirectory {
 		Dir(value, "backend/"+value)
 	}
@@ -28,15 +28,17 @@ func Deploy() {
 		}
 		File(value, "backend/"+value)
 	}
-	err := os.Chdir("./backend")
-	currDir, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-		return
+	if env == "local" {
+		err := os.Chdir("./backend")
+		currDir, err := os.Getwd()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(currDir)
+		SetProject()
+		ExecuteCloudbuild()
 	}
-	fmt.Println(currDir)
-	SetProject()
-	ExecuteCloudbuild()
 }
 
 func SetProject() {
