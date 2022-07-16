@@ -45,7 +45,7 @@ func (o *Organization)GetOrganization(id string) error {
 func(o *Organization) Update() error {
 	if o.ImageData != "" {
 		deleteImageName := o.Image
-		fileName, err := StoreImage("organizations", o.ImageData); if err != nil {
+		fileName, err := UploadToGCS("organizations", o.ImageData); if err != nil {
 			return errors.New("couldn't save the image")
 		}
 		o.Image = fileName

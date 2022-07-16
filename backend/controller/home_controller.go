@@ -74,7 +74,7 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 		deleteImageName := u.Image
 
 		// イメージを保存
-		fileName, err := StoreImage("users", u.ImageData); if err != nil {
+		fileName, err := UploadToGCS("users", u.ImageData); if err != nil {
 			errorlog.Print(err)
 			errMap := map[string]string{"message": "couldn't save the image"}
 			errJson, _ := json.Marshal(errMap)
@@ -109,11 +109,7 @@ func (h *Home) Update(w http.ResponseWriter, r *http.Request) {
 
 			// 環境による保存場所の変更
 			path := "users/" + u.Image
-			if credentialsPath != "" {
-				err = StoreImageToGCS(buf.Bytes(), path)
-			} else {
-				err = StoreBinaryImage(buf.Bytes(), path)
-			}
+			err = StoreImageToGCS(buf.Bytes(), path)
 			if err != nil {
 				errorlog.Print(err);
 				errMap := map[string]string{"message": "couldn't save the image"}

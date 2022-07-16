@@ -142,7 +142,7 @@ func (pur *ProjectUpdateRequest)BulkUpdateProject() error {
 		if pur.Project.ImageData != "" {
 
 			deleteImageName := pur.Project.Image
-			fileName, err := StoreImage("projects", pur.Project.ImageData); if err != nil {
+			fileName, err := UploadToGCS("projects", pur.Project.ImageData); if err != nil {
 				return errors.New("couldn't save the image")
 			}
 

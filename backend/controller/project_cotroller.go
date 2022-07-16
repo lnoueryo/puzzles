@@ -28,7 +28,7 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 
 	// イメージが更新された場合
 	if p.ImageData != "" {
-		fileName, err := StoreImage("projects", p.ImageData); if err != nil {
+		fileName, err := UploadToGCS("projects", p.ImageData); if err != nil {
 			errorlog.Print(err);
 			errMap := map[string]string{"message": "couldn't save the image"}
 			errJson, _ := json.Marshal(errMap)

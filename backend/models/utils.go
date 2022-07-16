@@ -13,7 +13,7 @@ var email mail.Mail
 var origin string
 var allowOrigin string
 var project string
-var StoreImage = config.StoreImage
+var UploadToGCS = config.UploadToGCS
 var DeleteImage = config.DeleteImage
 var errorlog = config.App.ErrorLog
 

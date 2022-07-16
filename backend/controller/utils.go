@@ -32,9 +32,8 @@ var ws_array []*websocket.Conn // *websocket.Connを入れる配列
 var email mail.Mail
 var origin string
 var allowOrigin string
-var credentialsPath string
 var project string
-var StoreImage = config.StoreImage
+var UploadToGCS = config.UploadToGCS
 var DeleteImage = config.DeleteImage
 var StoreImageToGCS = config.StoreImageToGCS
 var StoreBinaryImage = config.StoreBinaryImage
@@ -47,7 +46,6 @@ func init() {
 	email = config.App.Email
 	origin = config.App.Origin
 	allowOrigin = config.App.AllowOrigin
-	credentialsPath = config.App.CredentialsPath
 	project = config.App.Project
 }
 
