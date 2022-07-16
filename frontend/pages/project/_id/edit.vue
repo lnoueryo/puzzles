@@ -127,7 +127,7 @@ export default Vue.extend({
         ...milestones,
         ...versions,
         // ...administers,
-        {title: 'イメージの変更', newData: this.selectedProject.image_data || this.selectedProject.image, oldData: this.selectedProject.image, image: true},
+        {title: 'イメージの変更', newData: this.selectedProject.image_data || this.selectedProject.image, oldData: '/projects/' + this.selectedProject.image, image: true},
         {title: 'プロジェクトの概要', newData: this.selectedProject.description, oldData: this.project.description},
       ];
     }

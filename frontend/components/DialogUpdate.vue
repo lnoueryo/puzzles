@@ -19,7 +19,7 @@
                 <div class="w50" v-if="content.change">
                   <div>{{ content.title }}</div>
                   <div>
-                    <v-img class="image-width" :src="$config.mediaURL + '/projects/' + content.oldData" :lazy-src="require('~/assets/image/project.png')">
+                    <v-img class="image-width" :src="$config.mediaURL + content.oldData" :lazy-src="require('~/assets/image/project.png')" v-if="content.oldData">
                       <template v-slot:placeholder>
                         <v-row class="fill-height ma-0" align="center" justify="center">
                           <v-progress-circular indeterminate color="grey lighten-5" />

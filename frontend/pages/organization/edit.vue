@@ -51,7 +51,7 @@ export default Vue.extend({
         {title: 'プロジェクトの概要', newData: this.organization.description, oldData: this.organizationAuthority.organization.description},
         {title: '設立日', newData: this.organization.founded, oldData: this.organizationAuthority.organization.founded},
         {title: '電話番号', newData: this.organization.number, oldData: this.organizationAuthority.organization.number},
-        {title: 'イメージの変更', newData: this.organization.image_data || this.organization.image, oldData: this.organizationAuthority.organization.image, image: true},
+        {title: 'イメージの変更', newData: this.organization.image_data || this.organization.image, oldData: '/organizations/' + this.organizationAuthority.organization.image, image: true},
       ];
     }
   },
