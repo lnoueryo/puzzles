@@ -1,17 +1,16 @@
 
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Cloud Run on merge
 'on':
   push:
     branches:
       - release*
-    paths:
-      - "./backend/**"
 
 jobs:
   job_id:
+    runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: './backend/backend'
     steps:
     - id: 'auth'
       uses: 'google-github-actions/auth@v0'
@@ -25,9 +24,9 @@ jobs:
     - name: check out
       uses: actions/checkout@v2
     - name: Prepare deploy
+      working-directory: './backend'
       run: go run main.go deploy
     - name: 'Deploy to Cloud Run'
-      working-directory: './backend/backend'
       uses: 'google-github-actions/deploy-cloudrun@v0'
       with:
         service: '${{ env.SERVICE }}'
