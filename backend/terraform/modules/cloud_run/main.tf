@@ -7,6 +7,34 @@ resource "google_cloud_run_service" "default" {
       service_account_name = var.service_account_name
       containers {
         image = var.image
+        env {
+          name = "DB_NAME"
+          value = var.db_name
+        }
+        env {
+          name = "DB_HOST"
+          value = var.db_host
+        }
+        env {
+          name = "DB_USER"
+          value = var.db_user
+        }
+        env {
+          name = "DB_PASSWORD"
+          value = var.db_password
+        }
+        env {
+          name = "EMAIL_FROM"
+          value = var.email_from
+        }
+        env {
+          name = "EMAIL_USERNAME"
+          value = var.email_username
+        }
+        env {
+          name = "EMAIL_PASSWORD"
+          value = var.email_password
+        }
         # メモリ1Gib
         resources {
           limits = { "memory" : "1Gi" }
