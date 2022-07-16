@@ -78,7 +78,7 @@
           v-if="!isEmptyObj(project)"
         >
         </v-select> -->
-        <v-cropper v-model="image" :pixel="900" ratio="16:9" :width="450" :currentImage="$config.mediaURL + '/projects/' + value.image"></v-cropper>
+        <v-cropper v-model="image" :pixel="900" ratio="16:9" :width="450" :currentImage="currentImage"></v-cropper>
         <div class="px-4 py-2 red--text accent-3 text-center error-height">{{ this.error }}</div>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -192,8 +192,8 @@ export default Vue.extend({
         this.updateValue({image_data});
       }
     },
-    imageSrc() {
-      return this.value?.image_data || this.$config.mediaURL + '/projects/' + this.value.image;
+    currentImage() {
+      return this.value.image_data || this.$config.mediaURL + '/projects/' + this.value.image
     },
     projectUserItems() {
       return this.project.authority_users.map((user: ProjectAuthority) => {
@@ -211,13 +211,6 @@ export default Vue.extend({
     updateValue(value: {}) {
       const newProject = {...this.value, ...value};
       this.$emit('input', newProject);
-    },
-    async onChangeFile(e: File) {
-      if(!e) return this.value.image_data = '';
-      const image_data = await resizeFile(e);
-      const newProject = {...this.value.project, ...{image_data}};
-      const newValue = {...this.value, ...{project: newProject}};
-      this.$emit('input', newValue);
     },
     onSubmit() {
       this.$emit('submit');
