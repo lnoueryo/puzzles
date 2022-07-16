@@ -147,7 +147,6 @@ export default Vue.extend({
   methods: {
     preprocessTask: function(): void {
       this.selectedTask = JSON.parse(JSON.stringify(this.task));
-      console.log(this.selectedTask)
       this.selectedTask.deadline = this.changeToDateISOFormat(this.selectedTask.deadline);
       this.pageReady = true;
     },

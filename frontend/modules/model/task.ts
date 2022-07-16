@@ -108,7 +108,6 @@ export class Tasks {
       if(task.id == updatedTask.id) {
         const newTask = this.preprocessTask(updatedTask);
         task = {...{}, ...newTask}
-        console.log(task)
       }
       return task;
     })

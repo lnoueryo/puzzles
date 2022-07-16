@@ -62,7 +62,6 @@ export const actions: ActionTree<ProjectState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.put('/api/project/update', form);
-        console.log(form)
         if(form.field_delete || form.milestone_delete) dispatch('task/getTasks', window.$nuxt.$route.params.id, {root: true});
         commit('updateProject', response.data);
         resolve(response);
