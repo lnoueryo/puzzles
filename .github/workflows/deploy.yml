@@ -4,7 +4,8 @@ name: Deploy to Cloud Run on merge
   push:
     branches:
       - release*
-
+    paths:
+      - 'backend/**'
 jobs:
   job_id:
     runs-on: ubuntu-latest
