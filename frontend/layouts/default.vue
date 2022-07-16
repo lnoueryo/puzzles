@@ -231,7 +231,6 @@ export default {
     const paths = [{text: 'Home', disabled: false, href: '/'}]
     this.$route.matched[0].path.split('/').forEach((devidedPath) => {
       if(devidedPath == '') return;
-      console.log(path)
       if(devidedPath[0] == ':') {
         const params = this.$route.params[devidedPath.replace(':', '')]
         path += '/' + params
@@ -241,7 +240,7 @@ export default {
       path += '/' + devidedPath
       paths.push({text: devidedPath, disabled: false, href: path})
     })
-    console.log(paths)
+
     // window.onload = () => {
     //   this.$store.getters['projectCreateSock'].onmessage = (event) => {
     //     const data = JSON.parse(event.data);
