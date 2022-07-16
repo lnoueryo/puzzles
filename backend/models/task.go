@@ -17,9 +17,9 @@ type Task struct {
 	AssigneeID		int			`gorm:"<-;not null"json:"assignee_id"`
 	AssignerID		int			`gorm:"<-;not null"json:"assigner_id"`
 	StatusID		int			`gorm:"<-;not null"json:"status_id"`
-	FieldID			*int		`gorm:"<-;not null;"json:"field_id"`
-	MilestoneID		*int		`gorm:"<-;not null;"json:"milestone_id"`
-	VersionID		*int		`gorm:"<-;not null;"json:"version_id"`
+	FieldID			*int		`gorm:"<-;"json:"field_id"`
+	MilestoneID		*int		`gorm:"<-;"json:"milestone_id"`
+	VersionID		*int		`gorm:"<-;"json:"version_id"`
 	PriorityID		int			`gorm:"<-;not null"json:"priority_id"`
 	TypeID			int			`gorm:"<-;not null"json:"type_id"`
 	ProjectID		int			`gorm:"<-;not null"json:"project_id"`

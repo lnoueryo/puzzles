@@ -85,6 +85,7 @@ export default Vue.extend({
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
       const field = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id) || {};
       const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
+      const version = this.project.versions.find((version: model.Milestone) => version.id === this.selectedTask.version_id) || {};
       const requiredDataforDisplay = {
         assignee,
         status,
@@ -92,6 +93,7 @@ export default Vue.extend({
         field,
         milestone,
         priority,
+        version,
         comments: [],
       }
       const newTask = {...this.selectedTask, ...additionalInfo, ...cleansedData, ...requiredDataforDisplay}
