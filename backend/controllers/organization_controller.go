@@ -30,17 +30,7 @@ func (*Organization)Update(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	mainUser, err := services.CreateMainUser(r); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "bad connection"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(sessionJson)
-		return
-	}
-
-	uJson, _ := json.Marshal(mainUser)
 	w.WriteHeader(http.StatusOK)
-	w.Write(uJson)
+	RespondMainUser(w, r)
 }
 

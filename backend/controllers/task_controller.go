@@ -40,7 +40,7 @@ func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := models.GetTasks(id); if err != nil {
+	t, err := models.GetTasks(DB, id); if err != nil {
 		errorlog.Print(err)
 		message := "bad connection"
 		errorlog.Print(message)
@@ -76,7 +76,7 @@ func (_ *Task)Create(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	project, err := task.CountProjectTask(); if err != nil {
+	project, err := task.CountProjectTask(DB); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -86,7 +86,7 @@ func (_ *Task)Create(w http.ResponseWriter, r *http.Request) {
     }
 
 	task.Key = project.Name + "_" + strconv.Itoa(len(project.Tasks) + 1)
-	err = task.Create(); if err != nil {
+	err = task.Create(DB); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -94,7 +94,7 @@ func (_ *Task)Create(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 	}
 
-	t, err := models.GetTasks(task.ProjectID); if err != nil {
+	t, err := models.GetTasks(DB, task.ProjectID); if err != nil {
 		errorlog.Print(err)
 		message := "bad connection"
 		errorlog.Print(message)
@@ -129,7 +129,7 @@ func (_ *Task)Update(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	err = task.Update(); if err != nil {
+	err = task.Update(DB); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -137,7 +137,7 @@ func (_ *Task)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 	}
 
-	t, err := models.GetTasks(task.ProjectID); if err != nil {
+	t, err := models.GetTasks(DB, task.ProjectID); if err != nil {
 		errorlog.Print(err)
 		message := "bad connection"
 		errorlog.Print(message)

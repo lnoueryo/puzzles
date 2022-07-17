@@ -27,7 +27,7 @@ func (c *Comment)Create(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
         return
     }
-	err = comment.Create(); if err != nil {
+	err = comment.Create(DB); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -89,7 +89,7 @@ func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
 		w.Write(sessionJson)
 		return
 	}
-	comments, _ := models.GetComments(id)
+	comments, _ := models.GetComments(DB, id)
 	commentJson, _ := json.Marshal(comments)
 	w.WriteHeader(http.StatusCreated)
 	w.Write(commentJson)
@@ -113,7 +113,7 @@ func (c *Comment)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
         return
     }
-	err = comment.Update(); if err != nil {
+	err = comment.Update(DB); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -157,7 +157,7 @@ func (_ *Comment)Delete(w http.ResponseWriter, r *http.Request) {
 		IDs = append(IDs, id)
 	}
 
-	c, err := models.DeleteComment(IDs); if err != nil {
+	c, err := models.DeleteComment(DB, IDs); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)

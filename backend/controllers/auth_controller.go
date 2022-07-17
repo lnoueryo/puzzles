@@ -20,7 +20,7 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// バリデーション
-	u, err := models.TryToLogin(w, r)
+	u, err := models.TryToLogin(DB, w, r)
 	if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": err.Error()}
@@ -103,7 +103,7 @@ func (*Auth) InviteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ユーザーを組織に招待
-	err := models.InviteUser(r); if err != nil {
+	err := models.InviteUser(DB, r); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": err.Error()}
 		errJson, _ := json.Marshal(errMap)
@@ -137,7 +137,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 
 	// verificationコードが正しいか確認
 	var oa models.OrganizationAuthority
-	err := oa.Find(verification);if err != nil {
+	err := oa.Find(DB, verification);if err != nil {
 		url := allowOrigin + "/expiry"
 		http.Redirect(w, r, url, http.StatusMovedPermanently)
 		return
@@ -153,7 +153,7 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// activeを有効に変更
-	err = oa.ChangeActive(); if err != nil {
+	err = oa.ChangeActive(DB); if err != nil {
 		errorlog.Print(err)
 		url := allowOrigin + "/bad-connection"
 		http.Redirect(w, r, url, http.StatusNotFound)
@@ -171,12 +171,12 @@ func (au *Auth) Confirm(w http.ResponseWriter, r *http.Request) {
 		var passwordLength uint32 = 20
 		password, _ := crypto.MakeRandomStr(passwordLength)
 		oa.User.ChangePassword = password
-		err = oa.User.Update(); if err !=nil {
-			errorlog.Print(err)
-			url := allowOrigin + "/bad-connection"
-			http.Redirect(w, r, url, http.StatusNotFound)
-			return
-		}
+		// err = oa.User.Update(); if err !=nil {
+		// 	errorlog.Print(err)
+		// 	url := allowOrigin + "/bad-connection"
+		// 	http.Redirect(w, r, url, http.StatusNotFound)
+		// 	return
+		// }
 		m.Message += "\n初回パスワード: " + password
 	}
 

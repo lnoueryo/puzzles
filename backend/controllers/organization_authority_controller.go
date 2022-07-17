@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/services"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -23,26 +24,8 @@ func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    oa, err := models.GetOrganizationAuthorityJson(r);if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-        return
-    }
 
-	// 権限の変更
-	err = oa.ChangeAuthority(); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": err.Error()}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-		return
-	}
-
-	mainUser, err := CreateMainUser(r); if err != nil {
+	mainUser, err := services.CreateMainUser(r); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -88,7 +71,7 @@ func (*OrganizationAuthority)Delete(w http.ResponseWriter, r *http.Request) {
 		IDs = append(IDs, id)
 	}
 
-	pa, err := models.DeleteProjectAuthority(IDs); if err != nil {
+	pa, err := models.DeleteProjectAuthority(DB, IDs); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)

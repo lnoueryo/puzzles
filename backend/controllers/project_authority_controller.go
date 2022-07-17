@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/services"
 	"encoding/json"
+
 	// "fmt"
 	"net/http"
 	"strconv"
@@ -32,14 +34,14 @@ func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	err = pa.Create(); if err != nil {
+	err = pa.Create(DB); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "couldn't create project"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-	mainUser, err := CreateMainUser(r); if err != nil {
+	mainUser, err := services.CreateMainUser(r); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -72,7 +74,7 @@ func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	err = pa.Update(); if err != nil {
+	err = pa.Update(DB); if err != nil {
 		errMap := map[string]string{"message": err.Error()}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -80,7 +82,7 @@ func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mainUser, err := CreateMainUser(r); if err != nil {
+	mainUser, err := services.CreateMainUser(r); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -128,7 +130,7 @@ func (_ *ProjectAuthority)Delete(w http.ResponseWriter, r *http.Request) {
 		IDs = append(IDs, id)
 	}
 
-	pa, err := models.DeleteProjectAuthority(IDs); if err != nil {
+	pa, err := models.DeleteProjectAuthority(DB, IDs); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)

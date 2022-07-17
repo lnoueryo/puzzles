@@ -5,6 +5,8 @@ import (
 	"backend/models"
 	"backend/modules/mail"
 	"backend/modules/session"
+	"backend/services"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -66,25 +68,25 @@ func GetSession(r *http.Request) (session.Session, error) {
 }
 
 // 新たにセッション作成
-func CreateMainUser(r *http.Request) (MainUser, error) {
-	// BUG(inoueryo) 何かしらデータ更新を行う際に新しくセッションを作成し、古いものは削除されていない可能性あり
-	var mainUser MainUser
-	var u models.User
-	s, err := GetSession(r)
-	err = u.GetMainUser(s.UserID, s.Organization); if err != nil {
-		errorlog.Print(err)
-		return mainUser, err
-	}
+// func CreateMainUser(r *http.Request) (MainUser, error) {
+// 	// BUG(inoueryo) 何かしらデータ更新を行う際に新しくセッションを作成し、古いものは削除されていない可能性あり
+// 	var mainUser MainUser
+// 	var u models.User
+// 	s, err := GetSession(r)
+// 	err = u.GetMainUser(s.UserID, s.Organization); if err != nil {
+// 		errorlog.Print(err)
+// 		return mainUser, err
+// 	}
 
-	mainUser.Projects = ProjectFilter(u.Organizations[0].Organization.Projects, func(userID int) bool {
-		return userID == u.ID
-    })
-	u.Organizations[0].Organization.Projects = nil
-	mainUser.OrganizationAuthority = u.Organizations[0]
-	u.Organizations = nil
-	mainUser.User = u
-	return mainUser, nil
-}
+// 	mainUser.Projects = ProjectFilter(u.Organizations[0].Organization.Projects, func(userID int) bool {
+// 		return userID == u.ID
+//     })
+// 	u.Organizations[0].Organization.Projects = nil
+// 	mainUser.OrganizationAuthority = u.Organizations[0]
+// 	u.Organizations = nil
+// 	mainUser.User = u
+// 	return mainUser, nil
+// }
 
 // ユーザーが参加しているプロジェクトをフィルター
 func ProjectFilter(projects []models.Project, f func(int) bool) []models.Project {
@@ -102,4 +104,19 @@ func ProjectFilter(projects []models.Project, f func(int) bool) []models.Project
 		}
 	}
 	return userProjects
+}
+
+func RespondMainUser(w http.ResponseWriter, r *http.Request) {
+	// セッションを確認し、ユーザー情報を作成
+	mainUser, err := services.CreateMainUser(r); if err != nil {
+		errorlog.Print(err)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
+
+	uJson, _ := json.Marshal(mainUser)
+	w.Write(uJson)
 }
