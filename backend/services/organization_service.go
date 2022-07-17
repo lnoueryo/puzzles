@@ -11,7 +11,7 @@ func UpdateOrganization(r *http.Request) error {
 		return err
 	}
 
-	err = o.Update()
+	err = o.Update(DB)
 	if err != nil {
 		return err
 	}

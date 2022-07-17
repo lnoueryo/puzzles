@@ -20,7 +20,7 @@ func CreateMainUser(r *http.Request) (MainUser, error) {
 	var mainUser MainUser
 	var u models.User
 	s, err := GetSession(r)
-	err = u.GetMainUser(s.UserID, s.Organization)
+	err = u.GetMainUser(DB, s.UserID, s.Organization)
 	if err != nil {
 		return mainUser, err
 	}
@@ -78,7 +78,7 @@ func UpdateMainUser(r *http.Request) error {
 		}
 	}
 
-	err = u.Update(); if err != nil {
+	err = u.Update(DB); if err != nil {
 		return err
 	}
 
