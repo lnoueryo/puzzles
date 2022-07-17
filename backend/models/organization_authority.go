@@ -27,6 +27,11 @@ type OrganizationAuthority struct {
 }
 
 
+func NewOrganizationAuthority(r *http.Request) (OrganizationAuthority, error) {
+	organizationAuthority, _ := GetOrganizationAuthorityJson(r)
+	return organizationAuthority, nil
+}
+
 func (oa *OrganizationAuthority)Find(DB *gorm.DB, verification string) error {
 	result := DB.Preload("User").First(&oa, "verification = ? and active = false", verification); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
@@ -41,6 +46,13 @@ func (oa *OrganizationAuthority)Create(DB *gorm.DB) error {
 		Active: oa.Active,
 	}
 	result := DB.Where(condition).FirstOrCreate(&oa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
+	}
+	return nil
+}
+
+func (oa *OrganizationAuthority)DeleteByUserIDs(DB *gorm.DB, ids []int) error {
+	result := DB.Delete(&oa, "user_id = ?", ids); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil

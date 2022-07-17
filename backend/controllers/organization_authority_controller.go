@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"backend/models"
 	"backend/services"
 	"encoding/json"
 	"net/http"
-	"strconv"
 )
 
 
@@ -24,8 +22,7 @@ func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	mainUser, err := services.CreateMainUser(r); if err != nil {
+	err := services.UpdateOrganizationAuthority(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -33,9 +30,9 @@ func (*OrganizationAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		w.Write(sessionJson)
 		return
 	}
-	uJson, _ := json.Marshal(mainUser)
+
 	w.WriteHeader(http.StatusOK)
-	w.Write(uJson)
+	RespondMainUser(w, r)
 }
 
 func (*OrganizationAuthority)Delete(w http.ResponseWriter, r *http.Request) {
@@ -48,30 +45,7 @@ func (*OrganizationAuthority)Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := r.URL.Query()
-    idSlice, ok := query["id"]; if !ok {
-		errorlog.Println(query)
-		errMap := map[string]string{"message": "not found"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-    }
-	var IDs []int
-	for _, ID := range idSlice {
-		id, err := strconv.Atoi(ID)
-		if err != nil {
-			errorlog.Print(err)
-			errMap := map[string]string{"message": "bad connection"}
-			sessionJson, _ := json.Marshal(errMap)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write(sessionJson)
-			return
-		}
-		IDs = append(IDs, id)
-	}
-
-	pa, err := models.DeleteProjectAuthority(DB, IDs); if err != nil {
+	err := services.DeleteOrganizationAuthority(r); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -80,7 +54,6 @@ func (*OrganizationAuthority)Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commentJson, _ := json.Marshal(pa)
-	w.WriteHeader(http.StatusNoContent)
-	w.Write(commentJson)
+	w.WriteHeader(http.StatusOK)
+	RespondMainUser(w, r)
 }

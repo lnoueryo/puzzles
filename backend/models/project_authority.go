@@ -54,12 +54,11 @@ func (pa *ProjectAuthority)Update(DB *gorm.DB) error {
 	return nil
 }
 
-func DeleteProjectAuthority(DB *gorm.DB, id []int) (ProjectAuthority, error) {
-	var pa ProjectAuthority
-	result := DB.Debug().Delete(&pa, id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return pa, result.Error
+func (pa *ProjectAuthority)DeleteByUserIDs(DB *gorm.DB, ids []int) error {
+	result := DB.Delete(&pa, ids); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
 	}
-	return pa, nil
+	return nil
 }
 
 func GetProjectAuthorityJson(r *http.Request) (ProjectAuthority, error) {

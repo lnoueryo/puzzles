@@ -1,13 +1,10 @@
 package controllers
 
 import (
-	"backend/models"
 	"backend/services"
 	"encoding/json"
 
-	// "fmt"
 	"net/http"
-	"strconv"
 )
 
 
@@ -25,7 +22,7 @@ func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    pa, err := models.GetProjectAuthorityJson(r);if err != nil {
+	err := services.CreateProjectAuthority(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -34,24 +31,8 @@ func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	err = pa.Create(DB); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "couldn't create project"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-	}
-	mainUser, err := services.CreateMainUser(r); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "bad connection"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(sessionJson)
-		return
-	}
-	uJson, _ := json.Marshal(mainUser)
 	w.WriteHeader(http.StatusOK)
-	w.Write(uJson)
+	RespondMainUser(w, r)
 }
 
 // プロジェクトの権限変更
@@ -65,7 +46,7 @@ func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    pa, err := models.GetProjectAuthorityJson(r);if err != nil {
+	err := services.UpdateProjectAuthority(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -74,25 +55,8 @@ func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	err = pa.Update(DB); if err != nil {
-		errMap := map[string]string{"message": err.Error()}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-		return
-	}
-
-	mainUser, err := services.CreateMainUser(r); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "bad connection"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(sessionJson)
-		return
-	}
-	uJson, _ := json.Marshal(mainUser)
-	w.WriteHeader(http.StatusNoContent)
-	w.Write(uJson)
+	w.WriteHeader(http.StatusOK)
+	RespondMainUser(w, r)
 }
 
 // ユーザーをプロジェクトから除外
@@ -106,40 +70,15 @@ func (_ *ProjectAuthority)Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := r.URL.Query()
-    idSlice, ok := query["id"]; if !ok {
-		errorlog.Println(query)
-		errMap := map[string]string{"message": "not found"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-    }
-
-	var IDs []int
-	for _, ID := range idSlice {
-		id, err := strconv.Atoi(ID)
-		if err != nil {
-			errorlog.Print(err)
-			errMap := map[string]string{"message": "bad connection"}
-			sessionJson, _ := json.Marshal(errMap)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write(sessionJson)
-			return
-		}
-		IDs = append(IDs, id)
-	}
-
-	pa, err := models.DeleteProjectAuthority(DB, IDs); if err != nil {
+	err := services.DeleteProjectAuthority(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
-		return
-	}
+        return
+    }
 
-	commentJson, _ := json.Marshal(pa)
-	w.WriteHeader(http.StatusNoContent)
-	w.Write(commentJson)
+	w.WriteHeader(http.StatusOK)
+	RespondMainUser(w, r)
 }
