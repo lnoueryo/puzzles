@@ -51,7 +51,7 @@ func NewTask(r *http.Request) (Task, error) {
 	return task, nil
 }
 
-func GetTasks(DB *gorm.DB, projectID int) ([]Task, error) {
+func GetTasksByProjectID(DB *gorm.DB, projectID int) ([]Task, error) {
 	var t []Task
 	result := DB.Preload("Comments", "id = ?", 0).Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -61,7 +61,6 @@ func GetTasks(DB *gorm.DB, projectID int) ([]Task, error) {
 }
 
 func (t *Task)GetTask(DB *gorm.DB) error {
-	fmt.Println(t)
 	tx := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations)
 	tx = RecursivePreload(tx)
 	result := tx.Find(&t, t.ID)

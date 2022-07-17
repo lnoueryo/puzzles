@@ -120,3 +120,17 @@ func RespondMainUser(w http.ResponseWriter, r *http.Request) {
 	uJson, _ := json.Marshal(mainUser)
 	w.Write(uJson)
 }
+
+func RespondTasks(w http.ResponseWriter, r *http.Request, id int) {
+
+	t, err := services.GetTask(id); if err != nil {
+		errorlog.Print(err)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
+	tJson, _ := json.Marshal(t)
+	w.Write(tJson)
+}

@@ -5,6 +5,7 @@ import (
 	"backend/modules/session"
 	"errors"
 	"net/http"
+	"strconv"
 )
 
 var DB = config.DB
@@ -23,4 +24,24 @@ func GetSession(r *http.Request) (session.Session, error) {
 		return s, err
 	}
 	return s, nil
+}
+
+func GetIDs(r *http.Request) ([]int, error) {
+	var ids []int
+	query := r.URL.Query()
+    idSlice, ok := query["id"]; if !ok {
+		message := "couldn't get id"
+		err := errors.New(message)
+		return ids, err
+    }
+
+	for _, ID := range idSlice {
+		id, err := strconv.Atoi(ID)
+		if err != nil {
+			return ids, err
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
 }
