@@ -6,13 +6,11 @@ import (
 )
 
 func UpdateOrganization(r *http.Request) error {
-	o, err := models.GetOrganizationJson(r)
-	if err != nil {
+	o, err := models.GetOrganizationJson(r);if err != nil {
 		return err
 	}
 
-	err = o.Update(DB)
-	if err != nil {
+	err = o.Update(DB);if err != nil {
 		return err
 	}
 

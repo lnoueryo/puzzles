@@ -2,9 +2,7 @@ package services
 
 import (
 	"backend/models"
-	"errors"
 	"net/http"
-	"strconv"
 )
 
 func CreateProjectAuthority(r *http.Request) error {
@@ -30,27 +28,16 @@ func UpdateProjectAuthority(r *http.Request) error {
 }
 
 func DeleteProjectAuthority(r *http.Request) error {
-	query := r.URL.Query()
-    idSlice, ok := query["id"]; if !ok {
-		message := "couldn't get id"
-		err := errors.New(message)
-		return err
-    }
 
-	var IDs []int
-	for _, ID := range idSlice {
-		id, err := strconv.Atoi(ID)
-		if err != nil {
-			return nil
-		}
-		IDs = append(IDs, id)
+	ids, err := GetIDs(r);if err != nil {
+		return err
 	}
 
 	pa, err := models.NewProjectAuthority(r);if err != nil {
 		return err
 	}
 
-	err = pa.DeleteByUserIDs(DB, IDs); if err != nil {
+	err = pa.DeleteByUserIDs(DB, ids); if err != nil {
 		return err
 	}
 	return nil

@@ -19,8 +19,7 @@ type ProjectUpdateRequest struct {
 
 func CreateProject(r *http.Request) error {
 
-    p, err := models.NewProject(r)
-    if err != nil {
+    p, err := models.NewProject(r);if err != nil {
         return err
     }
 
@@ -55,8 +54,7 @@ func UpdateProject(r *http.Request) error {
 
 func getProjectUpdateRequestJson(r *http.Request) (ProjectUpdateRequest, error) {
 	var projectUpdateRequest ProjectUpdateRequest
-	err := json.NewDecoder(r.Body).Decode(&projectUpdateRequest)
-	if err != nil {
+	err := json.NewDecoder(r.Body).Decode(&projectUpdateRequest);if err != nil {
 		return projectUpdateRequest, err
 	}
 	return projectUpdateRequest, nil
