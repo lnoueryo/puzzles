@@ -57,7 +57,7 @@ func (*Project)Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uJson, _ := json.Marshal(mainUser)
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	w.Write(uJson)
 }
 
@@ -89,8 +89,17 @@ func (*Project)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	projectJson, _ := json.Marshal(pur.Project)
-	w.WriteHeader(http.StatusAccepted)
-	w.Write(projectJson)
-}
+	mainUser, err := CreateMainUser(r); if err != nil {
+		errorlog.Print(err)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
 
+	uJson, _ := json.Marshal(mainUser)
+	w.WriteHeader(http.StatusNoContent)
+	w.Write(uJson)
+
+}

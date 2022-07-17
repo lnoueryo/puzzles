@@ -107,13 +107,13 @@ export const actions: ActionTree<TaskState, RootState> = {
     console.log('Get Task')
     return new Promise(async(resolve, reject) => {
       try {
-        commit('reset')
         const t0 = performance.now();
         const response = await this.$axios.get('/api/task', {
           params: {id: id}
         })
         const t1 = performance.now();
         console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+        commit('reset')
         resolve(response);
         commit('tasks', response.data);
       } catch (error: any) {
@@ -122,14 +122,12 @@ export const actions: ActionTree<TaskState, RootState> = {
       }
     })
   },
-  async updateTask({commit, rootGetters }, form) {
+  async updateTask({commit}, form) {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.put('/api/task/update', form);
-        response.data.assignee = rootGetters.project.authority_users.find((authority_user: model.ProjectAuthority) => {
-          return authority_user.user_id == response.data.assignee_id;
-        }).user
-        commit('updateTask', response.data);
+        commit('reset')
+        commit('tasks', response.data);
         resolve(response);
       } catch (error: any) {
         console.log(error);
@@ -141,9 +139,9 @@ export const actions: ActionTree<TaskState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.post('/api/task/create', form);
-        commit('addTask', response.data);
+        commit('reset')
+        commit('tasks', response.data);
         resolve(response);
-        // commit('tasks', response.data);
       } catch (error: any) {
         console.log(error);
         reject(error.response);

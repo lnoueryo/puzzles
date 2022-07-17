@@ -39,10 +39,17 @@ func (*ProjectAuthority)Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 	}
-
-	pJson, _ := json.Marshal(pa)
-	w.WriteHeader(http.StatusCreated)
-	w.Write(pJson)
+	mainUser, err := CreateMainUser(r); if err != nil {
+		errorlog.Print(err)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
+	uJson, _ := json.Marshal(mainUser)
+	w.WriteHeader(http.StatusOK)
+	w.Write(uJson)
 }
 
 // プロジェクトの権限変更
@@ -73,9 +80,17 @@ func (*ProjectAuthority)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	projectJson, _ := json.Marshal(pa)
-	w.WriteHeader(http.StatusAccepted)
-	w.Write(projectJson)
+	mainUser, err := CreateMainUser(r); if err != nil {
+		errorlog.Print(err)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
+	uJson, _ := json.Marshal(mainUser)
+	w.WriteHeader(http.StatusNoContent)
+	w.Write(uJson)
 }
 
 // ユーザーをプロジェクトから除外

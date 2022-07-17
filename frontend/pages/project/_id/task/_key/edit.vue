@@ -124,8 +124,8 @@ export default Vue.extend({
     const newVersion = this.project.versions.find((version: model.Field) => version.id === this.selectedTask.version_id);
       return [
         {title: '課題のタイトル', newData: this.selectedTask.title, oldData: this.task.title },
-        {title: '担当者', newData: newAssignee.user.name, oldData: this.task.assignee.name },
-        {title: '状況', newData: newStatus.name, oldData: this.task.status },
+        {title: '担当者', newData: newAssignee.user?.name, oldData: this.task.assignee?.name },
+        {title: '状況', newData: newStatus?.name, oldData: this.task.status },
         {title: 'タスクの種類', newData: newType?.name, oldData: this.task.type },
         {title: '優先順位', newData: newPriority.name, oldData: this.task.priority },
         {title: 'マイルストーン', newData: newMilestone?.name, oldData: this.task.milestone },

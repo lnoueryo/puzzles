@@ -72,6 +72,36 @@ export default Vue.extend({
     organizationUsers() {
       return this.$store.getters['organization'].users;
     },
+  },
+  /** ユーザーの権限確認 */
+  async created() {
+    let timer = setInterval(() => {
+      if(this.isEmptyObj(this.project)) return;
+      clearInterval(timer)
+      const authority = this.projectAuthority.auth_id;
+      if(authority != 1) return this.$router.back();
+      this.preprocessProjectAuthority()
+    }, 100);
+  },
+  methods: {
+    async onClickUpdate() {
+      this.dialog = false;
+      let response;
+      try {
+        response = await this.$store.dispatch('project/updateProject', this.projectForm());
+      } catch (error: any) {
+        response = error;
+      } finally {
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
+        this.checkStatus(response.status, () => {
+          this.$router.push({name: 'project-id', params: {id: this.$route.params.id}})
+        },
+        () => {
+          this.loading = false;
+        }
+        )
+      }
+    },
     dialogForm() {
       // imageの比較もする
       let fields = this.selectedProject.fields.map((field, i) => {
@@ -127,39 +157,9 @@ export default Vue.extend({
         ...milestones,
         ...versions,
         // ...administers,
-        {title: 'イメージの変更', newData: this.selectedProject.image_data || this.selectedProject.image, oldData: '/projects/' + this.selectedProject.image, image: true},
+        {title: 'イメージの変更', newData: this.selectedProject.image_data || '/projects/' + this.selectedProject.image, oldData: '/projects/' + this.selectedProject.image, image: true},
         {title: 'プロジェクトの概要', newData: this.selectedProject.description, oldData: this.project.description},
       ];
-    }
-  },
-  /** ユーザーの権限確認 */
-  async created() {
-    let timer = setInterval(() => {
-      if(this.isEmptyObj(this.project)) return;
-      clearInterval(timer)
-      const authority = this.projectAuthority.auth_id;
-      if(authority != 1) return this.$router.back();
-      this.preprocessProjectAuthority()
-    }, 100);
-  },
-  methods: {
-    async onClickUpdate() {
-      this.dialog = false;
-      let response;
-      try {
-        response = await this.$store.dispatch('project/updateProject', this.projectForm());
-      } catch (error: any) {
-        response = error;
-      } finally {
-        if('status' in response === false) return this.$router.push('/error/bad-connection')
-        this.checkStatus(response.status, () => {
-          this.$router.push({name: 'project-id', params: {id: this.$route.params.id}})
-        },
-        () => {
-          this.loading = false;
-        }
-        )
-      }
     },
     preprocessProjectAuthority() {
       this.selectedProject = this.deepCopy((this.project) as model.Project);

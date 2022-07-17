@@ -49,7 +49,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.post('/api/project/create', form);
-        commit('userData', response.data, {root: true});
+        commit('insertUserData', response.data, {root: true});
         // commit('createProject', response.data);
         resolve(response);
       } catch (error: any) {
@@ -63,7 +63,8 @@ export const actions: ActionTree<ProjectState, RootState> = {
       try {
         const response = await this.$axios.put('/api/project/update', form);
         if(form.field_delete || form.milestone_delete) dispatch('task/getTasks', window.$nuxt.$route.params.id, {root: true});
-        commit('updateProject', response.data);
+        console.log(response.data)
+        commit('insertUserData', response.data, {root: true});
         resolve(response);
       } catch (error: any) {
         console.log(error);
@@ -75,7 +76,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.post('/api/project-authority/create', form);
-        commit('createProjectAuthority', response.data);
+        commit('insertUserData', response.data, {root: true});
         resolve(response);
       } catch (error: any) {
         console.log(error);
@@ -87,7 +88,7 @@ export const actions: ActionTree<ProjectState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.put('/api/project-authority/update', form);
-        commit('updateProjectAuthority', response.data);
+        commit('insertUserData', response.data, {root: true});
         resolve(response);
       } catch (error: any) {
         console.log(error);
