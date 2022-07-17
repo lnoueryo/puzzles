@@ -7,7 +7,7 @@ import (
 // 本番環境の設定
 func configureProdSettings() {
 	App.Addr = ":8080"
-	App.AllowOrigin = "https://puzzles.jounetsism.biz"
+	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN")
 	App.Origin = "puzzles-api.jounetsism.biz"
 	App.Project = "puzzles-345814"
 	DBSet := Database{
