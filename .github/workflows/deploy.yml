@@ -40,6 +40,7 @@ jobs:
           DB_HOST=${{ secrets.DB_HOST }}
           DB_USER=${{ secrets.DB_USER }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          PRIVATE=${{ secrets.PRIVATE }}
           EMAIL_FROM=${{ secrets.EMAIL_FROM }}
           EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
           EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
