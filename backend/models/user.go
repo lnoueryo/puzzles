@@ -49,7 +49,7 @@ func NewUser(r *http.Request) (User, error) {
 	return user, nil
 }
 
-func UserAll() ([]User, error) {
+func UserAll(DB *gorm.DB) ([]User, error) {
 	var users []User
 	result := DB.Find(&users)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -58,7 +58,7 @@ func UserAll() ([]User, error) {
 	return users, nil
 }
 
-func UserLatest(limit int) ([]User, error) {
+func UserLatest(DB *gorm.DB, limit int) ([]User, error) {
 	var users []User
 	result := DB.Order("created_at desc").Limit(limit).Find(&users)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -67,7 +67,7 @@ func UserLatest(limit int) ([]User, error) {
 	return users, nil
 }
 
-func (u *User) Create() error {
+func (u *User) Create(DB *gorm.DB) error {
 	result := DB.Create(u)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
@@ -75,7 +75,7 @@ func (u *User) Create() error {
 	return nil
 }
 
-func (u *User) Update() error {
+func (u *User) Update(DB *gorm.DB) error {
 	if u.ChangePassword != "" {
 		u.Password = crypto.Encrypt(u.ChangePassword)
 		result := DB.Omit("Organizations").Save(u)
@@ -91,7 +91,7 @@ func (u *User) Update() error {
 	return nil
 }
 
-func (u *User)GetMainUser(userID int, orgID string) error {
+func (u *User)GetMainUser(DB *gorm.DB, userID int, orgID string) error {
 	result := DB.Preload("Organizations.Organization.Projects.AuthorityUsers." + clause.Associations).
 	Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).
 	Preload("Organizations.Organization.Projects.Fields").
@@ -111,7 +111,7 @@ func (u *User)GetMainUser(userID int, orgID string) error {
 	return nil
 }
 
-func (u *User)CheckUser() error {
+func (u *User)CheckUser(DB *gorm.DB) error {
 
 	result := DB.FirstOrCreate(&u, User{Email: u.Email}); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
@@ -119,12 +119,12 @@ func (u *User)CheckUser() error {
 	return nil
 }
 
-func SearchUserLike(r *http.Request, column string) ([]User, int64, error) {
+func SearchUserLike(DB *gorm.DB, r *http.Request, column string) ([]User, int64, error) {
 	var users []User
 	query := r.URL.Query()
 	page, _ := strconv.Atoi(query["page"][0])
 	if query[column][0] == "" {
-		users, count, _ := ChunkUser(page)
+		users, count, _ := ChunkUser(DB, page)
 		return users, count, nil
 	}
 	split := 10
@@ -143,7 +143,7 @@ func SearchUserLike(r *http.Request, column string) ([]User, int64, error) {
 	return users, count, nil
 }
 
-func ChunkUser(page int) ([]User, int64, error) {
+func ChunkUser(DB *gorm.DB, page int) ([]User, int64, error) {
 	var users []User
 	var count int64
 	split := 10
@@ -178,7 +178,7 @@ func (u *User) Validate(r *http.Request) error {
 	return nil
 }
 
-func (u *User) UpdateValidate(r *http.Request) error {
+func (u *User) UpdateValidate(DB *gorm.DB, r *http.Request) error {
 	err := u.CheckBlankForUpdate(r)
 	if err != nil {
 		return err
@@ -189,7 +189,7 @@ func (u *User) UpdateValidate(r *http.Request) error {
 		return err
 	}
 
-	err = u.SearchSameEmail(r)
+	err = u.SearchSameEmail(DB, r)
 	if err != nil {
 		return err
 	}
@@ -357,7 +357,7 @@ func (u *User) CheckImage(r *http.Request) error {
 	return nil
 }
 
-func (u *User) SearchSameEmail(r *http.Request) error {
+func (u *User) SearchSameEmail(DB *gorm.DB, r *http.Request) error {
 	var user User
 	result := DB.Where("email = ?", r.Form.Get("email")).First(&user)
 	if !errors.Is(result.Error, gorm.ErrRecordNotFound) {

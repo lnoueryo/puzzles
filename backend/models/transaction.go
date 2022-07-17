@@ -24,7 +24,7 @@ type MailRequest struct {
 // ユーザーを組織に登録する関数。
 // 組織に登録するユーザーの有無と、組織に既に登録されているかを確認し、
 // 招待のメールを送る
-func InviteUser(r *http.Request) error {
+func InviteUser(DB *gorm.DB, r *http.Request) error {
 
 	err := DB.Transaction(func(tx *gorm.DB) error {
 
@@ -107,62 +107,6 @@ func GetMailJson(r *http.Request) (MailRequest, error) {
 	json.NewDecoder(r.Body).Decode(&mailRequest)
 	return mailRequest, nil
 }
-
-// プロジェクトの内容を変更する関数
-// プロジェクトのみにかかわらずフィールド、ヴァージョン、マイルストーン、も変更する
-func (pur *ProjectUpdateRequest)BulkUpdateProject() error {
-
-	err := DB.Transaction(func(tx *gorm.DB) error {
-
-		if pur.FieldDelete {
-
-			var f Field
-			if err := tx.Delete(&f, "project_id = ?", pur.Project.ID).Error; err != nil {
-				return errors.New("couldn't delete")
-			}
-		}
-
-		if pur.MilestoneDelete {
-
-			var m Milestone
-			if err := tx.Delete(&m, "project_id = ?", pur.Project.ID).Error; err != nil {
-				return errors.New("couldn't delete")
-			}
-		}
-
-		if pur.VersionDelete {
-
-			var v Version
-			if err := tx.Delete(&v, "project_id = ?", pur.Project.ID).Error; err != nil {
-				return errors.New("couldn't delete")
-			}
-		}
-
-		// イメージを変更した場合
-		if pur.Project.ImageData != "" {
-
-			deleteImageName := pur.Project.Image
-			fileName, err := UploadToGCS("projects", pur.Project.ImageData); if err != nil {
-				return errors.New("couldn't save the image")
-			}
-
-			pur.Project.Image = fileName
-			result := DB.Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers", "AuthorityUsers").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				return result.Error
-			}
-
-			DeleteImage(deleteImageName, "projects")
-			return nil
-		}
-		// 変更しないカラム
-		result := tx.Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers.Project").Session(&gorm.Session{FullSaveAssociations: true}).Save(&pur.Project); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return result.Error
-		}
-		return nil
-	})
-	return err
-}
-
 
 const (
 	// メールのメッセージ

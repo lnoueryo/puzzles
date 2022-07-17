@@ -20,7 +20,7 @@ type Login struct {
 }
 
 // ログインのバリデーション
-func TryToLogin(w http.ResponseWriter, r *http.Request) (*User, error) {
+func TryToLogin(DB *gorm.DB, w http.ResponseWriter, r *http.Request) (*User, error) {
 
 	var u *User
 	l, err := getLoginJson(r)
@@ -41,7 +41,7 @@ func TryToLogin(w http.ResponseWriter, r *http.Request) (*User, error) {
 	}
 
 	// 全ての項目を踏まえログイン情報が正しい確認
-	u, err = l.FindUser(u)
+	u, err = l.FindUser(DB, u)
 	if err != nil {
 		return u, err
 	}
@@ -71,7 +71,7 @@ func (l *Login) CheckLoginFormBlank() error {
 	return nil
 }
 
-func (l *Login) FindUser(u *User) (*User, error) {
+func (l *Login) FindUser(DB *gorm.DB, u *User) (*User, error) {
 	// Password check
 	cryptoPassword := crypto.Encrypt(l.Password)
 	result := DB.Preload("Organizations", "organization_id = ?", l.Organization).Preload(clause.Associations).First(&u, "email = ? and password = ?", l.Email, cryptoPassword)

@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 
 
@@ -12,6 +16,16 @@ type Milestone struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime;"json:"-"`
 }
 
-func (m *Milestone)DeleteAll(id int) {
-	DB.Delete(&m, "project_id = ?", id)
+func (m *Milestone)DeleteAll(DB *gorm.DB, id int) error {
+	if err := DB.Delete(&m, "project_id = ?", id).Error;err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Milestone)DeleteByProjectID(DB *gorm.DB, projectID int) error {
+	if err := DB.Delete(&m, "project_id = ?", projectID).Error;err != nil {
+		return err
+	}
+	return nil
 }

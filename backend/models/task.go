@@ -51,7 +51,7 @@ func NewTask(r *http.Request) (Task, error) {
 	return task, nil
 }
 
-func GetTasks(projectID int) ([]Task, error) {
+func GetTasks(DB *gorm.DB, projectID int) ([]Task, error) {
 	var t []Task
 	result := DB.Preload("Comments", "id = ?", 0).Preload(clause.Associations).Find(&t, "project_id = ?", projectID)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -60,7 +60,7 @@ func GetTasks(projectID int) ([]Task, error) {
 	return t, nil
 }
 
-func (t *Task)GetTask() error {
+func (t *Task)GetTask(DB *gorm.DB) error {
 	fmt.Println(t)
 	tx := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations)
 	tx = RecursivePreload(tx)
@@ -73,14 +73,14 @@ func (t *Task)GetTask() error {
 	return nil
 }
 
-func (t *Task)Create() error {
+func (t *Task)Create(DB *gorm.DB) error {
 	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Version", "Type", "Priority").Create(&t); if result.Error != nil {
 		return result.Error
 	}
 	return nil
 }
 
-func (t *Task)Update() error {
+func (t *Task)Update(DB *gorm.DB) error {
 	fmt.Println(t.EstimatedTime)
 	result := DB.Debug().Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Version", "Type", "Priority").Save(&t).Clauses(clause.Returning{}); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
@@ -88,7 +88,7 @@ func (t *Task)Update() error {
 	return nil
 }
 
-func (t *Task)CountProjectTask() (Project, error) {
+func (t *Task)CountProjectTask(DB *gorm.DB) (Project, error) {
 	var project Project
 	result := DB.Preload("Tasks").Find(&project, t.ProjectID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return project, result.Error

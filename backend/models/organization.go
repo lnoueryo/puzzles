@@ -33,7 +33,7 @@ type Organization struct {
 	UpdatedAt			time.Time				`gorm:"autoUpdateTime;"json:"updated_at"`
 }
 
-func (o *Organization)GetOrganization(id string) error {
+func (o *Organization)GetOrganization(DB *gorm.DB, id string) error {
 	result := DB.Preload("Projects", func(db *gorm.DB) *gorm.DB {
 		return DB.Preload(clause.Associations)
 	  }).Preload(clause.Associations).First(&o, "id = ?", id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -42,7 +42,7 @@ func (o *Organization)GetOrganization(id string) error {
 	return nil
 }
 
-func(o *Organization) Update() error {
+func(o *Organization) Update(DB *gorm.DB) error {
 	if o.ImageData != "" {
 		deleteImageName := o.Image
 		fileName, err := UploadToGCS("organizations", o.ImageData); if err != nil {
