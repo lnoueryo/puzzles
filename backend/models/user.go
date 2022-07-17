@@ -370,15 +370,15 @@ func (u *User) SearchSameEmail(DB *gorm.DB, r *http.Request) error {
 	return nil
 }
 
-func GetJsonForm(r *http.Request) (Login, error) {
-	var login Login
-	err := json.NewDecoder(r.Body).Decode(&login)
-	if err != nil {
-		fmt.Println(err)
-		return login, err
-	}
-	return login, err
-}
+// func GetJsonForm(r *http.Request) (Login, error) {
+// 	var login Login
+// 	err := json.NewDecoder(r.Body).Decode(&login)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return login, err
+// 	}
+// 	return login, err
+// }
 
 func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
 	s := session.Session{
@@ -440,4 +440,21 @@ func (u *User) GetImage() {
 
 	io.Copy(file, response.Body)
 	u.Image = filename
+}
+
+func (u *User)FindLoginUser(DB *gorm.DB, email string, password string, organization string) error {
+	cryptoPassword := crypto.Encrypt(password)
+	result := DB.Preload("Organizations", "organization_id = ?", organization).Preload(clause.Associations).First(&u, "email = ? and password = ?", email, cryptoPassword)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		message := "email or password is wrong"
+		err := errors.New(message)
+		return err
+	}
+
+	if len(u.Organizations) == 0 {
+		message := "organization is wrong"
+		err := errors.New(message)
+		return err
+	}
+	return nil
 }

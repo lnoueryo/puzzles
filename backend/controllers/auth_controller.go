@@ -5,6 +5,7 @@ import (
 	"backend/modules/crypto"
 	"backend/modules/mail"
 	"backend/modules/session"
+	"backend/services"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -19,9 +20,7 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	// バリデーション
-	u, err := models.TryToLogin(DB, w, r)
-	if err != nil {
+	err := services.Login(w, r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": err.Error()}
 		errJson, _ := json.Marshal(errMap)
@@ -30,20 +29,8 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ユーザーが発見できた場合セッションを作成
-	s, err := u.CreateSession(w)
-	if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": err.Error()}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(errJson)
-		return
-	}
-
-	sessionJson, _ := json.Marshal(s)
 	w.WriteHeader(http.StatusOK)
-	w.Write(sessionJson)
+	RespondMainUser(w, r)
 }
 
 // ログアウト処理
