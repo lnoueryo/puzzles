@@ -66,7 +66,7 @@ func (au *Auth) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = session.DeleteSession(s.ID, project)
+	err = session.DeleteSession(s.ID, projectID)
 	if err != nil {
 		errorlog.Print(err)
 	}

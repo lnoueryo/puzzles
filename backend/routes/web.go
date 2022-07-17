@@ -18,7 +18,7 @@ var projectAuthority controller.ProjectAuthority
 var data controller.Data
 var infolog = config.App.InfoLog
 var allowOrigin = config.App.AllowOrigin
-var projectenv = config.App.Project
+var projectID = config.App.ProjectID
 
 func Routes() http.Handler{
 	mux := http.NewServeMux()

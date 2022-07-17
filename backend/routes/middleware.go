@@ -22,7 +22,7 @@ func Auth(next http.Handler) http.Handler {
 			w.Write(errJson)
 			return
 		}
-		_, err = session.CheckSession(cookie.Value, projectenv)
+		_, err = session.CheckSession(cookie.Value, projectID)
 		if err != nil {
 			errMap := map[string]string{"message": "session is expired"}
 			errJson, _ := json.Marshal(errMap)
@@ -65,7 +65,7 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		l.handler.ServeHTTP(w, r)
 		return
 	}
-	s, err := session.CheckSession(cookie.Value, projectenv)
+	s, err := session.CheckSession(cookie.Value, projectID)
 	if err != nil {
 		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, r.RemoteAddr, time.Since(start))
 	} else {

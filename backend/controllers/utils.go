@@ -32,7 +32,7 @@ var ws_array []*websocket.Conn // *websocket.Connを入れる配列
 var email mail.Mail
 var origin string
 var allowOrigin string
-var project string
+var projectID string
 var UploadToGCS = config.UploadToGCS
 var DeleteImage = config.DeleteImage
 var StoreImageToGCS = config.StoreImageToGCS
@@ -46,7 +46,7 @@ func init() {
 	email = config.App.Email
 	origin = config.App.Origin
 	allowOrigin = config.App.AllowOrigin
-	project = config.App.Project
+	projectID = config.App.ProjectID
 }
 
 // 既存のセッションを取得
@@ -58,7 +58,7 @@ func GetSession(r *http.Request) (session.Session, error) {
 		return s, err
 	}
 
-	s, err = session.CheckSession(cookie.Value, project)
+	s, err = session.CheckSession(cookie.Value, projectID)
 	if err != nil {
 		return s, err
 	}

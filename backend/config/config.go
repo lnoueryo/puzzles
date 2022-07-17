@@ -22,7 +22,7 @@ type AppConfig struct {
 	Origin			string
 	AllowOrigin		string
 	Email			mail.Mail
-	Project			string
+	ProjectID		string
 }
 
 var App AppConfig
