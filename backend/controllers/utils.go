@@ -3,16 +3,11 @@ package controllers
 import (
 	"backend/config"
 	"backend/models"
-	"backend/modules/mail"
 	"backend/modules/session"
 	"backend/services"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
-
-	"golang.org/x/net/websocket"
-	"gorm.io/gorm"
 )
 type TemplateData struct {
 	StringMap map[string]string
@@ -27,26 +22,10 @@ type TemplateData struct {
 	Session   session.Session
 }
 
-var infolog *log.Logger
-var errorlog *log.Logger
-var DB *gorm.DB
-var ws_array []*websocket.Conn // *websocket.Connを入れる配列
-var email mail.Mail
-var origin string
-var allowOrigin string
-var projectID string
-
-
-
-func init() {
-	infolog = config.App.InfoLog
-	errorlog = config.App.ErrorLog
-	DB = config.DB
-	email = config.App.Email
-	origin = config.App.Origin
-	allowOrigin = config.App.AllowOrigin
-	projectID = config.App.ProjectID
-}
+var infolog = config.App.InfoLog
+var errorlog = config.App.ErrorLog
+var projectID = config.App.ProjectID
+var DB = config.DB
 
 // 既存のセッションを取得
 func GetSession(r *http.Request) (session.Session, error) {
