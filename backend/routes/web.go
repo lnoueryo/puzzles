@@ -15,7 +15,7 @@ var organization controllers.Organization
 var organizationAuthority controllers.OrganizationAuthority
 var project controllers.Project
 var projectAuthority controllers.ProjectAuthority
-var data controllers.Data
+var csv controllers.CSV
 var infolog = config.App.InfoLog
 var allowOrigin = config.App.AllowOrigin
 var projectID = config.App.ProjectID
@@ -53,8 +53,8 @@ func Routes() http.Handler{
 	mux.Handle("/api/logout", http.HandlerFunc(auth.Logout))
 	mux.Handle("/api/invite", http.HandlerFunc(auth.InviteUser))
 	
-	mux.Handle("/api/data/upload", http.HandlerFunc(data.Upload))
-	mux.Handle("/api/data/download", http.HandlerFunc(data.Download))
+	mux.Handle("/api/data/upload", http.HandlerFunc(csv.Upload))
+	mux.Handle("/api/data/download", http.HandlerFunc(csv.Download))
 
 	// JSON
 	mux.HandleFunc("/task", task.Index)

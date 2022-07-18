@@ -9,23 +9,9 @@ import (
 	"errors"
 	"net/http"
 )
-type TemplateData struct {
-	StringMap map[string]string
-	IntMap    map[string]string
-	FloatMap  map[string]float32
-	Data      map[string]interface{}
-	Flash     string
-	Warning   string
-	Error     string
-	JSON      []byte
-	Users     []models.User
-	Session   session.Session
-}
 
-var infolog = config.App.InfoLog
 var errorlog = config.App.ErrorLog
 var projectID = config.App.ProjectID
-var DB = config.DB
 
 // 既存のセッションを取得
 func GetSession(r *http.Request) (session.Session, error) {
@@ -42,27 +28,6 @@ func GetSession(r *http.Request) (session.Session, error) {
 	}
 	return s, nil
 }
-
-// 新たにセッション作成
-// func CreateMainUser(r *http.Request) (MainUser, error) {
-// 	// BUG(inoueryo) 何かしらデータ更新を行う際に新しくセッションを作成し、古いものは削除されていない可能性あり
-// 	var mainUser MainUser
-// 	var u models.User
-// 	s, err := GetSession(r)
-// 	err = u.GetMainUser(s.UserID, s.Organization); if err != nil {
-// 		errorlog.Print(err)
-// 		return mainUser, err
-// 	}
-
-// 	mainUser.Projects = ProjectFilter(u.Organizations[0].Organization.Projects, func(userID int) bool {
-// 		return userID == u.ID
-//     })
-// 	u.Organizations[0].Organization.Projects = nil
-// 	mainUser.OrganizationAuthority = u.Organizations[0]
-// 	u.Organizations = nil
-// 	mainUser.User = u
-// 	return mainUser, nil
-// }
 
 // ユーザーが参加しているプロジェクトをフィルター
 func ProjectFilter(projects []models.Project, f func(int) bool) []models.Project {
@@ -109,4 +74,18 @@ func RespondTasks(w http.ResponseWriter, r *http.Request, id int) {
 	}
 	tJson, _ := json.Marshal(t)
 	w.Write(tJson)
+}
+
+func RespondComments(w http.ResponseWriter, r *http.Request, id int) {
+
+	c, err := services.GetComment(id); if err != nil {
+		errorlog.Print(err)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
+	cJson, _ := json.Marshal(c)
+	w.Write(cJson)
 }

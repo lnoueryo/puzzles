@@ -1,270 +1,37 @@
-package controllers
+package services
 
 import (
 	"backend/models"
 	dp "backend/modules/processing"
+	"bytes"
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
-)
-
-
-
-type Data struct{}
-
-var (
-	csvNameList = []string{
-		"activities.csv",
-		"activity_contents.csv",
-		"authorities.csv",
-		"comments.csv",
-		"fields.csv",
-		"milestones.csv",
-		"organization_authorities.csv",
-		"organizations.csv",
-		"priorities.csv",
-		"project_authorities.csv",
-		"projects.csv",
-		"statuses.csv",
-		"tasks.csv",
-		"types.csv",
-		"users.csv",
-	}
 )
 
 type CSVRequest struct {
 	Request []string `json:"request"`
 }
 
-
-// DBのデータをCSVに変換しダウンロード
-func(*Data)Download(w http.ResponseWriter, r *http.Request) {
-	byteArray, _ := ioutil.ReadAll(r.Body)
-	var csvRequest CSVRequest
-	err := json.Unmarshal(byteArray, &csvRequest); if err != nil{
-		errorlog.Print(err)
-		errMap := map[string]string{"message": err.Error()}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-	}
-	var csvBufferArray []dp.CSVBuffer
-	for _, request := range csvRequest.Request {
-		if request == "activities" {
-			var activities []models.Activity
-			err := DB.Find(&activities).Error; if err != nil {
-				errorlog.Print("Activityテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLActivity(activities),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "activity_contents" {
-			var activity_contents []models.ActivityContent
-			err := DB.Find(&activity_contents).Error; if err != nil {
-				errorlog.Print("ActivityContentテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLActivityContent(activity_contents),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "authorities" {
-			var authorities []models.Authority
-			err := DB.Find(&authorities).Error; if err != nil {
-				errorlog.Print("ActivityContentテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLAuthority(authorities),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "comments" {
-			var comments []models.Comment
-			err := DB.Find(&comments).Error; if err != nil {
-				errorlog.Print("Commentテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLComment(comments),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "fields" {
-			var fields []models.Field
-			err := DB.Find(&fields).Error; if err != nil {
-				errorlog.Print("Fieldテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLField(fields),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "milestones" {
-			var milestones []models.Milestone
-			err := DB.Find(&milestones).Error; if err != nil {
-				errorlog.Print("Milestoneテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLMilestone(milestones),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "versions" {
-			var versions []models.Version
-			err := DB.Find(&versions).Error; if err != nil {
-				errorlog.Print("Versionテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLVersion(versions),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "organization_authorities" {
-			var organization_authorities []models.OrganizationAuthority
-			err := DB.Find(&organization_authorities).Error; if err != nil {
-				errorlog.Print("OrganizationAuthorityテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLOrganizationAuthority(organization_authorities),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "organizations" {
-			var organizations []models.Organization
-			err := DB.Find(&organizations).Error; if err != nil {
-				errorlog.Print("Organizationテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLOrganization(organizations),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "priorities" {
-			var priorities []models.Priority
-			err := DB.Find(&priorities).Error; if err != nil {
-				errorlog.Print("Priorityテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLPriority(priorities),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "project_authorities" {
-			var project_authorities []models.ProjectAuthority
-			err := DB.Find(&project_authorities).Error; if err != nil {
-				errorlog.Print("ProjectAuthorityテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLProjectAuthority(project_authorities),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "projects" {
-			var projects []models.Project
-			err := DB.Find(&projects).Error; if err != nil {
-				errorlog.Print("Projectテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLProject(projects),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "statuses" {
-			var statuses []models.Status
-			err := DB.Find(&statuses).Error; if err != nil {
-				errorlog.Print("Statusテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLStatus(statuses),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "tasks" {
-			var tasks []models.Task
-			err := DB.Find(&tasks).Error; if err != nil {
-				errorlog.Print("Taskテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLTask(tasks),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "types" {
-			var types []models.Type
-			err := DB.Find(&types).Error; if err != nil {
-				errorlog.Print("Typeテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLType(types),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-		if request == "users" {
-			var users []dp.User
-			err := DB.Find(&users).Error; if err != nil {
-				errorlog.Print("Userテーブルの読み込みに失敗しました。")
-			}
-			csvBuffer := dp.CSVBuffer{
-				Name: request,
-				Byte: dp.DLUser(users),
-			}
-			csvBufferArray = append(csvBufferArray, csvBuffer)
-		}
-	}
-	b := dp.ZipCSVByteArray(&csvBufferArray)
-	w.WriteHeader(http.StatusOK)
-	w.Write(b.Bytes())
-}
-
-// CSVをアップロードし、DBを更新
-func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method != "POST" {
-		errMap := map[string]string{"message": "not found"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-	}
-	err := r.ParseMultipartForm(20000000) // grab the multipart form
-	if err != nil {
-		return
+func ImportCSV(r *http.Request) ([][]string, error) {
+	var errorArray [][]string
+	err := r.ParseMultipartForm(20000000);if err != nil {
+		return errorArray, err
 	}
 
 	formdata := r.MultipartForm // ok, no problem so far, read the Form data
 	//get the *fileheaders
 	files := formdata.File["files"] // grab the filenames
-	var errorArray [][]string
 	for _, file := range files {
 		f, err := file.Open()
 		defer f.Close()
 		if err != nil {
-			return
+			return errorArray, err
 		}
 		if file.Filename == "activities.csv" {
 			activities, errArray := dp.UpsertActivity(f)
 			err := DB.Save(&activities).Error; if err != nil {
 				message := "Activityテーブルの書き込みに失敗しました。"
-				errorlog.Print(message)
-				errorlog.Print(err)
 				errArray = append(errArray, message)
 			}
 			if len(errArray) != 0 {
@@ -276,8 +43,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			activity_contents, errArray := dp.UpsertActivityContent(f)
 			err := DB.Save(&activity_contents).Error; if err != nil {
 				message := "ActivityContentテーブルの書き込みに失敗しました。"
-				errorlog.Print(message)
-				errorlog.Print(err)
 				errArray = append(errArray, message)
 			}
 			if len(errArray) != 0 {
@@ -289,8 +54,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			authorities, errArray := dp.UpsertAuthority(f);
 			err := DB.Save(&authorities).Error; if err != nil {
 				message := "Authorityテーブルの書き込みに失敗しました。"
-				errorlog.Print(message)
-				errorlog.Print(err)
 				errArray = append(errArray, message)
 			}
 			if len(errArray) != 0 {
@@ -306,8 +69,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(&bulk).Error; if err != nil {
 						message := "Commentテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					if len(errArray) != 0 {
@@ -319,8 +80,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(&bulk).Error; if err != nil {
 					message := "Commentテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 				if len(errArray) != 0 {
@@ -337,8 +96,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "Fieldテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -347,8 +104,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Fieldテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -365,8 +120,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "Milestoneテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -375,8 +128,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Milestoneテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -393,8 +144,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "Versionテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -403,8 +152,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Versionテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -421,8 +168,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "OrganizationAuthorityテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -431,8 +176,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "OrganizationAuthorityテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -449,8 +192,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "Organizationテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -459,8 +200,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Organizationテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -473,8 +212,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			priorities, errArray := dp.UpsertPriority(f);
 			err := DB.Save(priorities).Error; if err != nil {
 				message := "Priorityテーブルの書き込みに失敗しました。"
-				errorlog.Print(message)
-				errorlog.Print(err)
 				errArray = append(errArray, message)
 			}
 			if len(errArray) != 0 {
@@ -490,8 +227,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "ProjectAuthorityテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -500,8 +235,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "ProjectAuthorityテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -518,8 +251,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "Projectテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -528,8 +259,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Projectテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -542,8 +271,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			statuses, errArray := dp.UpsertStatus(f);
 			err := DB.Save(statuses).Error; if err != nil {
 				message := "Statusテーブルの書き込みに失敗しました。"
-				errorlog.Print(message)
-				errorlog.Print(err)
 				errArray = append(errArray, message)
 			}
 			if len(errArray) != 0 {
@@ -559,8 +286,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 300 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "Taskテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -569,8 +294,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Taskテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -583,8 +306,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			types, errArray := dp.UpsertType(f);
 			err := DB.Save(types).Error; if err != nil {
 				message := "Typeテーブルの書き込みに失敗しました。"
-				errorlog.Print(message)
-				errorlog.Print(err)
 				errArray = append(errArray, message)
 			}
 			if len(errArray) != 0 {
@@ -600,8 +321,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 				if len(bulk) > 500 {
 					err := DB.Save(bulk).Error; if err != nil {
 						message := "Userテーブルの書き込みに失敗しました。"
-						errorlog.Print(message)
-						errorlog.Print(err)
 						errArray = append(errArray, message)
 					}
 					bulk = nil
@@ -610,8 +329,6 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			if len(bulk) != 0 {
 				err := DB.Save(bulk).Error; if err != nil {
 					message := "Userテーブルの書き込みに失敗しました。"
-					errorlog.Print(message)
-					errorlog.Print(err)
 					errArray = append(errArray, message)
 				}
 			}
@@ -620,24 +337,168 @@ func (*Data) Upload(w http.ResponseWriter, r *http.Request) {
 			}
 			continue
 		}
-		errorlog.Print(file.Filename + "は除外されました")
 		message := []string{file.Filename + "は除外されました"}
 		errorArray = append(errorArray, message)
 	}
-	errJson, _ := json.Marshal(errorArray)
-	w.WriteHeader(http.StatusOK)
-	w.Write(errJson)
+	return errorArray, nil
 }
 
-// 受け取ったJSONを構造体に変換
-func GetJson(r *http.Request) (Project, error) {
-	var project Project
-	err := json.NewDecoder(r.Body).Decode(&project)
-	if err != nil {
-		message := "couldn't decode json"
-		err := errors.New(message)
-		return project, err
+func ExportCSV(r *http.Request) (*bytes.Buffer, error) {
+	var b *bytes.Buffer
+	byteArray, _ := ioutil.ReadAll(r.Body)
+	var csvRequest CSVRequest
+	err := json.Unmarshal(byteArray, &csvRequest); if err != nil{
+		return b, err
 	}
-	return project, nil
-}
 
+	var csvBufferArray []dp.CSVBuffer
+	for _, request := range csvRequest.Request {
+		if request == "activities" {
+			var activities []models.Activity
+			DB.Find(&activities)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLActivity(activities),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "activity_contents" {
+			var activity_contents []models.ActivityContent
+			DB.Find(&activity_contents)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLActivityContent(activity_contents),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "authorities" {
+			var authorities []models.Authority
+			DB.Find(&authorities)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLAuthority(authorities),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "comments" {
+			var comments []models.Comment
+			DB.Find(&comments)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLComment(comments),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "fields" {
+			var fields []models.Field
+			DB.Find(&fields)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLField(fields),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "milestones" {
+			var milestones []models.Milestone
+			DB.Find(&milestones)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLMilestone(milestones),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "versions" {
+			var versions []models.Version
+			DB.Find(&versions)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLVersion(versions),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "organization_authorities" {
+			var organization_authorities []models.OrganizationAuthority
+			DB.Find(&organization_authorities)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLOrganizationAuthority(organization_authorities),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "organizations" {
+			var organizations []models.Organization
+			DB.Find(&organizations)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLOrganization(organizations),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "priorities" {
+			var priorities []models.Priority
+			DB.Find(&priorities)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLPriority(priorities),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "project_authorities" {
+			var project_authorities []models.ProjectAuthority
+			DB.Find(&project_authorities)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLProjectAuthority(project_authorities),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "projects" {
+			var projects []models.Project
+			DB.Find(&projects)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLProject(projects),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "statuses" {
+			var statuses []models.Status
+			DB.Find(&statuses)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLStatus(statuses),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "tasks" {
+			var tasks []models.Task
+			DB.Find(&tasks)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLTask(tasks),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "types" {
+			var types []models.Type
+			DB.Find(&types)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLType(types),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+		if request == "users" {
+			var users []dp.User
+			DB.Find(&users)
+			csvBuffer := dp.CSVBuffer{
+				Name: request,
+				Byte: dp.DLUser(users),
+			}
+			csvBufferArray = append(csvBufferArray, csvBuffer)
+		}
+	}
+	b = dp.ZipCSVByteArray(&csvBufferArray)
+
+	return b, nil
+}

@@ -13,6 +13,7 @@ var projectID = config.App.ProjectID
 var email = config.App.Email
 var origin = config.App.Origin
 var allowOrigin = config.App.AllowOrigin
+var infolog = config.App.InfoLog
 
 // 既存のセッションを取得
 func GetSession(r *http.Request) (session.Session, error) {

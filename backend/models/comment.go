@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -30,7 +29,7 @@ func NewComment(r *http.Request) (Comment, error) {
 	return comment, nil
 }
 
-func GetComments(DB *gorm.DB, id int) ([]Comment, error) {
+func GetCommentsByTaskID(DB *gorm.DB, id int) ([]Comment, error) {
 	var comments []Comment
 	tx := DB.Preload(clause.Associations)
 	tx = RecursivePreload(tx)
@@ -54,13 +53,11 @@ func (c *Comment)Update(DB *gorm.DB) error {
 	return nil
 }
 
-func DeleteComment(DB *gorm.DB, id []int) (Comment, error) {
-	fmt.Print(id)
-	var c Comment
-	result := DB.Debug().Delete(&c, id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return c, result.Error
+func (c *Comment)Delete(DB *gorm.DB, ids []int) error {
+	result := DB.Debug().Delete(&c, ids); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
 	}
-	return c, nil
+	return nil
 }
 
 func RecursivePreload(tx *gorm.DB) *gorm.DB {

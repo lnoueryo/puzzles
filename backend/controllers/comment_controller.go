@@ -1,16 +1,15 @@
 package controllers
 
 import (
-	"backend/models"
+	"backend/services"
 	"encoding/json"
 	"net/http"
-	"strconv"
 )
 
 type Comment struct{}
 
 // コメントの作成
-func (c *Comment)Create(w http.ResponseWriter, r *http.Request) {
+func (*Comment)Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -19,48 +18,15 @@ func (c *Comment)Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    comment, err := models.NewComment(r);if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
-        return
-    }
-	err = comment.Create(DB); if err != nil {
-		errorlog.Print(err)
+	c, err := services.CreateComment(r);if err != nil {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
 		return
 	}
-	// infolog.Print(comment)
-	// comments, err := models.GetComments(comment.TaskID); if err != nil {
-	// 	errMap := map[string]string{"message": "not found"}
-	// 	errJson, _ := json.Marshal(errMap)
-	// 	w.WriteHeader(http.StatusNotFound)
-	// 	w.Write(errJson)
-	// 	return
-	// }
-
-	// s, _ := GetSession(r)
-	// activity := models.Activity{
-	// 	UserID: s.UserID,
-	// 	ProjectID: task.ProjectID,
-	// 	ContentID: 3,
-	// }
-
-	// err = activity.Create(); if err != nil {
-	// 	errMap := map[string]string{"message": "not found"}
-	// 	errJson, _ := json.Marshal(errMap)
-	// 	w.WriteHeader(http.StatusNotFound)
-	// 	w.Write(errJson)
-	// }
-
-	commentJson, _ := json.Marshal(comment)
-	w.WriteHeader(http.StatusCreated)
-	w.Write(commentJson)
+	w.WriteHeader(http.StatusOK)
+	RespondTasks(w, r, c.TaskID)
 }
 
 // コメントの取得
@@ -72,16 +38,8 @@ func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
 		w.Write(errJson)
 		return
 	}
-	query := r.URL.Query()
-    idSlice, ok := query["id"]; if !ok {
-		errMap := map[string]string{"message": "not found"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-    }
-	id, err := strconv.Atoi(idSlice[0])
-	if err != nil {
+
+	ids, err := services.GetIDs(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -89,14 +47,12 @@ func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
 		w.Write(sessionJson)
 		return
 	}
-	comments, _ := models.GetComments(DB, id)
-	commentJson, _ := json.Marshal(comments)
 	w.WriteHeader(http.StatusCreated)
-	w.Write(commentJson)
+	RespondTasks(w, r, ids[0])
 }
 
 // コメントの更新
-func (c *Comment)Update(w http.ResponseWriter, r *http.Request) {
+func (*Comment)Update(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "PUT" {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
@@ -105,24 +61,17 @@ func (c *Comment)Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    comment, err := models.NewComment(r);if err != nil {
+	c, err := services.UpdateComment(r); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(errJson)
         return
-    }
-	err = comment.Update(DB); if err != nil {
-		errorlog.Print(err)
-		errMap := map[string]string{"message": "not found"}
-		errJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(errJson)
 	}
-	taskJson, _ := json.Marshal(comment)
-	w.WriteHeader(http.StatusCreated)
-	w.Write(taskJson)
+
+	w.WriteHeader(http.StatusOK)
+	RespondTasks(w, r, c.TaskID)
 }
 
 // コメントの削除
@@ -135,30 +84,7 @@ func (_ *Comment)Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := r.URL.Query()
-    idSlice, ok := query["id[]"]; if !ok {
-		errMap := map[string]string{"message": "not found"}
-		sessionJson, _ := json.Marshal(errMap)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write(sessionJson)
-		return
-    }
-	var IDs []int
-	for _, ID := range idSlice {
-		id, err := strconv.Atoi(ID)
-		if err != nil {
-			errorlog.Print(err)
-			errMap := map[string]string{"message": "bad connection"}
-			sessionJson, _ := json.Marshal(errMap)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write(sessionJson)
-			return
-		}
-		IDs = append(IDs, id)
-	}
-
-	c, err := models.DeleteComment(DB, IDs); if err != nil {
-		errorlog.Print(err)
+	err := services.DeleteComment(r);if err != nil {
 		errMap := map[string]string{"message": "not found"}
 		errJson, _ := json.Marshal(errMap)
 		w.WriteHeader(http.StatusNotFound)
@@ -166,7 +92,6 @@ func (_ *Comment)Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commentJson, _ := json.Marshal(c)
-	w.WriteHeader(http.StatusNoContent)
-	w.Write(commentJson)
+	// w.WriteHeader(http.StatusOK)
+	// RespondTasks(w, r, c.TaskID)
 }
