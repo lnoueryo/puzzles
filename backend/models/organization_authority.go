@@ -39,6 +39,14 @@ func (oa *OrganizationAuthority)Find(DB *gorm.DB, verification string) error {
 	return nil
 }
 
+func FindByIDs(DB *gorm.DB, orgID string, userID int) (OrganizationAuthority, error) {
+	var oa OrganizationAuthority
+	result := DB.First(&oa, "organization_id = ? and user_id = ?", orgID, userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return oa, result.Error
+	}
+	return oa, nil
+}
+
 func (oa *OrganizationAuthority)Create(DB *gorm.DB) error {
 	condition := OrganizationAuthority{
 		OrganizationID: oa.OrganizationID,

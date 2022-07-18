@@ -35,10 +35,7 @@ var email mail.Mail
 var origin string
 var allowOrigin string
 var projectID string
-var UploadToGCS = config.UploadToGCS
-var DeleteImage = config.DeleteImage
-var StoreImageToGCS = config.StoreImageToGCS
-var StoreBinaryImage = config.StoreBinaryImage
+
 
 
 func init() {

@@ -10,9 +10,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"regexp"
-	"strconv"
-	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -47,24 +44,6 @@ func NewUser(r *http.Request) (User, error) {
 	password := crypto.Encrypt(user.Password)
 	user = User{Name: user.Name, Email: user.Email, Image: filename, Password: password}
 	return user, nil
-}
-
-func UserAll(DB *gorm.DB) ([]User, error) {
-	var users []User
-	result := DB.Find(&users)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return users, result.Error
-	}
-	return users, nil
-}
-
-func UserLatest(DB *gorm.DB, limit int) ([]User, error) {
-	var users []User
-	result := DB.Order("created_at desc").Limit(limit).Find(&users)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return users, result.Error
-	}
-	return users, nil
 }
 
 func (u *User) Create(DB *gorm.DB) error {
@@ -111,275 +90,6 @@ func (u *User)GetMainUser(DB *gorm.DB, userID int, orgID string) error {
 	return nil
 }
 
-func (u *User)CheckUser(DB *gorm.DB) error {
-
-	result := DB.FirstOrCreate(&u, User{Email: u.Email}); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return result.Error
-	}
-	return nil
-}
-
-func SearchUserLike(DB *gorm.DB, r *http.Request, column string) ([]User, int64, error) {
-	var users []User
-	query := r.URL.Query()
-	page, _ := strconv.Atoi(query["page"][0])
-	if query[column][0] == "" {
-		users, count, _ := ChunkUser(DB, page)
-		return users, count, nil
-	}
-	split := 10
-	offset := (page - 1) * split
-	textSlice := strings.Split(query[column][0], " ")
-	var tx *gorm.DB
-	var count int64
-	for _, text := range textSlice {
-		likeText := "%" + text + "%"
-		tx = DB.Model(&User{}).Limit(split).Offset(offset).Where(fmt.Sprintf("%s LIKE ? ", column), likeText)
-	}
-	result := tx.Find(&users).Limit(-1).Offset(-1).Count(&count)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return users, 0, result.Error
-	}
-	return users, count, nil
-}
-
-func ChunkUser(DB *gorm.DB, page int) ([]User, int64, error) {
-	var users []User
-	var count int64
-	split := 10
-	offset := (page - 1) * split
-	result := DB.Limit(split).Offset(offset).Find(&users).Limit(-1).Offset(-1).Count(&count)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return users, 0, result.Error
-	}
-	return users, count, nil
-}
-
-func (u *User) Validate(r *http.Request) error {
-	err := u.CheckBlank(r)
-	if err != nil {
-		return err
-	}
-
-	err = u.ComparePassword(r)
-	if err != nil {
-		return err
-	}
-
-	err = CheckEmailFormat(u.Email)
-	if err != nil {
-		return err
-	}
-
-	err = u.CheckLength(r)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (u *User) UpdateValidate(DB *gorm.DB, r *http.Request) error {
-	err := u.CheckBlankForUpdate(r)
-	if err != nil {
-		return err
-	}
-
-	err = u.MatchPassword(r)
-	if err != nil {
-		return err
-	}
-
-	err = u.SearchSameEmail(DB, r)
-	if err != nil {
-		return err
-	}
-
-	err = u.CheckImage(r)
-	if err != nil {
-		return err
-	}
-
-	err = u.CheckLengthForUpdate(r)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (u *User) CheckBlank(r *http.Request) error {
-	name := r.FormValue("name")
-	if name == "" {
-		message := "name is blank"
-		err := errors.New(message)
-		return err
-	}
-
-	email := r.FormValue("email")
-	if email == "" {
-		message := "email address is blank"
-		err := errors.New(message)
-		return err
-	}
-
-	password := r.FormValue("password")
-	if password == "" {
-		message := "password is blank"
-		err := errors.New(message)
-		return err
-	}
-
-	confirmation := r.FormValue("confirmation")
-	if confirmation == "" {
-		message := "confirmation is blank"
-		err := errors.New(message)
-		return err
-	}
-	return nil
-}
-	// login, _ := GetJsonForm(r)
-	// var login Login
-	// err := json.NewDecoder(r.Body).Decode(&login)
-	// fmt.Print(err)
-	// fmt.Print("err")
-	// fmt.Print(login)
-func (u *User) CheckBlankForUpdate(r *http.Request) error {
-	name := r.FormValue("name")
-	if name == "" {
-		message := "name is blank"
-		err := errors.New(message)
-		return err
-	}
-
-	email := r.FormValue("email")
-	if email == "" {
-		message := "email address is blank"
-		err := errors.New(message)
-		return err
-	}
-
-	password := r.FormValue("current-password")
-	if password == "" {
-		message := "password is blank"
-		err := errors.New(message)
-		return err
-	}
-
-	return nil
-}
-
-func (u *User) ComparePassword(r *http.Request) error {
-	password := r.FormValue("password")
-	confirmation := r.FormValue("confirmation")
-	if password != confirmation {
-		message := "password and confirmation must be the same"
-		err := errors.New(message)
-		return err
-	}
-	return nil
-}
-
-func CheckEmailFormat(email string) error {
-	regex := `^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$`
-
-	isEnabled := regexp.MustCompile(regex).Match([]byte(email))
-	if !isEnabled {
-		message := "invalid email address pattern"
-		err := errors.New(message)
-		return err
-	}
-	return nil
-}
-
-func (u *User) CheckLength(r *http.Request) error {
-	name := r.FormValue("name")
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	if len(name) > 50 {
-		message := "name must be less than 50 characters"
-		err := errors.New(message)
-		return err
-	}
-	index := strings.Index(email, "@")
-	localPart := email[:index]
-	if len(localPart) > 64 {
-		message := "invalid email address pattern"
-		err := errors.New(message)
-		return err
-	}
-
-	if 8 > len(password) {
-		message := "password must be more than 8 characters"
-		err := errors.New(message)
-		return err
-	}
-	return nil
-}
-
-func (u *User) CheckLengthForUpdate(r *http.Request) error {
-	name := r.FormValue("name")
-	email := r.FormValue("email")
-
-	if len(name) > 50 {
-		message := "name must be less than 50 characters"
-		err := errors.New(message)
-		return err
-	}
-	index := strings.Index(email, "@")
-	localPart := email[:index]
-	if len(localPart) > 64 {
-		message := "invalid email address pattern"
-		err := errors.New(message)
-		return err
-	}
-
-	return nil
-}
-
-func (u *User) MatchPassword(r *http.Request) error {
-	currentPassword := crypto.Encrypt(r.FormValue("current-password"))
-	if u.Password != currentPassword {
-		message := "current password is wrong"
-		err := errors.New(message)
-		return err
-	}
-	return nil
-}
-
-func (u *User) CheckImage(r *http.Request) error {
-	currentPassword := crypto.Encrypt(r.FormValue("current-password"))
-	if u.Password != currentPassword {
-		message := "current password is wrong"
-		err := errors.New(message)
-		return err
-	}
-	return nil
-}
-
-func (u *User) SearchSameEmail(DB *gorm.DB, r *http.Request) error {
-	var user User
-	result := DB.Where("email = ?", r.Form.Get("email")).First(&user)
-	if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		if u.Email == user.Email {
-			return nil
-		}
-		err := errors.New("email address is already registered")
-		return err
-	}
-	return nil
-}
-
-// func GetJsonForm(r *http.Request) (Login, error) {
-// 	var login Login
-// 	err := json.NewDecoder(r.Body).Decode(&login)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return login, err
-// 	}
-// 	return login, err
-// }
-
 func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
 	s := session.Session{
 		UserID:			u.ID,
@@ -406,16 +116,6 @@ func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
 	}
 	http.SetCookie(w, &cookie)
 	return s, nil
-}
-
-func GetUserJson(r *http.Request) (User, error) {
-	var user User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		fmt.Println(err)
-		return user, err
-	}
-	return user, nil
 }
 
 func (u *User) GetImage() {
@@ -451,10 +151,15 @@ func (u *User)FindLoginUser(DB *gorm.DB, email string, password string, organiza
 		return err
 	}
 
-	if len(u.Organizations) == 0 {
-		message := "organization is wrong"
-		err := errors.New(message)
-		return err
-	}
 	return nil
+}
+
+func GetUserJson(r *http.Request) (User, error) {
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		fmt.Println(err)
+		return user, err
+	}
+	return user, nil
 }
