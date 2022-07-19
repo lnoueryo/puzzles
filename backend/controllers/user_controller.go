@@ -22,7 +22,7 @@ type MainUser struct {
 type User struct{}
 
 // セッションが有効であるか確認
-func (_ *User) Show(w http.ResponseWriter, r *http.Request) {
+func (*User) Show(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "GET" {
 		errMap := map[string]string{"message": "not found"}
