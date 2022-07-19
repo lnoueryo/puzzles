@@ -14,12 +14,13 @@ var email = config.App.Email
 var origin = config.App.Origin
 var allowOrigin = config.App.AllowOrigin
 var infolog = config.App.InfoLog
+var cookieKey = config.App.CookieKey
 
 // 既存のセッションを取得
 func GetSession(r *http.Request) (session.Session, error) {
 
 	var s session.Session
-	cookie, err := r.Cookie("_cookie");if err != nil {
+	cookie, err := r.Cookie(cookieKey);if err != nil {
 		err := errors.New("session is expired")
 		return s, err
 	}

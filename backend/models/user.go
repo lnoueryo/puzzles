@@ -1,9 +1,7 @@
 package models
 
 import (
-	"backend/config"
 	"backend/modules/crypto"
-	"backend/modules/session"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -88,34 +86,6 @@ func (u *User)GetMainUser(DB *gorm.DB, userID int, orgID string) error {
 	}
 	u.Password = ""
 	return nil
-}
-
-func (u *User)CreateSession(w http.ResponseWriter) (session.Session, error) {
-	s := session.Session{
-		UserID:			u.ID,
-		Name:			u.Name,
-		Age:			u.Age,
-		Sex:			u.Sex,
-		Email:			u.Email,
-		Address:		u.Address,
-		Image:			u.Image,
-		Description:	u.Description,
-		Organization:	u.Organization,
-		CreatedAt:		time.Now(),
-	}
-	err := s.CreateSession(config.App.ProjectID); if err != nil {
-		return s, err
-	}
-	cookie := http.Cookie{
-		Name:     "_cookie",
-		Value:    s.ID,
-		HttpOnly: true,
-		Secure:   true,
-		Path:     "/",
-		SameSite: 4,
-	}
-	http.SetCookie(w, &cookie)
-	return s, nil
 }
 
 func (u *User) GetImage() {

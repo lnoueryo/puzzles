@@ -23,6 +23,7 @@ type AppConfig struct {
 	AllowOrigin		string
 	Email			mail.Mail
 	ProjectID		string
+	CookieKey		string
 }
 
 var App AppConfig
@@ -51,6 +52,8 @@ func commonSettings() {
 	// file path
 	App.Static = "public"
 	App.Media = "upload"
+
+	App.CookieKey = "_cookie"
 
 	// email
 	App.Email.From = os.Getenv("EMAIL_FROM")

@@ -41,10 +41,20 @@ func Login(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	// ユーザーが発見できた場合セッションを作成
-	_, err = u.CreateSession(w);if err != nil {
-		return err
+	s := session.Session{
+		UserID:			u.ID,
+		Name:			u.Name,
+		Age:			u.Age,
+		Sex:			u.Sex,
+		Email:			u.Email,
+		Address:		u.Address,
+		Image:			u.Image,
+		Description:	u.Description,
+		Organization:	u.Organization,
+		CreatedAt:		time.Now(),
 	}
+	s.CreateSession(projectID)
+	SetCookie(w, s.ID)
 
 	return nil
 }
@@ -56,7 +66,7 @@ func Logout(w *http.ResponseWriter, r *http.Request) error {
 
 	session.DeleteSession(s.ID, projectID)
 
-	cookie, err := r.Cookie("_cookie");if err != nil {
+	cookie, err := r.Cookie(cookieKey);if err != nil {
 		return err
 	}
 
@@ -70,7 +80,7 @@ func InviteUser(r *http.Request) error {
 
 	err := DB.Transaction(func(tx *gorm.DB) error {
 
-		cookie, err := r.Cookie("_cookie");if err != nil {
+		cookie, err := r.Cookie(cookieKey);if err != nil {
 			return err
 		}
 
@@ -285,4 +295,16 @@ func getMailJson(r *http.Request) (MailRequest, error) {
 	var mailRequest MailRequest
 	json.NewDecoder(r.Body).Decode(&mailRequest)
 	return mailRequest, nil
+}
+
+func SetCookie(w http.ResponseWriter, id string) {
+	cookie := http.Cookie{
+		Name:     cookieKey,
+		Value:    id,
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/",
+		SameSite: 4,
+	}
+	http.SetCookie(w, &cookie)
 }

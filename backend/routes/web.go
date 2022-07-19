@@ -19,6 +19,7 @@ var csv controllers.CSV
 var infolog = config.App.InfoLog
 var allowOrigin = config.App.AllowOrigin
 var projectID = config.App.ProjectID
+var cookieKey = config.App.CookieKey
 
 func Routes() http.Handler{
 	mux := http.NewServeMux()
