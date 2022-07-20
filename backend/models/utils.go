@@ -4,11 +4,8 @@ import (
 	"backend/config"
 	"backend/modules/mail"
 	"time"
-
-	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
 var email mail.Mail
 var origin string
 var allowOrigin string
@@ -18,11 +15,10 @@ var DeleteImage = config.DeleteImage
 var errorlog = config.App.ErrorLog
 
 func init() {
-	DB = config.DB
 	email = config.App.Email
 	origin = config.App.Origin
 	allowOrigin = config.App.AllowOrigin
-	project = config.App.Project
+	project = config.App.ProjectID
 }
 
 func timeToString(t time.Time) string {

@@ -32,7 +32,7 @@ func NewProjectAuthority(r *http.Request) (ProjectAuthority, error) {
 	return projectAuthority, nil
 }
 
-func GetProjectAuthority(pid int, uid int) (ProjectAuthority, error) {
+func GetProjectAuthority(DB *gorm.DB, pid int, uid int) (ProjectAuthority, error) {
 	var pa ProjectAuthority
 	result := DB.Preload("Project.AuthorityUsers.Type").Preload("Project.AuthorityUsers.User").Preload("Project.AuthorityUsers", "active = ?", true).Preload("Project." + clause.Associations).Preload(clause.Associations).First(&pa, "project_id = ? and user_id = ?", pid, uid); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return pa, result.Error
@@ -40,26 +40,25 @@ func GetProjectAuthority(pid int, uid int) (ProjectAuthority, error) {
 	return pa, nil
 }
 
-func (pa *ProjectAuthority)Create() error {
+func (pa *ProjectAuthority)Create(DB *gorm.DB) error {
 	result := DB.Omit("User", "Type", "Project").Create(&pa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
 }
 
-func (pa *ProjectAuthority)Update() error {
+func (pa *ProjectAuthority)Update(DB *gorm.DB) error {
 	result := DB.Omit("User", "Type", "Project").Save(&pa); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
 }
 
-func DeleteProjectAuthority(id []int) (ProjectAuthority, error) {
-	var pa ProjectAuthority
-	result := DB.Debug().Delete(&pa, id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return pa, result.Error
+func (pa *ProjectAuthority)DeleteByUserIDs(DB *gorm.DB, ids []int) error {
+	result := DB.Delete(&pa, ids); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return result.Error
 	}
-	return pa, nil
+	return nil
 }
 
 func GetProjectAuthorityJson(r *http.Request) (ProjectAuthority, error) {

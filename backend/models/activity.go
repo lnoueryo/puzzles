@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Activity struct {
 	ID			int				`gorm:"AUTO_INCREMENT"json:"id"`
@@ -14,7 +18,7 @@ type Activity struct {
 }
 
 
-func (a *Activity)Create() error {
+func (a *Activity)Create(DB *gorm.DB) error {
 	result := DB.Create(&a); if result.Error != nil {
 		return result.Error
 	}

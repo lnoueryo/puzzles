@@ -15,14 +15,14 @@ type Logger struct {
 // セッションの確認
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("_cookie");if err != nil {
+		cookie, err := r.Cookie(cookieKey);if err != nil {
 			errMap := map[string]string{"message": "session is expired"}
 			errJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusNotModified)
 			w.Write(errJson)
 			return
 		}
-		_, err = session.CheckSession(cookie.Value, projectenv)
+		_, err = session.CheckSession(cookie.Value, projectID)
 		if err != nil {
 			errMap := map[string]string{"message": "session is expired"}
 			errJson, _ := json.Marshal(errMap)
@@ -60,12 +60,12 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// セッション情報をログに吐き出す
 	start := time.Now()
-	cookie, err := r.Cookie("_cookie");if err != nil {
+	cookie, err := r.Cookie(cookieKey);if err != nil {
 		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, r.RemoteAddr, time.Since(start))
 		l.handler.ServeHTTP(w, r)
 		return
 	}
-	s, err := session.CheckSession(cookie.Value, projectenv)
+	s, err := session.CheckSession(cookie.Value, projectID)
 	if err != nil {
 		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, r.RemoteAddr, time.Since(start))
 	} else {
