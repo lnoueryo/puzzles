@@ -6,9 +6,9 @@ import (
 	"strconv"
 )
 
-func GetTask(id int) ([]models.Task, error) {
+func GetTask(id int, pageNum int) ([]uint8, error) {
 
-	t, err := models.GetTasksByProjectID(DB, id); if err != nil {
+	t, err := models.GetTasksByProjectID(DB, id, pageNum); if err != nil {
 		return t, err
 	}
 

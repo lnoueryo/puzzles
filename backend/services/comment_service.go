@@ -40,7 +40,7 @@ func UpdateComment(r *http.Request) (models.Comment, error) {
 
 func DeleteComment(r *http.Request) error {
 
-	ids, err := GetIDs(r);if err != nil {
+	ids, _, err := GetIDs(r);if err != nil {
 		return err
 	}
 

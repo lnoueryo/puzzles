@@ -62,7 +62,7 @@ func StoreImage(dir string, base64Data string) (string, error) {
 }
 
 // base64をデコードしイメージをGCSにアップロード
-func UploadToGCS(dir string, base64Data string) (string, error) {
+func UploadToGCS(dir string, base64Data string, bucketName string) (string, error) {
 	coI := strings.Index(base64Data, ",")
 	randStr, _ := crypto.MakeRandomStr(20)
 	filename := randStr + "."
@@ -76,11 +76,13 @@ func UploadToGCS(dir string, base64Data string) (string, error) {
 	b64data := base64Data[strings.IndexByte(base64Data, ',')+1:]
     decodedImage, err := base64.StdEncoding.DecodeString(b64data)
     if err != nil {
+		message := "could't upload the file"
+		err := errors.New(message)
 		return filename, err
     }
 
 	objectPath := dir + "/" + filename
-	err = StoreImageToGCS(decodedImage, objectPath)
+	err = StoreImageToGCS(decodedImage, objectPath, bucketName)
 	if err != nil {
 		return filename, err
 	}
@@ -89,21 +91,24 @@ func UploadToGCS(dir string, base64Data string) (string, error) {
 }
 
 // GCSにアップロード
-func StoreImageToGCS(bImage []byte, path string) error {
+func StoreImageToGCS(bImage []byte, path string, bucketName string) error {
     f := bytes.NewReader(bImage)
 	// クライアントを作成する
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
+		message := "could't upload the file"
+		err := errors.New(message)
 		return err
 	}
 	// オブジェクトのReaderを作成
-	bucketName := "puzzle-media"
 	writer := client.Bucket(bucketName).Object(path).NewWriter(ctx)
 	defer writer.Close()
 
 	// 書き込み
     if _, err := io.Copy(writer, f); err != nil {
+		message := "could't upload the file"
+		err := errors.New(message)
 		return err
     }
 	return nil

@@ -29,7 +29,7 @@ func UpdateProjectAuthority(r *http.Request) error {
 
 func DeleteProjectAuthority(r *http.Request) error {
 
-	ids, err := GetIDs(r);if err != nil {
+	ids, _, err := GetIDs(r);if err != nil {
 		return err
 	}
 
@@ -41,4 +41,11 @@ func DeleteProjectAuthority(r *http.Request) error {
 		return err
 	}
 	return nil
+}
+
+func FindProjectAuthority(pid int, uid int) bool {
+	_, err := models.FindProjectAuthority(DB, pid, uid);if err != nil {
+		return false
+	}
+	return true
 }

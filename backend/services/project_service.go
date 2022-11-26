@@ -25,7 +25,7 @@ func CreateProject(r *http.Request) error {
 
 	// イメージが更新された場合
 	if p.ImageData != "" {
-		fileName, err := storage.UploadToGCS("projects", p.ImageData); if err != nil {
+		fileName, err := storage.UploadToGCS("projects", p.ImageData, bucketName); if err != nil {
 			return err
 		}
 		p.Image = fileName
@@ -93,7 +93,7 @@ func (pur *ProjectUpdateRequest)BulkUpdateProject() error {
 		if pur.Project.ImageData != "" {
 
 			deleteImageName := pur.Project.Image
-			fileName, err := storage.UploadToGCS("projects", pur.Project.ImageData); if err != nil {
+			fileName, err := storage.UploadToGCS("projects", pur.Project.ImageData, bucketName); if err != nil {
 				return err
 			}
 

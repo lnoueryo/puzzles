@@ -4,6 +4,7 @@ import (
 	"backend/models"
 	"backend/modules/crypto"
 	"backend/modules/image"
+	"backend/modules/session"
 	"backend/modules/storage"
 	"net/http"
 )
@@ -19,9 +20,10 @@ func CreateMainUser(r *http.Request) (MainUser, error) {
 	// BUG(inoueryo) 何かしらデータ更新を行う際に新しくセッションを作成し、古いものは削除されていない可能性あり
 	var mainUser MainUser
 	var u models.User
-	s, err := GetSession(r)
-	err = u.GetMainUser(DB, s.UserID, s.Organization)
-	if err != nil {
+	var ses session.Session
+	s := r.Context().Value(ses).(session.Session)
+
+	err := u.GetMainUser(DB, s.UserID, s.Organization);	if err != nil {
 		return mainUser, err
 	}
 
@@ -46,7 +48,7 @@ func UpdateMainUser(r *http.Request) error {
 		// 既存のイメージの名前を格納
 		deleteImageName := u.Image
 
-		fileName, err := storage.UploadToGCS("users", u.ImageData); if err != nil {
+		fileName, err := storage.UploadToGCS("users", u.ImageData, bucketName); if err != nil {
 			return err
 		}
 		u.Image = fileName
@@ -71,7 +73,7 @@ func UpdateMainUser(r *http.Request) error {
 
 			// 環境による保存場所の変更
 			path := "users/" + u.Image
-			err = storage.StoreImageToGCS(buf.Bytes(), path)
+			err = storage.StoreImageToGCS(buf.Bytes(), path, bucketName)
 			if err != nil {
 				return err
 			}

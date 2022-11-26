@@ -5,8 +5,10 @@ import (
 	"backend/modules/crypto"
 	"backend/modules/mail"
 	"backend/modules/session"
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -35,12 +37,11 @@ const (
 	mainMessage = "下記のURLより参加できます。\n"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) error {
+func Login(w http.ResponseWriter, r *http.Request) (*http.Request, error) {
 	// バリデーション
 	u, err := tryToLogin(w, r);if err != nil {
-		return err
+		return r, err
 	}
-
 	s := session.Session{
 		UserID:			u.ID,
 		Name:			u.Name,
@@ -53,16 +54,23 @@ func Login(w http.ResponseWriter, r *http.Request) error {
 		Organization:	u.Organization,
 		CreatedAt:		time.Now(),
 	}
+	ses := session.Session{}
+	r = r.WithContext(context.WithValue(
+		r.Context(),
+		ses,
+		s,
+	))
 	s.CreateSession(projectID)
 	SetCookie(w, s.ID)
 
-	return nil
+	return r, nil
 }
 
 func Logout(w *http.ResponseWriter, r *http.Request) error {
-	s, err := GetSession(r);if err != nil {
-		return err
-	}
+	fmt.Print("Hello")
+	var ses session.Session
+	s := r.Context().Value(ses).(session.Session)
+	fmt.Print("2")
 
 	session.DeleteSession(s.ID, projectID)
 
@@ -206,8 +214,7 @@ func ValidateVerification(r *http.Request, oa *models.OrganizationAuthority) (st
 
 // ログインのバリデーション
 func tryToLogin(w http.ResponseWriter, r *http.Request) (*models.User, error) {
-
-	var u *models.User
+	var u = models.NewUser()
 	l, err := GetLoginJson(r);if err != nil {
 		return u, err
 	}
@@ -216,7 +223,6 @@ func tryToLogin(w http.ResponseWriter, r *http.Request) (*models.User, error) {
 	err = l.CheckLoginFormBlank();if err != nil {
 		return u, err
 	}
-
 	// メールアドレスのフォームチェック
 	err = CheckEmailFormat(l.Email);if err != nil {
 		return u, err

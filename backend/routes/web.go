@@ -51,7 +51,7 @@ func Routes() http.Handler{
 	mux.Handle("/api/comment/update", Auth(http.HandlerFunc(comment.Update)))
 	mux.Handle("/api/comment/delete", Auth(http.HandlerFunc(comment.Delete)))
 	mux.Handle("/api/session", Auth(http.HandlerFunc(user.Show)))
-	mux.Handle("/api/logout", http.HandlerFunc(auth.Logout))
+	mux.Handle("/api/logout", Auth(http.HandlerFunc(auth.Logout)))
 	mux.Handle("/api/invite", http.HandlerFunc(auth.InviteUser))
 	
 	mux.Handle("/api/data/upload", http.HandlerFunc(csv.Upload))
