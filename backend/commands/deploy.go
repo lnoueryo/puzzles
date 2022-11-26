@@ -7,10 +7,10 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
-var requiredDirectory = []string{"config", "controller", "credentials", "models", "modules", "public", "routes", "templates"}
+var requiredDirectory = []string{"config", "controllers", "services", "models", "modules", "public", "routes", "templates"}
 var requiredFiles = []string{"Dockerfile", "go.mod", "go.sum", "gorm.db", ".env", "server/main.go", "cloudbuild.yaml"}
 
 func Deploy(env string) {
@@ -23,20 +23,20 @@ func Deploy(env string) {
 		}
 		File(value, "backend/"+value)
 	}
-	if env == "local" {
-		err := godotenv.Load(".env.dev"); if err != nil {
-			panic("not found .env.dev")
-		}
-		err = os.Chdir("./backend")
+	// if env == "local" {
+	// 	err := godotenv.Load(".env.dev"); if err != nil {
+	// 		panic("not found .env.dev")
+	// 	}
+		err := os.Chdir("./backend")
 		currDir, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		fmt.Println(currDir)
-		SetProject()
+	// 	SetProject()
 		ExecuteCloudbuild()
-	}
+	// }
 }
 
 func SetProject() {

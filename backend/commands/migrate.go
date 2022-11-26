@@ -16,42 +16,38 @@ var (
 
 var structSlice []interface{}
 
-func SeriesOfCreation(SQDB *gorm.DB, MQDB *gorm.DB) {
+func SeriesOfCreation(MQDB *gorm.DB) {
 	structSlice = append(structSlice, &md.Organization{},&md.Project{},&md.User{},&md.OrganizationAuthority{},&md.ProjectAuthority{},&md.Task{},&md.Field{},&md.Type{},&md.Status{},&md.Priority{},&md.Milestone{},&md.Comment{},&md.Authority{},&md.Activity{},&md.ActivityContent{})
 	for _, v := range structSlice {
-		Migrate(SQDB, MQDB, v)
+		Migrate(MQDB, v)
 	}
-	CreateActivityContent(SQDB, MQDB)
-	CreateOrganization(SQDB, MQDB)
-	CreateProject(SQDB, MQDB)
-	CreateUser(SQDB, MQDB)
-	CreateOrganizationAuthority(SQDB, MQDB)
-	CreateProjectAuthority(SQDB, MQDB)
-	CreateField(SQDB, MQDB)
-	CreateMilestone(SQDB, MQDB)
-	CreateStatus(SQDB, MQDB)
-	CreateType(SQDB, MQDB)
-	CreatePriority(SQDB, MQDB)
-	CreateTask(SQDB, MQDB)
-	// CreateComment(SQDB, MQDB)
-	CreateAuthority(SQDB, MQDB)
+	CreateActivityContent(MQDB)
+	CreateOrganization(MQDB)
+	CreateProject(MQDB)
+	CreateUser(MQDB)
+	CreateOrganizationAuthority(MQDB)
+	CreateProjectAuthority(MQDB)
+	CreateField(MQDB)
+	CreateMilestone(MQDB)
+	CreateStatus(MQDB)
+	CreateType(MQDB)
+	CreatePriority(MQDB)
+	CreateTask(MQDB)
+	// CreateComment(MQDB)
+	CreateAuthority(MQDB)
 }
 
-func AutoMigrate(SQDB *gorm.DB, MQDB *gorm.DB) {
-	SQDB.AutoMigrate(&md.Organization{},&md.Project{},&md.User{},&md.OrganizationAuthority{},&md.ProjectAuthority{},&md.Task{},&md.Field{},&md.Type{},&md.Status{},&md.Priority{},&md.Milestone{},&md.Comment{},&md.Authority{},&md.Activity{},&md.ActivityContent{})
+func AutoMigrate(MQDB *gorm.DB) {
 	MQDB.AutoMigrate(&md.Organization{},&md.Project{},&md.User{},&md.OrganizationAuthority{},&md.ProjectAuthority{},&md.Task{},&md.Field{},&md.Type{},&md.Status{},&md.Priority{},&md.Milestone{},&md.Comment{},&md.Authority{},&md.Activity{},&md.ActivityContent{})
 }
 
-func Migrate(SQDB *gorm.DB, MQDB *gorm.DB, tableStruct interface{}) {
-	SQDB.AutoMigrate(&tableStruct)
+func Migrate(MQDB *gorm.DB, tableStruct interface{}) {
 	MQDB.AutoMigrate(&tableStruct)
-	SQDB.Migrator().DropTable(&tableStruct)
-	SQDB.Migrator().CreateTable(&tableStruct)
 	MQDB.Migrator().DropTable(&tableStruct)
 	MQDB.Migrator().CreateTable(&tableStruct)
 }
 
-func CreateActivityContent(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateActivityContent(MQDB *gorm.DB) {
 	result := make([]md.ActivityContent, 0)
 	for _, value := range []string{"タスクを作成しました", "タスクを変更しました", "コメントを作成しました", "コメントを変更しました", "プロジェクトを作成しました", "プロジェクトを変更しました"} {
 		var newActivityContent = md.ActivityContent{
@@ -59,11 +55,10 @@ func CreateActivityContent(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		result = append(result, newActivityContent)
 	}
-	SQDB.Create(&result)
 	MQDB.Create(&result)
 }
 
-func CreateOrganization(SQDB *gorm.DB, MQDB *gorm.DB) md.Organization {
+func CreateOrganization(MQDB *gorm.DB) md.Organization {
 	var newOrganization = md.Organization{
 		ID:					"prygen4fDISDVgSYDjxZ5uICD",
 		Name:				"+base",
@@ -74,12 +69,11 @@ func CreateOrganization(SQDB *gorm.DB, MQDB *gorm.DB) md.Organization {
 		Image:				"base.png",
 		Plan:				"standard",
 	}
-	SQDB.Create(&newOrganization)
 	MQDB.Create(&newOrganization)
 	return newOrganization
 }
 
-func CreateUser(SQDB *gorm.DB, MQDB *gorm.DB) md.User {
+func CreateUser(MQDB *gorm.DB) md.User {
 	var newUser = md.User{
 		ID: 1,
 		Name:      "井上領",
@@ -91,44 +85,40 @@ func CreateUser(SQDB *gorm.DB, MQDB *gorm.DB) md.User {
 		Image:     "CWCM67iUYAAZ1Kp.png",
 		Description: "hello",
 	}
-	SQDB.Create(&newUser)
 	MQDB.Create(&newUser)
 	return newUser
 }
 
-func CreateProject(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateProject(MQDB *gorm.DB) {
 	var newProject = md.Project{
 		Name:      		"性格診断",
 		Image:     		"diagnosis.png",
 		OrganizationID: "prygen4fDISDVgSYDjxZ5uICD",
 	}
-	SQDB.Create(&newProject)
 	MQDB.Create(&newProject)
 }
 
-func CreateProjectAuthority(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateProjectAuthority(MQDB *gorm.DB) {
 	var newProjectAuthority = md.ProjectAuthority{
 		ProjectID:		1,
 		UserID:			1,
 		AuthorityID:	1,
 		Active: true,
 	}
-	SQDB.Create(&newProjectAuthority)
 	MQDB.Create(&newProjectAuthority)
 }
 
-func CreateOrganizationAuthority(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateOrganizationAuthority(MQDB *gorm.DB) {
 	var newOrganizationAuthority = md.OrganizationAuthority{
 		OrganizationID:	"prygen4fDISDVgSYDjxZ5uICD",
 		UserID:			1,
 		AuthorityID:	1,
 		Active: true,
 	}
-	SQDB.Create(&newOrganizationAuthority)
 	MQDB.Create(&newOrganizationAuthority)
 }
 
-func CreateStatus(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateStatus(MQDB *gorm.DB) {
 	result := make([]md.Status, 0)
 	for _, value := range []string{"相談", "依頼", "再議", "未対応", "対応中", "中断", "確認", "調整", "完了"} {
 		var newStatus = md.Status{
@@ -136,11 +126,10 @@ func CreateStatus(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		result = append(result, newStatus)
 	}
-	SQDB.Create(&result)
 	MQDB.Create(&result)
 }
 
-func CreateField(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateField(MQDB *gorm.DB) {
 	var fields []md.Field
 	fieldTypes := []string{"エンジニア", "医療", "データサイエンス", "営業"}
 	for _, fieldType := range fieldTypes {
@@ -150,11 +139,10 @@ func CreateField(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		fields = append(fields, newField)
 	}
-	SQDB.Create(&fields)
 	MQDB.Create(&fields)
 }
 
-func CreateMilestone(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateMilestone(MQDB *gorm.DB) {
 	var milestones []md.Milestone
 	var projects []md.Project
 	milestoneTypes := []string{"フェーズ1", "フェーズ2", "フェーズ3", "フェーズ4", "テスト", "ベータ版公開"}
@@ -166,11 +154,10 @@ func CreateMilestone(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		milestones = append(milestones, milestone)
 	}
-	SQDB.Create(&milestones)
 	MQDB.Create(&milestones)
 }
 
-func CreateType(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateType(MQDB *gorm.DB) {
 	result := make([]md.Type, 0)
 	for _, value := range []string{"追加", "変更", "バグ", "その他"} {
 		var newType = md.Type{
@@ -178,11 +165,10 @@ func CreateType(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		result = append(result, newType)
 	}
-	SQDB.Create(&result)
 	MQDB.Create(&result)
 }
 
-func CreatePriority(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreatePriority(MQDB *gorm.DB) {
 	result := make([]md.Priority, 0)
 	for _, value := range []string{"低", "中", "高"} {
 		var newPriority = md.Priority{
@@ -190,11 +176,10 @@ func CreatePriority(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		result = append(result, newPriority)
 	}
-	SQDB.Create(&result)
 	MQDB.Create(&result)
 }
 
-func CreateTask(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateTask(MQDB *gorm.DB) {
 	fieldID := 1
 	milestoneID := 1
 	var newTask = md.Task{
@@ -211,11 +196,10 @@ func CreateTask(SQDB *gorm.DB, MQDB *gorm.DB) {
 		Detail:     "<strong>課題を作成してください</strong>",
 		Deadline: time.Now(),
 	}
-	SQDB.Create(&newTask)
 	MQDB.Create(&newTask)
 }
 
-// func CreateComment(SQDB *gorm.DB, MQDB *gorm.DB) {
+// func CreateComment(MQDB *gorm.DB) {
 // 	var newComment1 = Comment{
 // 		Content: "これで大丈夫ですか？",
 // 		TaskID: 1,
@@ -254,7 +238,7 @@ func CreateTask(SQDB *gorm.DB, MQDB *gorm.DB) {
 // 	MQDB.Create(&CommentReply{4,3,4})
 // }
 
-func CreateAuthority(SQDB *gorm.DB, MQDB *gorm.DB) {
+func CreateAuthority(MQDB *gorm.DB) {
 	result := make([]md.Authority, 0)
 	for _, value := range []string{"管理者", "一般"} {
 		var newAuthority = md.Authority{
@@ -262,7 +246,6 @@ func CreateAuthority(SQDB *gorm.DB, MQDB *gorm.DB) {
 		}
 		result = append(result, newAuthority)
 	}
-	SQDB.Create(&result)
 	MQDB.Create(&result)
 }
 

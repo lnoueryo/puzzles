@@ -38,11 +38,6 @@ func CMD() {
 		return
 	}
 
-	if verb == "practice" {
-		Practice()
-		return
-	}
-
 	errMessage := fmt.Sprintf(`no command "go run main.go %v"`, CreateArgsText())
 	fmt.Println(errMessage)
 }
