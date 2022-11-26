@@ -8,6 +8,8 @@ import (
 
 type Task struct{}
 
+const PAGE_NUM = 0
+
 // タスクの取得
 func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 
@@ -19,7 +21,7 @@ func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ids, err := services.GetIDs(r);if err != nil {
+	ids, page, err := services.GetIDs(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -28,8 +30,17 @@ func (*Task) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if page < 0 {
+		errorlog.Print("page num is wrong")
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	RespondTasks(w, r, ids[0])
+	RespondTasks(w, r, ids[0], page)
 
 }
 
@@ -54,7 +65,7 @@ func (_ *Task)Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	RespondTasks(w, r, t.ProjectID)
+	RespondTasks(w, r, t.ProjectID, PAGE_NUM)
 
 }
 
@@ -78,5 +89,5 @@ func (_ *Task)Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	RespondTasks(w, r, t.ProjectID)
+	RespondTasks(w, r, t.ProjectID, PAGE_NUM)
 }

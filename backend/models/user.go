@@ -15,34 +15,37 @@ import (
 )
 
 type User struct {
-	ID						int						`gorm:"AUTO_INCREMENT"json:"id"`
-	Name					string					`json:"name"`
-	Age						int						`json:"age"`
-	Sex						string					`json:"sex"`
-	Email					string					`json:"email"`
-	Address					string					`json:"address"`
-	Password				string					`json:"-"`
-	Image					string					`json:"image"`
-	ImageData				string					`gorm:"<-:false;-:migration;"json:"image_data"`
-	Description				string					`json:"description"`
-	Organization			string					`gorm:"-:all;"json:"organization"`
-	ChangePassword			string					`gorm:"-:all;"json:"password"`
-	Projects				[]ProjectAuthority		`json:"projects"`
-	Organizations			[]OrganizationAuthority	`gorm:"foreignkey:UserID;"json:"organizations"`
-	Tasks					[]Task					`gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
-	CreatedAt				time.Time				`gorm:"->:false;<-:create;autoCreateTime;"json:"-"`
-	UpdatedAt				time.Time				`gorm:"autoUpdateTime;"json:"updated_at"`
+	ID             int                     `gorm:"AUTO_INCREMENT"json:"id"`
+	Name           string                  `json:"name"`
+	Age            int                     `json:"age"`
+	Sex            string                  `json:"sex"`
+	Email          string                  `json:"email"`
+	Address        string                  `json:"address"`
+	Password       string                  `json:"-"`
+	Image          string                  `json:"image"`
+	ImageData      string                  `gorm:"<-:false;-:migration;"json:"image_data"`
+	Description    string                  `json:"description"`
+	Organization   string                  `gorm:"-:all;"json:"organization"`
+	ChangePassword string                  `gorm:"-:all;"json:"password"`
+	Projects       []ProjectAuthority      `json:"projects"`
+	Organizations  []OrganizationAuthority `gorm:"foreignkey:UserID;"json:"organizations"`
+	Tasks          []Task                  `gorm:"foreignKey:AssigneeID;references:ID"json:"tasks"`
+	CreatedAt      time.Time               `gorm:"->:false;<-:create;autoCreateTime;"json:"-"`
+	UpdatedAt      time.Time               `gorm:"autoUpdateTime;"json:"updated_at"`
 }
 
-
-func NewUser(r *http.Request) (User, error) {
-	user, _ := GetUserJson(r)
-	randStr, _ := crypto.MakeRandomStr(20)
-	filename := randStr + ".png"
-	password := crypto.Encrypt(user.Password)
-	user = User{Name: user.Name, Email: user.Email, Image: filename, Password: password}
-	return user, nil
+func NewUser() *User {
+	return &User{}
 }
+
+// func NewUser(r *http.Request) (User, error) {
+// 	user, _ := GetUserJson(r)
+// 	randStr, _ := crypto.MakeRandomStr(20)
+// 	filename := randStr + ".png"
+// 	password := crypto.Encrypt(user.Password)
+// 	user = User{Name: user.Name, Email: user.Email, Image: filename, Password: password}
+// 	return user, nil
+// }
 
 func (u *User) Create(DB *gorm.DB) error {
 	result := DB.Create(u)
@@ -68,20 +71,21 @@ func (u *User) Update(DB *gorm.DB) error {
 	return nil
 }
 
-func (u *User)GetMainUser(DB *gorm.DB, userID int, orgID string) error {
-	result := DB.Preload("Organizations.Organization.Projects.AuthorityUsers." + clause.Associations).
-	Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).
-	Preload("Organizations.Organization.Projects.Fields").
-	Preload("Organizations.Organization.Projects.Milestones").
-	Preload("Organizations.Organization.Projects.Versions").
-	Preload("Organizations.Organization.Projects").
-	Preload("Organizations.Organization.Users.User").
-	Preload("Organizations.Organization.Users.Type").
-	Preload("Organizations.Organization.Users").
-	Preload("Organizations." + clause.Associations).
-	Preload("Organizations", "organization_id = ?", orgID).
-	Preload("Organizations").
-	First(&u, "id = ?", userID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+func (u *User) GetMainUser(DB *gorm.DB, userID int, orgID string) error {
+	result := DB.Preload("Organizations.Organization.Projects.AuthorityUsers."+clause.Associations).
+		Preload("Organizations.Organization.Projects.AuthorityUsers", "active = ?", true).
+		Preload("Organizations.Organization.Projects.Fields").
+		Preload("Organizations.Organization.Projects.Milestones").
+		Preload("Organizations.Organization.Projects.Versions").
+		Preload("Organizations.Organization.Projects").
+		Preload("Organizations.Organization.Users.User").
+		Preload("Organizations.Organization.Users.Type").
+		Preload("Organizations.Organization.Users").
+		Preload("Organizations."+clause.Associations).
+		Preload("Organizations", "organization_id = ?", orgID).
+		Preload("Organizations").
+		First(&u, "id = ?", userID)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	u.Password = ""
@@ -112,10 +116,16 @@ func (u *User) GetImage() {
 	u.Image = filename
 }
 
-func (u *User)FindLoginUser(DB *gorm.DB, email string, password string, organization string) error {
+func (u *User) FindLoginUser(DB *gorm.DB, email string, password string, organization string) error {
 	cryptoPassword := crypto.Encrypt(password)
-	result := DB.Preload("Organizations", "organization_id = ?", organization).Preload(clause.Associations).First(&u, "email = ? and password = ?", email, cryptoPassword)
+	result := DB.Preload("Organizations", "organization_id = ?", organization).First(&u, "email = ?", email)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		message := "email or password is wrong"
+		err := errors.New(message)
+		return err
+	}
+
+	if cryptoPassword != u.Password {
 		message := "email or password is wrong"
 		err := errors.New(message)
 		return err

@@ -7,7 +7,6 @@ import (
 )
 
 var email mail.Mail
-var origin string
 var allowOrigin string
 var project string
 var UploadToGCS = config.UploadToGCS
@@ -16,7 +15,6 @@ var errorlog = config.App.ErrorLog
 
 func init() {
 	email = config.App.Email
-	origin = config.App.Origin
 	allowOrigin = config.App.AllowOrigin
 	project = config.App.ProjectID
 }

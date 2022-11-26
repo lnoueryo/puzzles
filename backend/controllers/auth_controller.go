@@ -16,7 +16,7 @@ func (au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	err := services.Login(w, r);if err != nil {
+	r, err := services.Login(w, r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": err.Error()}
 		errJson, _ := json.Marshal(errMap)

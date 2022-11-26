@@ -26,7 +26,7 @@ func (*Comment)Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	RespondTasks(w, r, c.TaskID)
+	RespondTasks(w, r, c.TaskID, PAGE_NUM)
 }
 
 // コメントの取得
@@ -39,7 +39,7 @@ func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ids, err := services.GetIDs(r);if err != nil {
+	ids, _, err := services.GetIDs(r);if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -48,7 +48,7 @@ func (c *Comment)Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
-	RespondTasks(w, r, ids[0])
+	RespondTasks(w, r, ids[0], PAGE_NUM)
 }
 
 // コメントの更新
@@ -71,7 +71,7 @@ func (*Comment)Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	RespondTasks(w, r, c.TaskID)
+	RespondTasks(w, r, c.TaskID, PAGE_NUM)
 }
 
 // コメントの削除

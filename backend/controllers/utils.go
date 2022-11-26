@@ -58,14 +58,24 @@ func RespondMainUser(w http.ResponseWriter, r *http.Request) {
 		w.Write(sessionJson)
 		return
 	}
-
 	uJson, _ := json.Marshal(mainUser)
 	w.Write(uJson)
 }
 
-func RespondTasks(w http.ResponseWriter, r *http.Request, id int) {
+func RespondTasks(w http.ResponseWriter, r *http.Request, id int, pageNum int) {
 
-	t, err := services.GetTask(id); if err != nil {
+	var ses session.Session
+	s := r.Context().Value(ses).(session.Session)
+	isAllowed := services.FindProjectAuthority(id, s.UserID);if !isAllowed {
+		errorlog.Printf("try to get tasks for different project: %v %v %v %v %v", r.Method, r.URL.Path, s.Name, s.Email, r.RemoteAddr)
+		errMap := map[string]string{"message": "bad connection"}
+		sessionJson, _ := json.Marshal(errMap)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(sessionJson)
+		return
+	}
+
+	t, err := services.GetTask(id, pageNum); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)
@@ -73,8 +83,9 @@ func RespondTasks(w http.ResponseWriter, r *http.Request, id int) {
 		w.Write(sessionJson)
 		return
 	}
-	tJson, _ := json.Marshal(t)
-	w.Write(tJson)
+	// tJson, _ := json.Marshal(t)
+
+	w.Write(t)
 }
 
 func RespondComments(w http.ResponseWriter, r *http.Request, id int) {

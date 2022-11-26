@@ -61,6 +61,14 @@ func (pa *ProjectAuthority)DeleteByUserIDs(DB *gorm.DB, ids []int) error {
 	return nil
 }
 
+func FindProjectAuthority(DB *gorm.DB, pid int, uid int) (ProjectAuthority, error) {
+	var pa ProjectAuthority
+	result := DB.Preload(clause.Associations).First(&pa, "project_id = ? and user_id = ? and active = true", pid, uid); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return pa, result.Error
+	}
+	return pa, nil
+}
+
 func GetProjectAuthorityJson(r *http.Request) (ProjectAuthority, error) {
 	var projectAuthority ProjectAuthority
 	err := json.NewDecoder(r.Body).Decode(&projectAuthority)
