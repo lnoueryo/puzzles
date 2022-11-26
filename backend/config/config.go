@@ -29,20 +29,23 @@ type AppConfig struct {
 var App AppConfig
 var infolog *log.Logger
 var errorlog *log.Logger
+var DB_NAME string
+var DB_HOST string
+var DB_USER string
+var DB_PASSWORD string
+var ADDRESS string
+var BUCKET_NAME string
 
+
+// SESSION=DATASTORE
+// APP_ORIGIN=puzzles-api.jounetsism.biz
+// EMAIL_FROM=popo62520908@gmail.com
+// EMAIL_USERNAME=popo62520908@gmail.com
+// EMAIL_PASSWORD=xprcmxlrrfbnodux
 // envによる環境の決定
 func init() {
+    godotenv.Load(".env")
 
-    err := godotenv.Load(".env.dev"); if err != nil {
-		configureProdSettings()
-	} else {
-		configureLocalSettings()
-	}
-	commonSettings()
-}
-
-// 本番、開発環境共通のセッティング
-func commonSettings() {
 	// log
 	infolog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorlog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
@@ -57,6 +60,63 @@ func commonSettings() {
 
 	// email
 	App.Email.From = os.Getenv("EMAIL_FROM")
+	infolog.Print("EMAIL_FROM: ", App.Email.From)
 	App.Email.Username = os.Getenv("EMAIL_USERNAME")
+	infolog.Print("EMAIL_USERNAME: ", App.Email.Username)
 	App.Email.Password = os.Getenv("EMAIL_PASSWORD")
+	infolog.Print("EMAIL_PASSWORD: ", App.Email.Password)
+	DB_NAME = os.Getenv("DB_NAME");if DB_NAME == "" {
+		DB_NAME = "puzzle"
+	}
+	infolog.Print("DB_NAME: ", DB_NAME)
+	DB_HOST = os.Getenv("DB_HOST");if DB_HOST == "" {
+		DB_HOST = "localhost"
+	}
+	infolog.Print("DB_HOST: ", DB_HOST)
+	DB_USER = os.Getenv("DB_USER");if DB_USER == "" {
+		DB_USER = "puzzles"
+	}
+	infolog.Print("DB_USER: ", DB_USER)
+	DB_PASSWORD = os.Getenv("DB_PASSWORD");if DB_PASSWORD == "" {
+		DB_PASSWORD = "password"
+	}
+	infolog.Print("DB_PASSWORD: ", DB_PASSWORD)
+	App.Addr = os.Getenv("ADDRESS");if App.Addr == "" {
+		App.Addr = "0.0.0.0:8080"
+	}
+	infolog.Print("ADDRESS: ", App.Addr)
+	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN");if App.AllowOrigin == "" {
+		App.AllowOrigin = "http://localhost:3000"
+	}
+	infolog.Print("ALLOW_ORIGIN: ", App.AllowOrigin)
+	App.Host = os.Getenv("HOST");if App.Host == "" {
+		App.Host = "http://localhost:8080"
+	}
+	infolog.Print("HOST: ", App.Host)
+	App.ProjectID = "private-361516"
+	BUCKET_NAME = "puzzles-media"
+	// DB接続
+	DBSet := Database{
+		Name:		DB_NAME,
+		Host:		DB_HOST,
+		User:		DB_USER,
+		Password:	DB_PASSWORD,
+		Port:		"3306",
+		Query:		"parseTime=true",
+	}
+	ConnectMysql(DBSet)
+}
+
+// 本番、開発環境共通のセッティング
+func commonSettings() {
+	// mode := os.Getenv("MODE");if mode == "" {
+	// 	mode = "develop"
+	// }
+
+	// if mode == "production" {
+	// 	App.Addr = ":8080"
+	// 	App.Origin = "puzzles-api.jounetsism.biz"
+	// 	App.ProjectID = "puzzles-345814"
+	// }
+
 }

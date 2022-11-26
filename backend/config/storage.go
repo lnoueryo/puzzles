@@ -84,7 +84,7 @@ func UploadToGCS(dir string, base64Data string) (string, error) {
     }
 
 	objectPath := dir + "/" + filename
-	err = StoreImageToGCS(decodedImage, objectPath)
+	err = StoreImageToGCS(decodedImage, objectPath, BUCKET_NAME)
 	if err != nil {
 		return filename, err
 	}
@@ -93,7 +93,7 @@ func UploadToGCS(dir string, base64Data string) (string, error) {
 }
 
 // GCSにアップロード
-func StoreImageToGCS(bImage []byte, path string) error {
+func StoreImageToGCS(bImage []byte, path string, bucketName string) error {
     f := bytes.NewReader(bImage)
 	// クライアントを作成する
 	ctx := context.Background()
@@ -105,7 +105,6 @@ func StoreImageToGCS(bImage []byte, path string) error {
 		return err
 	}
 	// オブジェクトのReaderを作成
-	bucketName := "puzzle-media"
 	writer := client.Bucket(bucketName).Object(path).NewWriter(ctx)
 	defer writer.Close()
 
