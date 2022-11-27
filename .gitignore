@@ -1,1 +1,3 @@
 *.sql
+logs
+.env

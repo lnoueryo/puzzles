@@ -6,6 +6,7 @@ const readyObj = isReadyObj();
 const emptyObj = isEmptyObj();
 const allowedPath = new Set(['/login', '/expiry', '/success', '/error/bad-connection', '/data/csv'])
 let projectID: string;
+let overlap = false;
 const router: Middleware = async({store, route, redirect}) => {
   if(emptyObj(store.getters.user)) store.commit('pageReady', false);
   if(allowedPath.has(route.path)) return;
@@ -13,9 +14,8 @@ const router: Middleware = async({store, route, redirect}) => {
   breadCrumbs(store, route)
   selectProject(store, route);
   selectUser(store, route);
-  if (Object.keys(route.params).length === 0) return;
-  getTask(store, route, redirect);
-  selectTask(store, route);
+  if(Object.keys(route.params).length === 0) return;
+  await getTask(store, route, redirect);
 }
 
 const getSession = async(store: any, redirect: any) => {
@@ -70,8 +70,13 @@ const selectUser = (store: any, route: any) => {
   }, 100)
 }
 
-const getTask = (store: any, route: any, redirect: any) => {
+const getTask = async(store: any, route: any, redirect: any) => {
   if(route.params.id == projectID) return setCondition(store);
+  if(overlap) {
+    overlap = false;
+    return;
+  }
+  overlap = true;
   let timer = setInterval(async() => {
     if(emptyObj(store.getters.project)) return;
     clearInterval(timer);
@@ -83,6 +88,7 @@ const getTask = (store: any, route: any, redirect: any) => {
     } catch (error: any) {
       response = error.response
     } finally {
+      overlap = false;
       if('status' in response === false) return redirect('/error/bad-connection')
       status(response.status, () => {}, () => {
         alert('エラーです。');
@@ -93,15 +99,6 @@ const getTask = (store: any, route: any, redirect: any) => {
 
 const setCondition = (store: any) => {
   store.dispatch('task/setCondition');
-}
-
-const selectTask = async(store: any, route: any) => {
-  if('key' in route.params === false) return;
-  let timer = setInterval(() => {
-    if(store.getters['task/allTasks'].length === 0) return;
-    clearInterval(timer);
-    store.commit('task/selectTask', route.params);
-  }, 100)
 }
 
 export default router

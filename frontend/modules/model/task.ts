@@ -18,8 +18,7 @@ export class Tasks {
   }
   /** ユーザーのタスク情報を格納 */
   insertTasks(tasks: Type.Task[]) {
-    this.tasks.all = this.preprocessTasks(tasks);
-    this.tasks.sortedTasks = this.tasks.all;
+    this.tasks.sortedTasks = this.preprocessTasks(tasks);
     this.resetSort();
   }
 
@@ -78,43 +77,23 @@ export class Tasks {
   }
 
   /** 選択されたタスクのオブジェクトを保持 */
-  selectTask(params: Type.URLParams) {
-    this.tasks.selectedTask = {}
-    const t0 = performance.now();
-    let key = 0;
-    if('key' in params) key = Number(params.key);
-    for (let index = 0; index < this.tasks.all.length; index++) {
-      if(this.tasks.all[index].id == key) {
-        this.tasks.taskIndex = index;
-        this.tasks.selectedTask = this.tasks.all[index]
-        break
-      }
-    }
-    const t1 = performance.now();
-    console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
-    if(Object.keys(this.tasks.selectedTask).length == 0) this.tasks.taskIndex = -1;
-  }
+  // selectTask(params: Type.URLParams) {
+  //   this.tasks.selectedTask = {}
+  //   const t0 = performance.now();
+  //   let key = 0;
+  //   if('key' in params) key = Number(params.key);
+  //   for (let index = 0; index < this.tasks.all.length; index++) {
+  //     if(this.tasks.all[index].id == key) {
+  //       this.tasks.taskIndex = index;
+  //       this.tasks.selectedTask = this.tasks.all[index]
+  //       break
+  //     }
+  //   }
+  //   const t1 = performance.now();
+  //   console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+  //   if(Object.keys(this.tasks.selectedTask).length == 0) this.tasks.taskIndex = -1;
+  // }
 
-  /** 新しいタスクの追加 */
-  addTask(task: Type.Task) {
-    this.tasks.all.push(this.preprocessTask(task));
-    this.tasks.sortedTasks = this.tasks.all;
-    this.resetSort();
-  }
-
-  /** タスクの更新 */
-  updateTask(updatedTask: Type.Task) {
-    this.tasks.all = this.tasks.all.map((task) => {
-      if(task.id == updatedTask.id) {
-        const newTask = this.preprocessTask(updatedTask);
-        task = {...{}, ...newTask}
-      }
-      return task;
-    })
-    this.tasks.sortedTasks = [...[], ...this.tasks.all];
-    this.resetSort();
-    this.selectTask({key: String(updatedTask.id)} as Type.URLParams)
-  }
   changeTimeFormat = (time: string) => {
     const dateObj = new Date(time);
     const year = dateObj.getFullYear();

@@ -86,11 +86,9 @@ export const mutations: MutationTree<TaskState> = {
     state.tasks.storeCondition({status});
     return state.tasks.selectStatus(status);
   },
-  selectTask: (state, params) => state.tasks.selectTask(params),
+  // selectTask: (state, params) => state.tasks.selectTask(params),
   listIndex: (state, index) => state.tasks.changeListIndex(index),
   pageChange: (state, index) => state.tasks.tasks.pageIndex += index,
-  addTask: (state, task) => state.tasks.addTask(task),
-  updateTask: (state, task) => state.tasks.updateTask(task),
   selectComment: (state, id) => state.selectedComment = id,
 }
 
@@ -104,18 +102,24 @@ export const actions: ActionTree<TaskState, RootState> = {
     commit('listIndex', index);
   },
   async getTasks({commit, dispatch}, id: number) {
+    commit('reset')
     console.log('Get Task')
     return new Promise(async(resolve, reject) => {
       try {
         const t0 = performance.now();
         const response = await this.$axios.get('/api/task', {
-          params: {id: id}
+          params: {
+            id: id,
+            page: 0
+          }
         })
         const t1 = performance.now();
         console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
-        commit('reset')
+        const size = new TextEncoder().encode(JSON.stringify(response)).length
+        const kiloBytes = size / 1024;
+        const megaBytes = kiloBytes / 1024;
         resolve(response);
-        commit('tasks', response.data);
+        commit('tasks', response.data.tasks);
       } catch (error: any) {
         console.log(error);
         reject(error.response);
