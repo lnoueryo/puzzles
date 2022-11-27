@@ -33,7 +33,7 @@ var DB_NAME string
 var DB_HOST string
 var DB_USER string
 var DB_PASSWORD string
-var ADDRESS string
+var SERVER_PORT string
 var BUCKET_NAME string
 
 
@@ -81,10 +81,10 @@ func init() {
 		DB_PASSWORD = "password"
 	}
 	infolog.Print("DB_PASSWORD: ", DB_PASSWORD)
-	App.Addr = os.Getenv("ADDRESS");if App.Addr == "" {
+	App.Addr = os.Getenv("SERVER_PORT");if App.Addr == "" {
 		App.Addr = "0.0.0.0:8080"
 	}
-	infolog.Print("ADDRESS: ", App.Addr)
+	infolog.Print("SERVER_PORT: ", App.Addr)
 	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN");if App.AllowOrigin == "" {
 		App.AllowOrigin = "http://localhost:3000"
 	}

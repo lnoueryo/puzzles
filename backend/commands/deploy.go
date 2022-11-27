@@ -11,7 +11,7 @@ import (
 )
 
 var requiredDirectory = []string{"config", "controllers", "services", "models", "modules", "public", "routes", "templates"}
-var requiredFiles = []string{"Dockerfile", "go.mod", "go.sum", "gorm.db", ".env", "server/main.go", "cloudbuild.yaml"}
+var requiredFiles = []string{"docker/prod/Dockerfile", "go.mod", "go.sum", "gorm.db", ".env", "server/main.go", "cloudbuild.yaml"}
 
 func Deploy(env string) {
 	for _, value := range requiredDirectory {

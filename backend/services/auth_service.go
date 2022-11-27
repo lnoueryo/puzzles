@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -60,17 +59,17 @@ func Login(w http.ResponseWriter, r *http.Request) (*http.Request, error) {
 		ses,
 		s,
 	))
-	s.CreateSession(projectID)
+	err = s.CreateSession(projectID); if err != nil {
+		return r, err
+	}
 	SetCookie(w, s.ID)
 
 	return r, nil
 }
 
 func Logout(w *http.ResponseWriter, r *http.Request) error {
-	fmt.Print("Hello")
 	var ses session.Session
 	s := r.Context().Value(ses).(session.Session)
-	fmt.Print("2")
 
 	session.DeleteSession(s.ID, projectID)
 
