@@ -1,0 +1,9 @@
+node_modules
+assets
+components
+layouts
+modules
+pages
+middleware
+static
+store

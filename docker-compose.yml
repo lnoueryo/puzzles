@@ -1,39 +1,111 @@
 version: '3'
+
 services:
-  nuxt:
-    container_name: puzzles_frontend
+  frontend:
+    image: puzzles-frontend
+    container_name: puzzles-frontend
     build:
-      context: "."
-      dockerfile: "DockerfileFrontend"
+      context: "./frontend"
+      dockerfile: "docker/dev/Dockerfile"
     ports:
-      - "3000:3000"
+      - 3000:${NUXT_SERVER_PORT}
     environment:
-      - CHOKIDAR_USEPOLLING=1
+      SERVER_PORT: ${NUXT_SERVER_PORT}
+      API_URL: ${API_URL}
+      BASE_URL: ${BASE_URL}
+      MEDIA_URL: ${MEDIA_URL}
+      CHOKIDAR_USEPOLLING: true
+      NODE_OPTIONS: --max_old_space_size=8192
     volumes:
-      - "./frontend:/app"
+      - "./frontend/assets:/app/assets"
+      - "./frontend/components:/app/components"
+      - "./frontend/layouts:/app/layouts"
+      - "./frontend/modules:/app/modules"
+      - "./frontend/pages:/app/pages"
+      - "./frontend/middleware:/app/middleware"
+      - "./frontend/static:/app/static"
+      - "./frontend/store:/app/store"
+    networks:
+      puzzles:
+        ipv4_address: ${FRONTEND_HOST}
+    hostname: frontend
+    extra_hosts:
+      - backend:${BACKEND_HOST}
+      - mysql:${DB_HOST}
     tty: true
     # command: npm run dev
-  go:
-    container_name: puzzles_backend
+
+  backend:
+    image: puzzles-backend
+    container_name: puzzles-backend
     build:
-      context: "."
-      dockerfile: "DockerfileBackend"
+      context: "./backend"
+      dockerfile: "docker/dev/Dockerfile"
     ports:
-      - "8080:8080"
+      - 8080:${APP_SERVER_PORT}
     environment:
-      CHOKIDAR_USEPOLLING: 1
-      GOOGLE_APPLICATION_CREDENTIALS: "./credentials/puzzles-345814-229e7076a0d5.json"
+      SESSION_KEY: ${SESSION_KEY}
+      MODE: ${MODE}
+      GOOGLE_APPLICATION_CREDENTIALS: ./credentials/${GOOGLE_APPLICATION_CREDENTIALS}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${APP_SERVER_PORT}
+      ALLOW_ORIGIN: ${ALLOW_ORIGIN}
+      HOST: ${HOST}
+      EMAIL_FROM: ${EMAIL_FROM}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
     volumes:
-      - "./backend:/app"
+      - "./backend/controllers:/app/controllers"
+      - "./backend/config:/app/config"
+      - "./backend/models:/app/models"
+      - "./backend/modules:/app/modules"
+      - "./backend/routes:/app/routes"
+      - "./backend/services:/app/services"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      puzzles:
+        ipv4_address: ${BACKEND_HOST}
+    hostname: backend
+    extra_hosts:
+      - mysql:${DB_HOST}
     tty: true
-    # command: go run main.go watch
-  mysql:
-    image: mysql:latest # プロダクトで使うならバージョンはlatestじゃないほうが良いです
-    container_name: puzzles_mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: Popo@6252 # MySQLパスワード設定
-      MYSQL_DATABASE: puzzle # MySQLデータベース名設定
-    volumes:
-      - ./sql:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
+    command: go run main.go watch
+
+  db:
+    container_name: puzzles-mysql
+    build:
+      context: "./database"
+      dockerfile: "docker/Dockerfile"
     ports:
-      - "3306:3306"
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # MySQLパスワード設定
+      MYSQL_DATABASE: ${DB_NAME} # MySQLデータベース名設定
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 5
+    volumes:
+      - ./database/sql:/docker-entrypoint-initdb.d # コンテナ作成時に走るシェルスクリプト指定
+      - ./database/logs:/var/log/mysql
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      puzzles:
+        ipv4_address: ${DB_HOST}
+    hostname: mysql
+
+networks:
+  puzzles:
+    name: puzzles
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.1/24
