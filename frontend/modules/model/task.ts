@@ -56,7 +56,7 @@ export class Tasks {
   /** タスクを取り込む際のデータ処理 */
   preprocessTasks = (tasks: Type.Task[]): Task[] => {
     const newTasks = []
-    for (let index = 0; index < tasks.length; index++) {
+    for (let index = 0; index < tasks?.length || 0; index++) {
       newTasks.push(this.preprocessTask(tasks[index]));
     }
     return newTasks;

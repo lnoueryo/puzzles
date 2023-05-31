@@ -82,11 +82,11 @@ func init() {
 	}
 	infolog.Print("DB_PASSWORD: ", DB_PASSWORD)
 	App.Addr = os.Getenv("SERVER_PORT");if App.Addr == "" {
-		App.Addr = "0.0.0.0:8080"
+		App.Addr = "8080"
 	}
 	infolog.Print("SERVER_PORT: ", App.Addr)
 	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN");if App.AllowOrigin == "" {
-		App.AllowOrigin = "http://localhost:3000"
+		App.AllowOrigin = "*"
 	}
 	infolog.Print("ALLOW_ORIGIN: ", App.AllowOrigin)
 	App.Host = os.Getenv("HOST");if App.Host == "" {

@@ -49,3 +49,7 @@ APP_ORIGIN=`"api origin"`
 ```
 $ go run main.go deploy
 ```
+
+```
+$ k6 run script.js --vus 50 --duration 10s --out  json=create-script.json
+```
