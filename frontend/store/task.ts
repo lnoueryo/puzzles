@@ -86,11 +86,9 @@ export const mutations: MutationTree<TaskState> = {
     state.tasks.storeCondition({status});
     return state.tasks.selectStatus(status);
   },
-  selectTask: (state, params) => state.tasks.selectTask(params),
+  // selectTask: (state, params) => state.tasks.selectTask(params),
   listIndex: (state, index) => state.tasks.changeListIndex(index),
   pageChange: (state, index) => state.tasks.tasks.pageIndex += index,
-  addTask: (state, task) => state.tasks.addTask(task),
-  updateTask: (state, task) => state.tasks.updateTask(task),
   selectComment: (state, id) => state.selectedComment = id,
 }
 
@@ -104,32 +102,36 @@ export const actions: ActionTree<TaskState, RootState> = {
     commit('listIndex', index);
   },
   async getTasks({commit, dispatch}, id: number) {
+    commit('reset')
     console.log('Get Task')
     return new Promise(async(resolve, reject) => {
       try {
-        commit('reset')
         const t0 = performance.now();
         const response = await this.$axios.get('/api/task', {
-          params: {id: id}
+          params: {
+            id: id,
+            page: 0
+          }
         })
         const t1 = performance.now();
         console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+        const size = new TextEncoder().encode(JSON.stringify(response)).length
+        const kiloBytes = size / 1024;
+        const megaBytes = kiloBytes / 1024;
         resolve(response);
-        commit('tasks', response.data);
+        commit('tasks', response.data.tasks);
       } catch (error: any) {
         console.log(error);
         reject(error.response);
       }
     })
   },
-  async updateTask({commit, rootGetters }, form) {
+  async updateTask({commit}, form) {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.put('/api/task/update', form);
-        response.data.assignee = rootGetters.project.authority_users.find((authority_user: model.ProjectAuthority) => {
-          return authority_user.user_id == response.data.assignee_id;
-        }).user
-        commit('updateTask', response.data);
+        commit('reset')
+        commit('tasks', response.data);
         resolve(response);
       } catch (error: any) {
         console.log(error);
@@ -141,9 +143,9 @@ export const actions: ActionTree<TaskState, RootState> = {
     return new Promise(async(resolve, reject) => {
       try {
         const response = await this.$axios.post('/api/task/create', form);
-        commit('addTask', response.data);
+        commit('reset')
+        commit('tasks', response.data);
         resolve(response);
-        // commit('tasks', response.data);
       } catch (error: any) {
         console.log(error);
         reject(error.response);

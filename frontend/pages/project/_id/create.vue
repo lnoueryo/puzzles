@@ -7,7 +7,7 @@
        md="10"
        lg="10"
       >
-        <form-task
+        <FormTask
          v-model="selectedTask"
          @submit="onClickCreate"
          :loading="loading"
@@ -18,7 +18,7 @@
           <template v-slot:submit>
             作成
           </template>
-        </form-task>
+        </FormTask>
       </v-col>
     </v-row>
   </div>
@@ -85,6 +85,7 @@ export default Vue.extend({
       const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
       const field = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id) || {};
       const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
+      const version = this.project.versions.find((version: model.Milestone) => version.id === this.selectedTask.version_id) || {};
       const requiredDataforDisplay = {
         assignee,
         status,
@@ -92,6 +93,7 @@ export default Vue.extend({
         field,
         milestone,
         priority,
+        version,
         comments: [],
       }
       const newTask = {...this.selectedTask, ...additionalInfo, ...cleansedData, ...requiredDataforDisplay}
@@ -130,7 +132,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error.response;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id', params: {id: this.$route.params.id}});
         }, () => {

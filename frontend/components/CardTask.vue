@@ -169,7 +169,7 @@ export default Vue.extend({
     changeToTimeStampFormat,
     noTask() {
       if(this.isReadyObj(this.project)) {
-        return this.isEmptyArr(this.allTasks);
+        return this.isEmptyArr(this.tasks);
       }
       return false;
     },

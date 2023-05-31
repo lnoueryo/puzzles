@@ -7,24 +7,24 @@
        md="10"
        lg="10"
       >
-        <form-task v-model="selectedTask" @submit="dialog = true">
+        <FormTask v-model="selectedTask" @submit="dialog = true">
           <template v-slot:back>
             戻る
           </template>
           <template v-slot:submit>
             更新
           </template>
-        </form-task>
+        </FormTask>
       </v-col>
     </v-row>
-    <dialog-update
+    <DialogUpdate
      v-model="dialog"
      :form="dialogForm"
      @submit="onClickSubmit"
      @loading="loading = $event"
     >
       {{ taskForm.key }}
-    </dialog-update>
+    </DialogUpdate>
   </div>
 </template>
 
@@ -124,8 +124,8 @@ export default Vue.extend({
     const newVersion = this.project.versions.find((version: model.Field) => version.id === this.selectedTask.version_id);
       return [
         {title: '課題のタイトル', newData: this.selectedTask.title, oldData: this.task.title },
-        {title: '担当者', newData: newAssignee.user.name, oldData: this.task.assignee.name },
-        {title: '状況', newData: newStatus.name, oldData: this.task.status },
+        {title: '担当者', newData: newAssignee.user?.name, oldData: this.task.assignee?.name },
+        {title: '状況', newData: newStatus?.name, oldData: this.task.status },
         {title: 'タスクの種類', newData: newType?.name, oldData: this.task.type },
         {title: '優先順位', newData: newPriority.name, oldData: this.task.priority },
         {title: 'マイルストーン', newData: newMilestone?.name, oldData: this.task.milestone },
@@ -147,7 +147,6 @@ export default Vue.extend({
   methods: {
     preprocessTask: function(): void {
       this.selectedTask = JSON.parse(JSON.stringify(this.task));
-      console.log(this.selectedTask)
       this.selectedTask.deadline = this.changeToDateISOFormat(this.selectedTask.deadline);
       this.pageReady = true;
     },
@@ -163,7 +162,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error.response;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id', params: {id: this.$route.params.id}});
         },

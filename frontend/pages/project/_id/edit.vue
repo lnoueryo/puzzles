@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <form-project
+    <FormProject
      v-model="selectedProject"
      @submit="dialog = true"
      :loading="loading"
@@ -15,15 +15,15 @@
           更新
         </div>
       </template>
-    </form-project>
-    <dialog-update
+    </FormProject>
+    <DialogUpdate
      v-model="dialog"
      :form="dialogForm"
      @submit="onClickUpdate"
      @loading="loading = $event"
     >
       更新の確認
-    </dialog-update>
+    </DialogUpdate>
   </div>
 </template>
 
@@ -127,10 +127,10 @@ export default Vue.extend({
         ...milestones,
         ...versions,
         // ...administers,
-        {title: 'イメージの変更', newData: this.selectedProject.image_data || this.selectedProject.image, oldData: this.selectedProject.image, image: true},
+        {title: 'イメージの変更', newData: this.selectedProject.image_data || '/projects/' + this.selectedProject.image, oldData: '/projects/' + this.selectedProject.image, image: true},
         {title: 'プロジェクトの概要', newData: this.selectedProject.description, oldData: this.project.description},
       ];
-    }
+    },
   },
   /** ユーザーの権限確認 */
   async created() {
@@ -151,7 +151,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project-id', params: {id: this.$route.params.id}})
         },

@@ -19,3 +19,24 @@ variable "cloud_sql_instance" {
 variable "domain" {
     type = string
 }
+variable "db_name" {
+    type = string
+}
+variable "db_host" {
+    type = string
+}
+variable "db_user" {
+    type = string
+}
+variable "db_password" {
+    type = string
+}
+variable "email_from" {
+    type = string
+}
+variable "email_username" {
+    type = string
+}
+variable "email_password" {
+    type = string
+}

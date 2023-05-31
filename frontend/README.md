@@ -28,7 +28,7 @@ $ npm run generate
 $ firebase deploy --only hosting
 ```
 
-## Account
-organizations: quaereoli5ath2iPiequaidoo
-email: jounetsism@gmail.com
+## Guest Account
+organizations: 0b0yndlguULVW3a4S3hFf4CTE
+email: izumida529@example.co.jp
 

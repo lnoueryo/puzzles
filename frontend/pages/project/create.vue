@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthorized">
-    <form-project
+    <FormProject
      v-model="newProject"
      @submit="onClickCreate"
      :loading="loading"
@@ -15,7 +15,7 @@
           作成
         </div>
       </template>
-    </form-project>
+    </FormProject>
   </div>
 </template>
 
@@ -84,7 +84,7 @@ export default Vue.extend({
       } catch (error: any) {
         response = error;
       } finally {
-        if('status' in response === false) return this.$router.push('/bad-connection')
+        if('status' in response === false) return this.$router.push('/error/bad-connection')
         this.checkStatus(response.status, () => {
           this.$router.push({name: 'project'})
         },

@@ -283,8 +283,6 @@ export default Vue.extend({
   methods: {
     openAuthorityDialog(e: Event, authorityUser: model.ProjectAuthority) {
       e.preventDefault();
-      
-      console.log(e)
       this.selectedUser = authorityUser;
       this.changeAuthority = authorityUser.type;
       this.authorityDialog = true;
@@ -308,7 +306,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         if ("status" in response === false)
-          return this.$router.push("/bad-connection");
+          return this.$router.push("/error/bad-connection");
         this.checkStatus(
           response.status,
           () => {
@@ -333,7 +331,6 @@ export default Vue.extend({
       };
       let response;
       try {
-        console.log(selectedUser);
         response = await this.$store.dispatch(
           "project/createProjectAuthority",
           selectedUser
@@ -342,7 +339,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         if ("status" in response === false)
-          return this.$router.push("/bad-connection");
+          return this.$router.push("/error/bad-connection");
         this.checkStatus(
           response.status,
           () => {
@@ -366,7 +363,7 @@ export default Vue.extend({
         response = error.response;
       } finally {
         if ("status" in response === false)
-          return this.$router.push("/bad-connection");
+          return this.$router.push("/error/bad-connection");
         this.checkStatus(
           response.status,
           () => {

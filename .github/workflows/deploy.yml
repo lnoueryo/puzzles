@@ -1,0 +1,46 @@
+
+name: Deploy to Cloud Run on merge
+'on':
+  push:
+    branches:
+      - release*
+    paths:
+      - 'backend/**'
+jobs:
+  job_id:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    steps:
+    - name: set up
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.17
+      id: go
+    - name: check out
+      uses: actions/checkout@v2
+    - name: Prepare deploy
+      working-directory: './backend'
+      run: go run main.go deploy
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        working-directory: './backend/backend'
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-cloudrun@v0'
+      with:
+        working-directory: './backend/backend'
+        service: '${{ secrets.SERVICE }}'
+        image: 'gcr.io/${{ secrets.PROJECT_ID }}/${{ secrets.SERVICE }}'
+        region: '${{ secrets.REGION }}'
+        env_vars: |
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          PRIVATE=${{ secrets.PRIVATE }}
+          EMAIL_FROM=${{ secrets.EMAIL_FROM }}
+          EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}

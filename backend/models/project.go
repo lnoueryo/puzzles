@@ -39,19 +39,12 @@ type ProjectRequest struct {
 	Authority	string	`gorm:"migration"json:"authority"`
 }
 
-type ProjectUpdateRequest struct {
-	Project			Project	`json:"project"`
-	FieldDelete		bool	`json:"field_delete"`
-	MilestoneDelete	bool	`json:"milestone_delete"`
-	VersionDelete	bool	`json:"versione_delete"`
-}
-
 func NewProject(r *http.Request) (Project, error) {
 	project, _ := GetProjectJson(r)
 	return project, nil
 }
 
-func (p *Project)GetProjectAuthority(uid int) (ProjectAuthority, error) {
+func (p *Project)GetProjectAuthority(DB *gorm.DB, uid int) (ProjectAuthority, error) {
 	var pa ProjectAuthority
 	result := DB.Preload("Project.Milestones").Preload("Project.Fields").Preload("ProjectUsers.Type").Preload("ProjectUsers.User").Preload("ProjectUsers").Preload(clause.Associations).Find(&pa, "user_id = ? and project_id = ?", uid, p.ID); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return pa, result.Error
@@ -59,35 +52,21 @@ func (p *Project)GetProjectAuthority(uid int) (ProjectAuthority, error) {
 	return pa, nil
 }
 
-func(p *Project)Create() error {
+func(p *Project)Create(DB *gorm.DB) error {
 	result := DB.Debug().Omit("Users.*").Create(&p); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
 }
 
-func (p *Project)Update() error {
-	var projectAuthorities []ProjectAuthority
-	for _, user := range p.AuthorityUsers {
-		projectAuthority := ProjectAuthority{
-			ID: user.ID,
-			ProjectID: user.ProjectID,
-			UserID: user.UserID,
-			AuthorityID: user.AuthorityID,
-			Active: user.Active,
-		}
-		projectAuthorities = append(projectAuthorities, projectAuthority)
-	}
-	result := DB.Debug().Updates(&projectAuthorities); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return result.Error
-	}
-	result = DB.Debug().Updates(&p); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+func (p *Project)Update(DB *gorm.DB) error {
+	result := DB.Omit("Organization", "Tasks", "AuthorityUsers.User", "AuthorityUsers.Type", "AuthorityUsers", "AuthorityUsers").Session(&gorm.Session{FullSaveAssociations: true}).Save(&p); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
 	return nil
 }
 
-func (p *Project)GetProject(id int, uid int) error {
+func (p *Project)GetProject(DB *gorm.DB, id int, uid int) error {
 	result := DB.Preload("Tasks", func(DB *gorm.DB) *gorm.DB {
 		return DB.Preload(clause.Associations)
 	  }).Preload(clause.Associations).First(&p, "id = ?", id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -107,7 +86,7 @@ func (p *Project)GetProject(id int, uid int) error {
 	return nil
 }
 
-func(p *Project)GetEditProject(id int, uid int) error {
+func(p *Project)GetEditProject(DB *gorm.DB, id int, uid int) error {
 	result := DB.Preload(clause.Associations).First(&p, "id = ?", id); if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error
 	}
@@ -166,15 +145,4 @@ func (p *Project) GetImage() {
 
 	io.Copy(file, response.Body)
 	p.Image = filename
-}
-
-func GetProjectUpdateRequestJson(r *http.Request) (ProjectUpdateRequest, error) {
-	var projectUpdateRequest ProjectUpdateRequest
-	err := json.NewDecoder(r.Body).Decode(&projectUpdateRequest)
-	if err != nil {
-		message := "couldn't decode json"
-		err := errors.New(message)
-		return projectUpdateRequest, err
-	}
-	return projectUpdateRequest, nil
 }

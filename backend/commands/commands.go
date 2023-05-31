@@ -24,7 +24,7 @@ func CMD() {
 	}
 
 	if verb == "deploy" {
-		Deploy()
+		Deploy(object)
 		return
 	}
 
@@ -32,14 +32,12 @@ func CMD() {
 		Watch()
 		return
 	}
+
 	if verb == "make" {
 		MakeCMD()
 		return
 	}
-	if verb == "practice" {
-		Practice()
-		return
-	}
+
 	errMessage := fmt.Sprintf(`no command "go run main.go %v"`, CreateArgsText())
 	fmt.Println(errMessage)
 }

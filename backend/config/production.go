@@ -6,6 +6,7 @@ import (
 
 // 本番環境の設定
 func configureProdSettings() {
+
 	App.Addr = ":8500"
 	if os.Getenv("DB") == "CLOUDSQL" {
 		DBSet := Database{
@@ -19,5 +20,4 @@ func configureProdSettings() {
 		ConnectMysql(DBSet)
 		return
 	}
-	ConnectSqlite3()
 }

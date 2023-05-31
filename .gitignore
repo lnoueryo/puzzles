@@ -1,2 +1,5 @@
 *.sql
 certs
+logs
+.env
+

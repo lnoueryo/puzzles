@@ -131,11 +131,23 @@ export const actions: ActionTree<RootState, RootState> = {
   updateOrganizationAuthority({commit}, form) {
     return new Promise(async(resolve, reject) => {
       try {
-        const response = await this.$axios.put('/api/organization-authority/update', form);
-        // console.log((new Blob([JSON.stringify (response)])).size);
+        const response = await this.$axios.put('/api/update', form);
         resolve(response);
         commit('insertUserData', response.data);
       } catch (error: any) {
+        reject(error.response);
+      }
+    })
+  },
+  deleteOrganizationAuthority({commit}, organizationAuthority) {
+    // 未実装
+    return new Promise(async(resolve, reject) => {
+      try {
+        const response = await this.$axios.delete('/api/organization-authority/delete', {params: {id: organizationAuthority.id}});
+        commit('deleteOrganizationAuthority', organizationAuthority);
+        resolve(response);
+      } catch (error: any) {
+        console.log(error);
         reject(error.response);
       }
     })

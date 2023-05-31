@@ -13,19 +13,12 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	"google.golang.org/api/option"
+	// "google.golang.org/api/option"
 )
 
 // 画像の保存
 func StoreImage(dir string, base64Data string) (string, error) {
-	// credentialのjsonファイルがあれば、GCSに保存
-	if App.CredentialsPath != "" {
-		filename, err := uploadToGCS(dir, base64Data)
-		if err != nil {
-			return filename, err
-		}
-		return filename, nil
-	}
+
 	randStr, _ := crypto.MakeRandomStr(20)
 	// サーバー側に保存するために空ファイルを作成
     coI := strings.Index(base64Data, ",")
@@ -70,7 +63,7 @@ func StoreImage(dir string, base64Data string) (string, error) {
 }
 
 // base64をデコードしイメージをGCSにアップロード
-func uploadToGCS(dir string, base64Data string) (string, error) {
+func UploadToGCS(dir string, base64Data string) (string, error) {
 	coI := strings.Index(base64Data, ",")
 	randStr, _ := crypto.MakeRandomStr(20)
 	filename := randStr + "."
@@ -91,7 +84,7 @@ func uploadToGCS(dir string, base64Data string) (string, error) {
     }
 
 	objectPath := dir + "/" + filename
-	err = StoreImageToGCS(decodedImage, objectPath)
+	err = StoreImageToGCS(decodedImage, objectPath, BUCKET_NAME)
 	if err != nil {
 		return filename, err
 	}
@@ -100,11 +93,11 @@ func uploadToGCS(dir string, base64Data string) (string, error) {
 }
 
 // GCSにアップロード
-func StoreImageToGCS(bImage []byte, path string) error {
+func StoreImageToGCS(bImage []byte, path string, bucketName string) error {
     f := bytes.NewReader(bImage)
 	// クライアントを作成する
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(App.CredentialsPath))
+	client, err := storage.NewClient(ctx)
 	if err != nil {
 		errorlog.Print(err)
 		message := "could't upload the file"
@@ -112,7 +105,6 @@ func StoreImageToGCS(bImage []byte, path string) error {
 		return err
 	}
 	// オブジェクトのReaderを作成
-	bucketName := "puzzle-media"
 	writer := client.Bucket(bucketName).Object(path).NewWriter(ctx)
 	defer writer.Close()
 
@@ -138,21 +130,11 @@ func StoreBinaryImage(bImage []byte, path string) error {
 	return nil
 }
 
-// イメージの削除
-func DeleteImage(name string, dir string) {
-	// credentialのjsonファイルがあれば、GCS上で削除
-	if App.CredentialsPath != "" {
-		deleteOnGCS(name, dir)
-		return
-	}
-	path := "upload/" + dir + "/" + name
-	os.Remove(path)
-}
 
 // GCS上のイメージを削除
-func deleteOnGCS(name string, dir string) {
+func DeleteImage(name string, dir string) {
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(App.CredentialsPath))
+	client, err := storage.NewClient(ctx)
 	if err != nil {
 		errorlog.Print(err)
 	}

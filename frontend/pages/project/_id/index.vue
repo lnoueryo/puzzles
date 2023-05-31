@@ -31,7 +31,6 @@
          :href="'#' + tab.component"
          v-for="(tab, i) in tabs"
          :key="i"
-         @click="$router.replace({...$route, ...{query: {tab: tab.component}}})"
         >
           {{ tab.title }}
           <v-icon>{{ tab.icon }}</v-icon>
@@ -99,8 +98,8 @@ export default Vue.extend({
     pageReady: false,
     tabKey: 'task',
     tabs: [
-      {title: '全てのタスク', icon: 'mdi-clipboard-check-multiple-outline', component: 'card-task'},
-      {title: 'プロジェクトの概要', icon: 'mdi-clipboard-check-multiple-outline', component: 'card-project'},
+      {title: '全てのタスク', icon: 'mdi-clipboard-check-multiple-outline', component: 'CardTask'},
+      {title: 'プロジェクトの概要', icon: 'mdi-clipboard-check-multiple-outline', component: 'CardProject'},
     ],
   }),
   computed: {
