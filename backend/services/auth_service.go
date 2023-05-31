@@ -59,7 +59,7 @@ func Login(w http.ResponseWriter, r *http.Request) (*http.Request, error) {
 		ses,
 		s,
 	))
-	err = s.CreateSession(projectID); if err != nil {
+	err = s.CreateSession(); if err != nil {
 		return r, err
 	}
 	SetCookie(w, s.ID)
@@ -71,7 +71,7 @@ func Logout(w *http.ResponseWriter, r *http.Request) error {
 	var ses session.Session
 	s := r.Context().Value(ses).(session.Session)
 
-	session.DeleteSession(s.ID, projectID)
+	session.DeleteSession(s.ID)
 
 	cookie, err := r.Cookie(cookieKey);if err != nil {
 		return err
@@ -91,7 +91,7 @@ func InviteUser(r *http.Request) error {
 			return err
 		}
 
-		s, err := session.CheckSession(cookie.Value, projectID)
+		s, err := session.CheckSession(cookie.Value)
 		if err != nil {
 			return err
 		}

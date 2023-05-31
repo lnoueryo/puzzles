@@ -66,7 +66,7 @@ func init() {
 	App.Email.Password = os.Getenv("EMAIL_PASSWORD")
 	infolog.Print("EMAIL_PASSWORD: ", App.Email.Password)
 	DB_NAME = os.Getenv("DB_NAME");if DB_NAME == "" {
-		DB_NAME = "puzzle"
+		DB_NAME = "puzzles"
 	}
 	infolog.Print("DB_NAME: ", DB_NAME)
 	DB_HOST = os.Getenv("DB_HOST");if DB_HOST == "" {
@@ -82,15 +82,17 @@ func init() {
 	}
 	infolog.Print("DB_PASSWORD: ", DB_PASSWORD)
 	App.Addr = os.Getenv("SERVER_PORT");if App.Addr == "" {
-		App.Addr = "8080"
+
+		App.Addr = "0.0.0.0:8500"
+
 	}
 	infolog.Print("SERVER_PORT: ", App.Addr)
 	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN");if App.AllowOrigin == "" {
 		App.AllowOrigin = "*"
 	}
 	infolog.Print("ALLOW_ORIGIN: ", App.AllowOrigin)
-	App.Host = os.Getenv("HOST");if App.Host == "" {
-		App.Host = "http://localhost:8080"
+	App.Host = os.Getenv("APP_HOST");if App.Host == "" {
+		App.Host = "http://localhost:8500"
 	}
 	infolog.Print("HOST: ", App.Host)
 	App.ProjectID = "private-361516"

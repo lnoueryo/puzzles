@@ -5,5 +5,5 @@ WORKDIR /app
 # COPY ./backend/go.sum /app/go.sum
 COPY . /app/.
 RUN go mod download
-EXPOSE 8080
+EXPOSE 8500
 ENV HOST 0.0.0.0

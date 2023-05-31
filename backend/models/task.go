@@ -152,15 +152,15 @@ FROM
 				'name', tp.name
 			) AS type
 		FROM
-			puzzle.tasks t
-		LEFT JOIN puzzle.users assignee ON assignee.id = t.assignee_id
-		LEFT JOIN puzzle.users assigner ON assigner.id = t.assigner_id
-		LEFT JOIN puzzle.statuses s ON s.id = t.status_id
-		LEFT JOIN puzzle.fields f ON f.id = t.field_id
-		LEFT JOIN puzzle.milestones m ON m.id = t.milestone_id
-		LEFT JOIN puzzle.versions v ON v.id = t.version_id
-		LEFT JOIN puzzle.priorities p ON p.id = t.priority_id
-		LEFT JOIN puzzle.types tp ON tp.id = t.type_id
+			puzzles.tasks t
+		LEFT JOIN puzzles.users assignee ON assignee.id = t.assignee_id
+		LEFT JOIN puzzles.users assigner ON assigner.id = t.assigner_id
+		LEFT JOIN puzzles.statuses s ON s.id = t.status_id
+		LEFT JOIN puzzles.fields f ON f.id = t.field_id
+		LEFT JOIN puzzles.milestones m ON m.id = t.milestone_id
+		LEFT JOIN puzzles.versions v ON v.id = t.version_id
+		LEFT JOIN puzzles.priorities p ON p.id = t.priority_id
+		LEFT JOIN puzzles.types tp ON tp.id = t.type_id
 		WHERE
 			t.project_id = ?
 		ORDER BY
@@ -176,7 +176,6 @@ func (t *Task) GetTask(DB *gorm.DB) error {
 	tx := DB.Preload("Comments", "parent_id = ?", 0).Preload(clause.Associations)
 	tx = RecursivePreload(tx)
 	result := tx.Find(&t, t.ID)
-	fmt.Println(t)
 	// result := DB.Preload(RecursivePreload()).Preload("Comments", "parent_id = ?", 1).Preload(clause.Associations).First(&t)
 	if result.Error != nil {
 		return result.Error

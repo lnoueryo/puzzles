@@ -7,15 +7,9 @@ import (
 	"os"
 )
 
-
 // ローカルにセッションファイル作成
-func (s *Session)CreateSession(project string) error {
-	if project != "" {
-		err := s.DSCreateSession(project); if err != nil {
-			return err
-		}
-		return nil
-	}
+func (s *Session) CreateSession() error {
+
 	s.GenerateSessionID()
 	// session用ファイル作成
 	// sessionフォルダの有無判定
@@ -38,13 +32,9 @@ func (s *Session)CreateSession(project string) error {
 }
 
 // ローカルのセッションファイル削除
-func DeleteSession(ID string, project string) error {
-	if project != "" {
-		err := DSDeleteSession(ID, project);if err != nil {
-			return err
-		}
-	}
+func DeleteSession(ID string) error {
 	filepath := fmt.Sprintf("./session/%v.txt", ID)
+	fmt.Print(filepath)
 	os.Remove(filepath)
 	return nil
 }
@@ -64,20 +54,15 @@ func (s *Session) ReadSession(filename string) error {
 }
 
 // セッションファイルの有無確認
-func CheckSession(ID string, project string) (Session, error) {
+func CheckSession(ID string) (Session, error) {
 	var s Session
 	if ID == "" {
 		err := errors.New("no cookie")
 		return s, err
 	}
-	if project != "" {
-		s, err := DSGetSession(ID, project); if err != nil {
-			return s, err
-		}
-		return s, nil
-	}
 	filepath := fmt.Sprintf("./session/%v.txt", ID)
-	err := s.ReadSession(filepath);if err != nil {
+	err := s.ReadSession(filepath)
+	if err != nil {
 		return s, err
 	}
 	return s, nil

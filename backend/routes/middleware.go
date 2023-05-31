@@ -31,7 +31,7 @@ func Auth(next http.Handler) http.Handler {
 			w.Write(errJson)
 			return
 		}
-		s, err := session.CheckSession(cookie.Value, projectID);if err != nil {
+		s, err := session.CheckSession(cookie.Value);if err != nil {
 			errMap := map[string]string{"message": "session is expired"}
 			errJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusNotModified)
@@ -72,14 +72,34 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-
 	// セッション情報をログに吐き出す
 	start := time.Now()
-	infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, r.RemoteAddr, time.Since(start))
+	cookie, err := r.Cookie("_cookie");if err != nil {
+		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, GetRealRemoteIP(r), time.Since(start))
+		l.handler.ServeHTTP(w, r)
+		return
+	}
+	s, err := session.CheckSession(cookie.Value)
+	if err != nil {
+		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, GetRealRemoteIP(r), time.Since(start))
+	} else {
+		infolog.Printf("%v %v %v %v %v %v", r.Method, r.URL.Path, s.Name, s.Email, GetRealRemoteIP(r), time.Since(start))
+	}
 	l.handler.ServeHTTP(w, r)
 }
 
 //NewLogger constructs a new Logger middleware handler
 func NewLogger(handlerToWrap http.Handler) *Logger {
 	return &Logger{handlerToWrap}
+}
+
+func GetRealRemoteIP(r *http.Request) string {
+	ip := r.Header.Get("X-Real-IP")
+	if ip == "" {
+		ip = r.Header.Get("X-Forwarded-For")
+	}
+	if ip == "" {
+		ip = r.RemoteAddr
+	}
+	return ip
 }

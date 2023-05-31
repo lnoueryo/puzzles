@@ -23,7 +23,7 @@ func GetSession(r *http.Request) (session.Session, error) {
 		return s, err
 	}
 
-	s, err = session.CheckSession(cookie.Value, projectID)
+	s, err = session.CheckSession(cookie.Value)
 	if err != nil {
 		return s, err
 	}
@@ -75,6 +75,7 @@ func RespondTasks(w http.ResponseWriter, r *http.Request, id int, pageNum int) {
 		return
 	}
 
+	
 	t, err := services.GetTask(id, pageNum); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
@@ -83,6 +84,7 @@ func RespondTasks(w http.ResponseWriter, r *http.Request, id int, pageNum int) {
 		w.Write(sessionJson)
 		return
 	}
+
 	// tJson, _ := json.Marshal(t)
 
 	w.Write(t)

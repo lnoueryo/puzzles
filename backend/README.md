@@ -16,7 +16,7 @@ DB_USER=`"root"`
 DB_PASSWORD=`password`
 DB_PORT=`"3306"`
 DB_QUERY=`"parseTime=true"`
-APP_ORIGIN=`"http://localhost:8080"`
+APP_ORIGIN=`"http://localhost:8500"`
 EMAIL_FROM=`Gmail`
 EMAIL_USERNAME=`Gmail`
 EMAIL_PASSWORD=`Gmail password`

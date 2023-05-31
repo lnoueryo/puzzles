@@ -1,0 +1,7 @@
+{
+    "editor.fontLigatures": false,
+    "[go]": {
+        "editor.tabSize": 4,
+        "editor.renderWhitespace": "selection"
+    }
+}
