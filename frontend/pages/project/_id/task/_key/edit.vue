@@ -19,11 +19,10 @@
     </v-row>
     <DialogUpdate
      v-model="dialog"
-     :form="dialogForm"
+     :form="dialogForm()"
      @submit="onClickSubmit"
      @loading="loading = $event"
     >
-      {{ taskForm.key }}
     </DialogUpdate>
   </div>
 </template>
@@ -53,7 +52,7 @@ export default Vue.extend({
       required: (v: string) => !!v || '必ずご記入ください',
       requiredSelect: (v: model.User[]) => v.length != 0 || '1名は選択してください',
     },
-    selectedTask: {} as model.Task,
+    selectedTask: {} as any,
   }),
   computed: {
     ...mapGetters('task', [
@@ -81,61 +80,6 @@ export default Vue.extend({
       today.setDate(today.getDate() + numberOfDaysToAdd);
       return today.toISOString()
     },
-    taskForm() {
-      const additionalInfo = {
-        id: Number(this.$route.params.key),
-        assigner_id: this.user.id,
-        project_id: Number(this.$route.params.id),
-      }
-      const cleansedData = {
-        estimated_time: Number(this.selectedTask.estimated_time),
-        start_time: this.selectedTask.start_time ? new Date(this.selectedTask.start_time) : null,
-        deadline: this.selectedTask.deadline ? new Date(this.selectedTask.deadline) : null,
-      }
-      const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
-      const type = this.types.find((type: {id: number}) => type.id === this.selectedTask.type_id);
-      const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
-      const field = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id) || {};
-      const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
-      const version = this.project.versions.find((version: model.Version) => version.id === this.selectedTask.version_id) || {};
-      const actual_time = 0
-      const created_at = new Date(this.selectedTask.created_at);
-      const requiredDataforDisplay = {
-        status,
-        type,
-        field,
-        milestone,
-        version,
-        priority,
-        actual_time,
-        comments: [],
-        created_at,
-      }
-      const newTask = {...this.selectedTask, ...additionalInfo, ...cleansedData, ...requiredDataforDisplay}
-      return newTask;
-    },
-    dialogForm() {
-    const newAssignee = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id);
-    const newStatus = this.statuses.find((status: model.Status) => status.id === this.selectedTask.status_id);
-    const newType = this.types.find((type: model.Type) => type.id === this.selectedTask.type_id);
-    const newPriority = this.priorities.find((priority: model.Priority) => priority.id === this.selectedTask.priority_id);
-    const newMilestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id);
-    const newField = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id);
-    const newVersion = this.project.versions.find((version: model.Field) => version.id === this.selectedTask.version_id);
-      return [
-        {title: '課題のタイトル', newData: this.selectedTask.title, oldData: this.task.title },
-        {title: '担当者', newData: newAssignee.user?.name, oldData: this.task.assignee?.name },
-        {title: '状況', newData: newStatus?.name, oldData: this.task.status },
-        {title: 'タスクの種類', newData: newType?.name, oldData: this.task.type },
-        {title: '優先順位', newData: newPriority.name, oldData: this.task.priority },
-        {title: 'マイルストーン', newData: newMilestone?.name, oldData: this.task.milestone },
-        {title: '分野', newData: newField?.name, oldData: this.task.field },
-        {title: 'バージョン', newData: newVersion?.name, oldData: this.task.version },
-        {title: '期日', newData: this.selectedTask.deadline, oldData: this.changeToDateISOFormat(this.task.deadline) },
-        {title: '推定時間', newData: this.selectedTask.estimated_time, oldData: this.task.estimated_time },
-        {title: 'タスクの詳細', newData: this.selectedTask.detail, oldData: this.task.detail },
-      ]
-    }
   },
   async created() {
     let timer = setInterval(() => {
@@ -156,9 +100,31 @@ export default Vue.extend({
       // if(validation) {
       //   return;
       // }
+
+      const request = {
+        id: this.selectedTask.id,
+        key: this.selectedTask.key,
+        title: this.selectedTask.title,
+        detail: this.selectedTask.detail,
+        actual_time: this.selectedTask.actual_time,
+        start_time: new Date(this.selectedTask.start_time),
+        estimated_time: this.selectedTask.estimated_time,
+        deadline: new Date(this.selectedTask.deadline),
+        project_id: Number(this.$route.params.id),
+        assignee_id: this.selectedTask.assignee.id,
+        assigner_id: this.selectedTask.assigner.id,
+        field_id: this.selectedTask.field.id,
+        milestone_id: this.selectedTask.milestone.id,
+        priority_id: this.selectedTask.priority.id,
+        status_id: this.selectedTask.status.id,
+        type_id: this.selectedTask.type.id,
+        version_id: this.selectedTask.version.id,
+        created_at: new Date(this.selectedTask.created_at),
+        updated_at: new Date(this.selectedTask.updated_at),
+      }
       let response
       try {
-        response = await this.$store.dispatch('task/updateTask', this.taskForm);
+        response = await this.$store.dispatch('task/updateTask', request);
       } catch (error: any) {
         response = error.response;
       } finally {
@@ -187,6 +153,29 @@ export default Vue.extend({
       }
       return;
     },
+    dialogForm() {
+    if(!this.pageReady) return []
+    const newAssignee = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id === this.selectedTask.assignee.id);
+    const newStatus = this.statuses.find((status: model.Status) => status.id === this.selectedTask.status.id);
+    const newType = this.types.find((type: model.Type) => type.id === this.selectedTask.type.id);
+    const newPriority = this.priorities.find((priority: model.Priority) => priority.id === this.selectedTask.priority.id);
+    const newMilestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone.id);
+    const newField = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field.id);
+    const newVersion = this.project.versions.find((version: model.Version) => version.id === this.selectedTask.version.id);
+      return [
+        {title: '課題のタイトル', newData: this.selectedTask.title, oldData: this.task.title },
+        {title: '担当者', newData: newAssignee.user?.name, oldData: this.task.assignee?.name },
+        {title: '状況', newData: newStatus?.name, oldData: this.task.status?.name },
+        {title: 'タスクの種類', newData: newType?.name, oldData: this.task.type?.name },
+        {title: '優先順位', newData: newPriority.name, oldData: this.task.priority?.name },
+        {title: 'マイルストーン', newData: newMilestone?.name, oldData: this.task.milestone?.name },
+        {title: '分野', newData: newField?.name, oldData: this.task.field?.name },
+        {title: 'バージョン', newData: newVersion?.name, oldData: this.task.version?.name },
+        {title: '期日', newData: this.selectedTask.deadline, oldData: this.changeToDateISOFormat(this.task.deadline) },
+        {title: '推定時間', newData: this.selectedTask.estimated_time, oldData: this.task.estimated_time },
+        {title: 'タスクの詳細', newData: this.selectedTask.detail, oldData: this.task.detail },
+      ]
+    }
   }
 })
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <filter-bar :noTask="noTask"></filter-bar>
+      <FilterBar :noTask="noTask"></FilterBar>
     </div>
     <div class="text-center scroll">
       <div class="thead"  :style="table.thead.style">
@@ -50,7 +50,7 @@
                 <user-cell :styleValue="cell.header.style" :user="task.assignee"></user-cell>
               </nuxt-link> -->
               <nuxt-link :to="{name: 'project-id-task-key-edit', params: {id: $route.params.id, key: task.id}}" v-else>
-                <div class="cell" :style="cell.header.style">{{ task[cell.name] }}</div>
+                <div class="cell" :style="cell.header.style">{{ getName(task[cell.name]) }}</div>
               </nuxt-link>
             </div>
           </div>
@@ -209,6 +209,10 @@ export default Vue.extend({
     openUserDialog(userID: number) {
       this.selectedUser = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id == userID);
       this.userDialog = true;
+    },
+    getName(v: string | {name: string}) {
+      if(!v || typeof v == 'string') return v;
+      return v.name;
     }
   }
 })

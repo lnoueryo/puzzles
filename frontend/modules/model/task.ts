@@ -17,8 +17,8 @@ export class Tasks {
     taskIndex: -1,
   }
   /** ユーザーのタスク情報を格納 */
-  insertTasks(tasks: Type.Task[]) {
-    this.tasks.sortedTasks = this.preprocessTasks(tasks);
+  insertTasks(tasks: any) {
+    this.tasks.sortedTasks = tasks;
     this.resetSort();
   }
 
@@ -54,45 +54,45 @@ export class Tasks {
     this.tasks.sortedTasks.sort(compare);
   }
   /** タスクを取り込む際のデータ処理 */
-  preprocessTasks = (tasks: Type.Task[]): Task[] => {
-    const newTasks = []
-    for (let index = 0; index < tasks?.length || 0; index++) {
-      newTasks.push(this.preprocessTask(tasks[index]));
-    }
-    return newTasks;
-  }
-  preprocessTask = (task: Type.Task) => {
-    const newTask = {} as Task
-    newTask.priority = (task?.priority as Type.Priority)?.name;
-    newTask.milestone = (task?.milestone as Type.Milestone)?.name;
-    newTask.version = (task?.version as Type.Version)?.name;
-    newTask.field = (task.field as Type.Field)?.name;
-    newTask.status = (task.status as Type.Status)?.name;
-    newTask.type = (task.type as Type.Type)?.name;
-    newTask.created_at = this.changeTimeFormat(task.created_at);
-    newTask.updated_at = this.changeTimeFormat(task.updated_at);
-    newTask.start_time = this.changeTimeFormat(task.start_time);
-    newTask.deadline = this.changeTimeFormat(task.deadline);
-    return {...task, ...newTask};
-  }
+  // preprocessTasks = (tasks: Type.Task[]): Task[] => {
+  //   const newTasks = []
+  //   for (let index = 0; index < tasks?.length || 0; index++) {
+  //     newTasks.push(this.preprocessTask(tasks[index]));
+  //   }
+  //   return newTasks;
+  // }
+  // preprocessTask = (task: Type.Task) => {
+  //   const newTask = {} as Task
+  //   newTask.priority = (task?.priority as Type.Priority)?.name;
+  //   newTask.milestone = (task?.milestone as Type.Milestone)?.name;
+  //   newTask.version = (task?.version as Type.Version)?.name;
+  //   newTask.field = (task.field as Type.Field)?.name;
+  //   newTask.status = (task.status as Type.Status)?.name;
+  //   newTask.type = (task.type as Type.Type)?.name;
+  //   newTask.created_at = this.changeTimeFormat(task.created_at);
+  //   newTask.updated_at = this.changeTimeFormat(task.updated_at);
+  //   newTask.start_time = this.changeTimeFormat(task.start_time);
+  //   newTask.deadline = this.changeTimeFormat(task.deadline);
+  //   return {...task, ...newTask};
+  // }
 
   /** 選択されたタスクのオブジェクトを保持 */
-  // selectTask(params: Type.URLParams) {
-  //   this.tasks.selectedTask = {}
-  //   const t0 = performance.now();
-  //   let key = 0;
-  //   if('key' in params) key = Number(params.key);
-  //   for (let index = 0; index < this.tasks.all.length; index++) {
-  //     if(this.tasks.all[index].id == key) {
-  //       this.tasks.taskIndex = index;
-  //       this.tasks.selectedTask = this.tasks.all[index]
-  //       break
-  //     }
-  //   }
-  //   const t1 = performance.now();
-  //   console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
-  //   if(Object.keys(this.tasks.selectedTask).length == 0) this.tasks.taskIndex = -1;
-  // }
+  selectTask(params: Type.URLParams) {
+    this.tasks.selectedTask = {}
+    const t0 = performance.now();
+    let key = 0;
+    if('key' in params) key = Number(params.key);
+    for (let index = 0; index < this.tasks.sortedTasks.length; index++) {
+      if(this.tasks.sortedTasks[index].id == key) {
+        this.tasks.taskIndex = index;
+        this.tasks.selectedTask = this.tasks.sortedTasks[index]
+        break
+      }
+    }
+    const t1 = performance.now();
+    console.log(`Call to doSomething took ${t1 - t0} milliseconds.`);
+    if(Object.keys(this.tasks.selectedTask).length == 0) this.tasks.taskIndex = -1;
+  }
 
   changeTimeFormat = (time: string) => {
     const dateObj = new Date(time);
@@ -246,13 +246,13 @@ export class Tasks {
 
   /** 担当者、フィールド、マイルストーン、ヴァージョン、ステータスによるタスクのフィルタリング */
   get filterTasks() {
-    return this.tasks.sortedTasks.filter((task) => {
-      if(!this.tasks.selectStatus.includes('完了') && task.status === '完了') return;
+    return this.tasks.sortedTasks.filter((task: any) => {
+      if(!this.tasks.selectStatus.includes('完了') && task.status.name === '完了') return;
       const assignee = !this.tasks.selectAssignee || task.assignee.name == this.tasks.selectAssignee;
       const field =  !this.tasks.selectField || task.field == this.tasks.selectField;
       const milestone = !this.tasks.selectMilestone || task.milestone == this.tasks.selectMilestone;
       const version = !this.tasks.selectVersion || task.version == this.tasks.selectVersion;
-      const status = this.tasks.selectStatus.length == 0 || this.tasks.selectStatus.includes(task.status);
+      const status = this.tasks.selectStatus.length == 0 || this.tasks.selectStatus.includes(task.status.name);
       return assignee && field && milestone && version && status;
     })
   }

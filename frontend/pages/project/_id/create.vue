@@ -40,8 +40,9 @@ declare module 'vue/types/vue' {
 export default Vue.extend({
   components: { FormTask },
   data: () => ({
-    selectedTask: {} as model.Task,
+    selectedTask: {} as any,
     loading: false,
+    pageReady: false
   }),
   computed: {
     ...mapGetters('task', [
@@ -59,46 +60,6 @@ export default Vue.extend({
     isEmptyArr,
     isEmptyObj,
     isReadyObj,
-    pageReady() {
-      return this.isReadyObj(this.project);
-    },
-    taskForm() {
-      /** タスク作成時に選択できない固定の値 */
-      const additionalInfo = {
-        assigner: this.user,
-        assigner_id: this.user.id,
-        project_id: Number(this.$route.params.id),
-        actual_time: 0,
-      }
-
-      /** 型の変更が必要な値 */
-      const cleansedData = {
-        estimated_time: Number(this.selectedTask.estimated_time),
-        start_time: this.selectedTask.start_time ? new Date(this.selectedTask.start_time) : null,
-        deadline: this.selectedTask.deadline ? new Date(this.selectedTask.deadline) : null,
-      }
-
-      /** idよりオブジェクトの検索が必要な値 */
-      const assignee = this.project.authority_users.find((user: model.ProjectAuthority) => user.user_id === this.selectedTask.assignee_id).user;
-      const status = this.statuses.find((status: {id: number}) => status.id === this.selectedTask.status_id);
-      const type = this.types.find((type: {id: number}) => type.id === this.selectedTask.type_id);
-      const priority = this.priorities.find((priority: {id: number}) => priority.id === this.selectedTask.priority_id);
-      const field = this.project.fields.find((field: model.Field) => field.id === this.selectedTask.field_id) || {};
-      const milestone = this.project.milestones.find((milestone: model.Milestone) => milestone.id === this.selectedTask.milestone_id) || {};
-      const version = this.project.versions.find((version: model.Milestone) => version.id === this.selectedTask.version_id) || {};
-      const requiredDataforDisplay = {
-        assignee,
-        status,
-        type,
-        field,
-        milestone,
-        priority,
-        version,
-        comments: [],
-      }
-      const newTask = {...this.selectedTask, ...additionalInfo, ...cleansedData, ...requiredDataforDisplay}
-      return newTask;
-    },
   },
 
   /** 新しく作成するタスクの初期設定 */
@@ -107,14 +68,16 @@ export default Vue.extend({
       if(this.isEmptyObj(this.user)) return;
       clearInterval(timer);
       const additionalInfo = {
-        assignee_id: this.user.id,
-        status_id: 1,
-        type_id: 1,
-        priority_id: 2,
+        assignee: this.user,
+        status: {id: 1, name: ''},
+        type: {id: 1},
+        priority: {id: 2},
         estimated_time: 0,
         deadline: this.changeToDateISOFormat('', 5)
       }
+      console.log(additionalInfo)
       this.selectedTask = {...this.selectedTask, ...additionalInfo}
+      this.pageReady = true
     }, 100)
   },
   methods: {
@@ -125,10 +88,30 @@ export default Vue.extend({
       // if(validation) {
       //   return;
       // }
-
+      const request = {
+        id: this.selectedTask.id,
+        key: this.selectedTask.key,
+        title: this.selectedTask.title,
+        detail: this.selectedTask.detail,
+        actual_time: this.selectedTask.actual_time,
+        start_time: new Date(this.selectedTask.start_time),
+        estimated_time: this.selectedTask.estimated_time,
+        deadline: new Date(this.selectedTask.deadline),
+        project_id: Number(this.$route.params.id),
+        assignee_id: this.selectedTask.assignee.id,
+        assigner_id: this.selectedTask.assignee.id,
+        field_id: this.selectedTask.field?.id,
+        milestone_id: this.selectedTask.milestone?.id,
+        priority_id: this.selectedTask.priority.id,
+        status_id: this.selectedTask.status.id,
+        type_id: this.selectedTask.type.id,
+        version_id: this.selectedTask.version?.id,
+        created_at: new Date(this.selectedTask.created_at),
+        updated_at: new Date(this.selectedTask.updated_at),
+      }
       let response
       try {
-        response = await this.$store.dispatch('task/createTask', this.taskForm);
+        response = await this.$store.dispatch('task/createTask', request);
       } catch (error: any) {
         response = error.response;
       } finally {

@@ -16,6 +16,7 @@ const router: Middleware = async({store, route, redirect}) => {
   selectUser(store, route);
   if(Object.keys(route.params).length === 0) return;
   await getTask(store, route, redirect);
+  selectTask(store, route);
 }
 
 const getSession = async(store: any, redirect: any) => {
@@ -71,34 +72,47 @@ const selectUser = (store: any, route: any) => {
 }
 
 const getTask = async(store: any, route: any, redirect: any) => {
-  if(route.params.id == projectID) return setCondition(store);
-  if(overlap) {
-    overlap = false;
-    return;
-  }
-  overlap = true;
-  let timer = setInterval(async() => {
-    if(emptyObj(store.getters.project)) return;
-    clearInterval(timer);
-    let response;
-    try {
-      response = await store.dispatch('task/getTasks', store.getters.project.id);
-      projectID = store.getters.project.id;
-      setCondition(store);
-    } catch (error: any) {
-      response = error.response
-    } finally {
+  return new Promise(async(resolve, reject) => {
+    setCondition(store);
+    if(overlap) {
       overlap = false;
-      if('status' in response === false) return redirect('/error/bad-connection')
-      status(response.status, () => {}, () => {
-        alert('エラーです。');
-      })
+      return;
     }
-  }, 100)
+    overlap = true;
+    let timer = setInterval(async() => {
+      if(emptyObj(store.getters.project)) return;
+      clearInterval(timer);
+      let response;
+      try {
+        response = await store.dispatch('task/getTasks', store.getters.project.id);
+        projectID = store.getters.project.id;
+        setCondition(store);
+        resolve(response);
+      } catch (error: any) {
+        response = error.response
+        reject(error.response);
+      } finally {
+        overlap = false;
+        if('status' in response === false) return redirect('/error/bad-connection')
+        status(response.status, () => {}, () => {
+          alert('エラーです。');
+        })
+      }
+    }, 100)
+  })
 }
 
 const setCondition = (store: any) => {
   store.dispatch('task/setCondition');
+}
+
+const selectTask = async(store: any, route: any) => {
+  if('key' in route.params === false) return;
+  let timer = setInterval(() => {
+    if(store.getters['task/allTasks'].length === 0) return;
+    clearInterval(timer);
+    store.commit('task/selectTask', route.params);
+  }, 100)
 }
 
 export default router

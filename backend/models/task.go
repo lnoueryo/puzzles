@@ -189,7 +189,7 @@ func (t *Task) Create(DB *gorm.DB) error {
 }
 
 func (t *Task) Update(DB *gorm.DB) error {
-	fmt.Println(t.EstimatedTime)
+	fmt.Print((t))
 	result := DB.Omit("Assignee", "Assigner", "Field", "Status", "Milestone", "Version", "Type", "Priority").Save(&t).Clauses(clause.Returning{})
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return result.Error

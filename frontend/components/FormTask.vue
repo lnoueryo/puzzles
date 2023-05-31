@@ -41,6 +41,7 @@
                 :items="statuses"
                 item-text="name"
                 item-value="id"
+                return-object
                 label="現在の状態"
                 prepend-icon="mdi-playlist-check"
               ></v-select>
@@ -55,6 +56,7 @@
                 label="タスクの種類"
                 item-text="name"
                 item-value="id"
+                return-object
                 prepend-icon="mdi-priority-high"
               ></v-select>
             </v-col>
@@ -66,6 +68,7 @@
                 label="優先順位"
                 item-text="name"
                 item-value="id"
+                return-object
                 prepend-icon="mdi-priority-high"
               ></v-select>
             </v-col>
@@ -115,6 +118,7 @@
                 :items="project.fields"
                 item-text="name"
                 item-value="id"
+                return-object
                 label="分野"
                 prepend-icon="mdi-shape"
                 :disabled="isEmptyArr(project.fields)"
@@ -128,6 +132,7 @@
                 :items="project.milestones"
                 item-text="name"
                 item-value="id"
+                return-object
                 label="マイルストーン"
                 prepend-icon="mdi-flag-triangle"
                 :disabled="isEmptyArr(project.milestones)"
@@ -140,6 +145,7 @@
                 :items="project.versions"
                 item-text="name"
                 item-value="id"
+                return-object
                 label="バージョン"
                 prepend-icon="mdi-rocket-launch"
                 :disabled="isEmptyArr(project.versions)"
@@ -218,58 +224,58 @@ export default Vue.extend({
     },
     assignee: {
       get() {
-        return this.value.assignee_id;
+        return this.value.assignee.id;
       },
-      set(assignee_id) {
-        this.updateValue({assignee_id});
+      set(assignee) {
+        this.updateValue({assignee});
       }
     },
     status: {
       get() {
-        return this.value.status_id;
+        return this.value.status.id;
       },
-      set(status_id) {
-        this.updateValue({status_id});
+      set(status) {
+        this.updateValue({status});
       }
     },
     type: {
       get() {
-        return this.value.type_id;
+        return this.value.type.id;
       },
-      set(type_id) {
-        this.updateValue({type_id});
+      set(type) {
+        this.updateValue({type});
       }
     },
     priority: {
       get() {
-        return this.value.priority_id;
+        return this.value.priority.id;
       },
-      set(priority_id) {
-        this.updateValue({priority_id});
+      set(priority) {
+        this.updateValue({priority});
       }
     },
     field: {
       get() {
-        return this.value.field_id;
+        return this.value.field?.id;
       },
-      set(field_id) {
-        this.updateValue({field_id});
+      set(field) {
+        this.updateValue({field});
       }
     },
     milestone: {
       get() {
-        return this.value.milestone_id;
+        return this.value.milestone?.id;
       },
-      set(milestone_id) {
-        this.updateValue({milestone_id});
+      set(milestone) {
+        this.updateValue({milestone});
       }
     },
     version: {
       get() {
-        return this.value.version_id;
+        return this.value.version?.id;
       },
-      set(version_id) {
-        this.updateValue({version_id});
+      set(version) {
+        this.updateValue({version});
       }
     },
     deadline: {
@@ -309,6 +315,8 @@ export default Vue.extend({
   methods: {
     updateValue(value: {}) {
       const newValue = {...this.value, ...value};
+      console.log(this.value)
+      console.log(value)
       this.$emit('input', newValue);
     },
     onSubmit() {

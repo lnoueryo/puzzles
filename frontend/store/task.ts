@@ -33,7 +33,7 @@ export const getters: GetterTree<TaskState, RootState> = {
   listNumArr: state => state.tasks.tasks.listNumArr,
   selectList: state => state.tasks.tasks.listNumArr[state.tasks.tasks.listIndex],
   pageIndex: state => state.tasks.tasks.pageIndex,
-  allTasks: state => state.tasks.tasks.all,
+  allTasks: state => state.tasks.tasks.sortedTasks,
   tasks: state => state.tasks.main,
   totalTasks: state => state.tasks.filterTasks.length,
   totalPageNum: state => state.tasks.totalPageNum,
@@ -86,7 +86,7 @@ export const mutations: MutationTree<TaskState> = {
     state.tasks.storeCondition({status});
     return state.tasks.selectStatus(status);
   },
-  // selectTask: (state, params) => state.tasks.selectTask(params),
+  selectTask: (state, params) => state.tasks.selectTask(params),
   listIndex: (state, index) => state.tasks.changeListIndex(index),
   pageChange: (state, index) => state.tasks.tasks.pageIndex += index,
   selectComment: (state, id) => state.selectedComment = id,
@@ -109,8 +109,7 @@ export const actions: ActionTree<TaskState, RootState> = {
         const t0 = performance.now();
         const response = await this.$axios.get('/api/task', {
           params: {
-            id: id,
-            page: 0
+            id: id
           }
         })
         const t1 = performance.now();
@@ -131,7 +130,7 @@ export const actions: ActionTree<TaskState, RootState> = {
       try {
         const response = await this.$axios.put('/api/task/update', form);
         commit('reset')
-        commit('tasks', response.data);
+        commit('tasks', response.data.tasks);
         resolve(response);
       } catch (error: any) {
         console.log(error);
@@ -144,7 +143,7 @@ export const actions: ActionTree<TaskState, RootState> = {
       try {
         const response = await this.$axios.post('/api/task/create', form);
         commit('reset')
-        commit('tasks', response.data);
+        commit('tasks', response.data.tasks);
         resolve(response);
       } catch (error: any) {
         console.log(error);

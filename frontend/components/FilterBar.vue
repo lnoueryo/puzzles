@@ -11,7 +11,7 @@
           outlined
           clearable
           item-disabled=""
-          :disabled="noTask"
+
           color="#295caa"
         ></v-select>
       </v-col>
@@ -25,7 +25,7 @@
           outlined
           clearable
           color="#295caa"
-          :disabled="noTask || noField"
+          :disabled="noField"
         ></v-select>
       </v-col>
       <v-col class="d-flex" cols="12" sm="3">
@@ -38,7 +38,7 @@
           outlined
           clearable
           color="#295caa"
-          :disabled="noTask || noMilestone"
+          :disabled="noMilestone"
         ></v-select>
       </v-col>
       <v-col class="d-flex" cols="12" sm="3">
@@ -51,7 +51,7 @@
           outlined
           clearable
           color="#295caa"
-          :disabled="noTask || noVersion"
+          :disabled="noVersion"
         ></v-select>
       </v-col>
       <v-col class="d-flex" cols="12" sm="3">
@@ -65,7 +65,6 @@
         outlined
         clearable
         color="#295caa"
-        :disabled="noTask"
       >
       <template v-slot:prepend-item>
         <v-list-item @mousedown.prevent>
