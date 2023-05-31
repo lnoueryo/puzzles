@@ -6,7 +6,7 @@ import (
 
 // 本番環境の設定
 func configureProdSettings() {
-	App.Addr = ":8080"
+	App.Addr = ":8500"
 	if os.Getenv("DB") == "CLOUDSQL" {
 		DBSet := Database{
 			Name:     os.Getenv("DB_NAME"),
