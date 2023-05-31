@@ -66,7 +66,7 @@ func init() {
 	App.Email.Password = os.Getenv("EMAIL_PASSWORD")
 	infolog.Print("EMAIL_PASSWORD: ", App.Email.Password)
 	DB_NAME = os.Getenv("DB_NAME");if DB_NAME == "" {
-		DB_NAME = "puzzle"
+		DB_NAME = "puzzles"
 	}
 	infolog.Print("DB_NAME: ", DB_NAME)
 	DB_HOST = os.Getenv("DB_HOST");if DB_HOST == "" {
@@ -89,7 +89,7 @@ func init() {
 		App.AllowOrigin = "http://localhost:3000"
 	}
 	infolog.Print("ALLOW_ORIGIN: ", App.AllowOrigin)
-	App.Host = os.Getenv("HOST");if App.Host == "" {
+	App.Host = os.Getenv("APP_HOST");if App.Host == "" {
 		App.Host = "http://localhost:8500"
 	}
 	infolog.Print("HOST: ", App.Host)

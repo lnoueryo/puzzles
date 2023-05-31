@@ -76,7 +76,7 @@ func authRoute(next http.Handler) http.Handler {
 			w.Write(errJson)
 			return
 		}
-		_, err = session.CheckSession(cookie.Value, projectID)
+		_, err = session.CheckSession(cookie.Value)
 		if err != nil {
 			errMap := map[string]string{"message": "session is expired"}
 			errJson, _ := json.Marshal(errMap)

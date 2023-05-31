@@ -31,7 +31,7 @@ func Auth(next http.Handler) http.Handler {
 			w.Write(errJson)
 			return
 		}
-		s, err := session.CheckSession(cookie.Value, projectID);if err != nil {
+		s, err := session.CheckSession(cookie.Value);if err != nil {
 			errMap := map[string]string{"message": "session is expired"}
 			errJson, _ := json.Marshal(errMap)
 			w.WriteHeader(http.StatusNotModified)
@@ -72,7 +72,6 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-
 	// セッション情報をログに吐き出す
 	start := time.Now()
 	cookie, err := r.Cookie("_cookie");if err != nil {
@@ -80,7 +79,7 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		l.handler.ServeHTTP(w, r)
 		return
 	}
-	s, err := session.CheckSession(cookie.Value, projectenv)
+	s, err := session.CheckSession(cookie.Value)
 	if err != nil {
 		infolog.Printf("%s %s %v %v", r.Method, r.URL.Path, GetRealRemoteIP(r), time.Since(start))
 	} else {
