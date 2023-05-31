@@ -62,7 +62,7 @@ func RespondMainUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(uJson)
 }
 
-func RespondTasks(w http.ResponseWriter, r *http.Request, id int, pageNum int) {
+func RespondTasks(w http.ResponseWriter, r *http.Request, id int) {
 
 	var ses session.Session
 	s := r.Context().Value(ses).(session.Session)
@@ -76,7 +76,7 @@ func RespondTasks(w http.ResponseWriter, r *http.Request, id int, pageNum int) {
 	}
 
 	
-	t, err := services.GetTask(id, pageNum); if err != nil {
+	t, err := services.GetTask(id); if err != nil {
 		errorlog.Print(err)
 		errMap := map[string]string{"message": "bad connection"}
 		sessionJson, _ := json.Marshal(errMap)

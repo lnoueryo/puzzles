@@ -5,6 +5,6 @@ COPY . /app
 RUN apk update && \
     npm install -g npm 
 RUN npm install
-EXPOSE 3000
+EXPOSE 3100
 ENV HOST 0.0.0.0
 CMD ["npm", "run", "dev"]

@@ -8,7 +8,7 @@ import (
 func configureLocalSettings() {
 
 	App.Addr = "0.0.0.0:8500"
-	App.AllowOrigin = "http://localhost:3000"
+	App.AllowOrigin = "http://localhost:3100"
 	App.Origin = "http://localhost:8500"
 	App.ProjectID = "puzzles-345814"
 

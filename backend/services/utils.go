@@ -16,29 +16,21 @@ var infolog = config.App.InfoLog
 var cookieKey = config.App.CookieKey
 var bucketName = config.BUCKET_NAME
 
-func GetIDs(r *http.Request) ([]int, int, error) {
+func GetIDs(r *http.Request) ([]int, error) {
 	var ids []int
-	page := -1
 	query := r.URL.Query()
     idSlice, ok := query["id"]; if !ok {
 		message := "couldn't get id"
 		err := errors.New(message)
-		return ids, page, err
+		return ids, err
     }
 
 	for _, ID := range idSlice {
 		id, err := strconv.Atoi(ID);if err != nil {
-			return ids, page, err
+			return ids, err
 		}
 		ids = append(ids, id)
 	}
 
-    pageSlice, ok := query["page"]; if ok {
-		intPage, err := strconv.Atoi(pageSlice[0]);if err != nil {
-			return ids, page, err
-		}
-		page = intPage
-    }
-
-	return ids, page, nil
+	return ids, nil
 }

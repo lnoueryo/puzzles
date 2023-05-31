@@ -16,7 +16,7 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   publicRuntimeConfig: {
-    apiHost: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8500',
+    apiHost: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://puzzles-api.jounetsism.biz/media',
     mediaURL: process.env.MEDIA_URL,
     // mediaURL: process.env.NODE_ENV === 'production' ? process.env.MEDIA_URL : 'http://localhost:8080/media',
   },
@@ -90,9 +90,9 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    prefix: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000',
-    baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000', // 正しい
+    // Workaround to avoid enforcing hard-coded localhost:3100: https://github.com/nuxt-community/axios-module/issues/308
+    prefix: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3100',
+    baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3100', // 正しい
     browserBaseURL: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8500', // 正しい
     credentials: true
   },
@@ -125,5 +125,8 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+  server: {
+    port: 3100
   }
 }

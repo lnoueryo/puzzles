@@ -20,7 +20,7 @@ func UpdateOrganizationAuthority(r *http.Request) error {
 
 func DeleteOrganizationAuthority(r *http.Request) error {
 
-	ids, _, err := GetIDs(r);if err != nil {
+	ids, err := GetIDs(r);if err != nil {
 		return err
 	}
 

@@ -49,12 +49,10 @@ func NewTask(r *http.Request) (Task, error) {
 	return task, nil
 }
 
-func GetTasksByProjectID(DB *gorm.DB, projectID int, pageNum int) ([]uint8, error) {
-	limit := 1000
-	offset := limit * pageNum
+func GetTasksByProjectID(DB *gorm.DB, projectID int) ([]uint8, error) {
 	start := time.Now()
 	var JSONs [][]uint8
-	DB.Raw(query, projectID, limit, offset).Scan(&JSONs)
+	DB.Raw(query, projectID).Scan(&JSONs)
 	duration := time.Since(start)
 	fmt.Println(duration)
 
@@ -73,6 +71,8 @@ SELECT
 			t.key,
 			'title',
 			t.title,
+			'detail',
+			t.detail,
 			'estimated_time',
 			t.estimated_time,
 			'actual_time',
@@ -111,6 +111,7 @@ FROM
 			t.id,
 			t.key,
 			t.title,
+			t.detail,
 			t.estimated_time,
 			t.actual_time,
 			t.start_time,
@@ -165,10 +166,6 @@ FROM
 			t.project_id = ?
 		ORDER BY
 			t.id
-		LIMIT
-			?
-		OFFSET
-			?
 	) t
 `
 

@@ -8,7 +8,7 @@ create ".env.dev" file
 ```
 APP_ENV=`"local"`
 APP_HOST=`"localhost"`
-ALLOW_ORIGIN=`"http://localhost:3000"`
+ALLOW_ORIGIN=`"http://localhost:3100"`
 CREDENTIALS_PATH=`"credentials/"service account json file`
 DB_NAME=`"puzzle"`
 DB_HOST=`"mysql"`

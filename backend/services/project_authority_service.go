@@ -29,7 +29,7 @@ func UpdateProjectAuthority(r *http.Request) error {
 
 func DeleteProjectAuthority(r *http.Request) error {
 
-	ids, _, err := GetIDs(r);if err != nil {
+	ids, err := GetIDs(r);if err != nil {
 		return err
 	}
 
