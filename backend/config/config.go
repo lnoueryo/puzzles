@@ -82,7 +82,7 @@ func init() {
 	}
 	infolog.Print("DB_PASSWORD: ", DB_PASSWORD)
 	App.Addr = os.Getenv("SERVER_PORT");if App.Addr == "" {
-		App.Addr = "0.0.0.0:8080"
+		App.Addr = "0.0.0.0:8500"
 	}
 	infolog.Print("SERVER_PORT: ", App.Addr)
 	App.AllowOrigin = os.Getenv("ALLOW_ORIGIN");if App.AllowOrigin == "" {
@@ -90,7 +90,7 @@ func init() {
 	}
 	infolog.Print("ALLOW_ORIGIN: ", App.AllowOrigin)
 	App.Host = os.Getenv("HOST");if App.Host == "" {
-		App.Host = "http://localhost:8080"
+		App.Host = "http://localhost:8500"
 	}
 	infolog.Print("HOST: ", App.Host)
 	App.ProjectID = "private-361516"
