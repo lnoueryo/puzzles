@@ -93,7 +93,7 @@ export default {
     // Workaround to avoid enforcing hard-coded localhost:3100: https://github.com/nuxt-community/axios-module/issues/308
     prefix: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3100',
     baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3100', // 正しい
-    browserBaseURL: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8500', // 正しい
+    browserBaseURL: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8200', // 正しい
     credentials: true
   },
 

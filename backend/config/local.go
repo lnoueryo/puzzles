@@ -7,9 +7,9 @@ import (
 // 開発環境の設定
 func configureLocalSettings() {
 
-	App.Addr = "0.0.0.0:8500"
-	App.AllowOrigin = "http://localhost:3100"
-	App.Origin = "http://localhost:8500"
+	App.Addr = "0.0.0.0:8200"
+	App.AllowOrigin = "http://localhost:3200"
+	App.Origin = "http://localhost:8200"
 	App.ProjectID = "puzzles-345814"
 
 	// DB接続

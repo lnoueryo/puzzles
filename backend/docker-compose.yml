@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  puzzles:
+    image: puzzles
+    container_name: puzzles
+    build:
+      context: "."
+      dockerfile: "docker/dev/Dockerfile"
+    ports:
+      - 8200:${APP_SERVER_PORT}
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SERVER_PORT: ${APP_SERVER_PORT}
+      ALLOW_ORIGIN: ${ALLOW_ORIGIN}
+      EMAIL_FROM: ${EMAIL_FROM}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+    volumes:
+      - "./controllers:/app/controllers"
+      - "./config:/app/config"
+      - "./models:/app/models"
+      - "./modules:/app/modules"
+      - "./routes:/app/routes"
+      - "./services:/app/services"
+    networks:
+      shared_network:
+        ipv4_address: ${BACKEND_HOST}
+    hostname: puzzles
+    extra_hosts:
+      - mysql:${DB_HOST}
+    tty: true
+    command: go run main.go watch
+
+networks:
+  shared_network:
+    external: true

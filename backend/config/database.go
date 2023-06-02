@@ -32,6 +32,7 @@ func ConnectMysql(DBSettings Database) (*gorm.DB, error) {
 		return db, err
 	}
 	DB = db
+
     return DB, err
 }
 
