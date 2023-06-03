@@ -83,7 +83,7 @@ func init() {
 	infolog.Print("DB_PASSWORD: ", DB_PASSWORD)
 	App.Addr = os.Getenv("SERVER_PORT");if App.Addr == "" {
 
-		App.Addr = "0.0.0.0:8200"
+		App.Addr = "0.0.0.0:8080"
 
 	}
 	infolog.Print("SERVER_PORT: ", App.Addr)

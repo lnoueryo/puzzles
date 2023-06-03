@@ -53,6 +53,12 @@ func GetTasksByProjectID(DB *gorm.DB, projectID int) ([]uint8, error) {
 	start := time.Now()
 	var JSONs [][]uint8
 	DB.Raw(query, projectID).Scan(&JSONs)
+	var strData []string
+	for _, v := range JSONs {
+		strData = append(strData, string(v))
+	}
+
+	fmt.Println(strData) // ["Hello" "World"]
 	duration := time.Since(start)
 	fmt.Println(duration)
 

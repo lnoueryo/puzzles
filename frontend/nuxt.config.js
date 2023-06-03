@@ -90,10 +90,10 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    // Workaround to avoid enforcing hard-coded localhost:3100: https://github.com/nuxt-community/axios-module/issues/308
-    prefix: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3100',
-    baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3100', // 正しい
-    browserBaseURL: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8200', // 正しい
+    // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
+    prefix: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000',
+    baseURL: process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000', // 正しい
+    browserBaseURL: process.env.NODE_ENV === 'production' ? process.env.API_URL : 'http://localhost:8080', // 正しい
     credentials: true
   },
 
@@ -127,6 +127,6 @@ export default {
   build: {
   },
   server: {
-    port: 3100
+    port: 3000
   }
 }

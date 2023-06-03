@@ -9,14 +9,14 @@ services:
       context: "."
       dockerfile: "docker/dev/Dockerfile"
     ports:
-      - 8200:${APP_SERVER_PORT}
+      - 8200:8200
     environment:
       DB_NAME: ${DB_NAME}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: 172.16.0.2
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      SERVER_PORT: ${APP_SERVER_PORT}
-      ALLOW_ORIGIN: ${ALLOW_ORIGIN}
+      SERVER_PORT: 8200
+      ALLOW_ORIGIN: https://puzzles.jounetsism.biz
       EMAIL_FROM: ${EMAIL_FROM}
       EMAIL_USERNAME: ${EMAIL_USERNAME}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}

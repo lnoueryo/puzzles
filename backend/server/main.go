@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os/exec"
+	"runtime"
 	"time"
 )
 
@@ -15,8 +16,11 @@ func main() {
 	infolog := config.App.InfoLog
 	infolog.Print("starting server...")
 	// windowsの場合":"は必要ない↓
+	if runtime.GOOS != "windows" {
+		config.App.Addr = ":" + config.App.Addr
+	}
 	server := http.Server{
-		Addr:    ":" + config.App.Addr,
+		Addr:    config.App.Addr,
 		Handler: routes.Routes(),
 	}
 	infolog.Print("run server!!")
